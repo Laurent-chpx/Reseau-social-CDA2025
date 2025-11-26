@@ -1,0 +1,26 @@
+# Symfony / PHP
+/vendor/
+/var/
+/.env
+.env.local
+.env.local.php
+/.phpunit.result.cache
+
+# Docker
+docker-compose.override.yml
+*.log
+
+# IDE / éditeurs
+.idea/
+.vscode/
+*.swp
+*.sublime-project
+*.sublime-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node / frontend (si tu utilises npm/yarn)
+node_modules/
+dist/
