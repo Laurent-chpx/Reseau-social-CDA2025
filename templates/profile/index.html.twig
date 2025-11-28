@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Profil{% endblock %}
+
+{% block body %}
+    <h1>Mon Profil</h1>
+
+    <p><strong>Email :</strong> {{ user.email }}</p>
+    <p><strong>Prénom :</strong> {{ user.firstName }}</p>
+    <p><strong>Nom :</strong> {{ user.lastName }}</p>
+    <p><strong>Inscrit le :</strong> {{ user.createdAt|date('d/m/Y H:i') }}</p>
+
+    <p><a href="{{ path('app_profile_edit') }}">Modifier mon profil</a></p>
+    <p><a href="{{ path('app_logout') }}">Déconnexion</a></p>
+{% endblock %}

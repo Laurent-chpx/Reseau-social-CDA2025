@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier mon Profil{% endblock %}
+
+{% block body %}
+    <h1>Modifier mon Profil</h1>
+
+    {% for message in app.flashes('success') %}
+        <p style="color: green;">{{ message }}</p>
+    {% endfor %}
+
+    {% for message in app.flashes('error') %}
+        <p style="color: red;">{{ message }}</p>
+    {% endfor %}
+
+    {{ form_start(form) }}
+    <h2>Informations personnelles</h2>
+    {{ form_row(form.email) }}
+    {{ form_row(form.firstName) }}
+    {{ form_row(form.lastName) }}
+
+    <h2>Changer le mot de passe (optionnel)</h2>
+    <p>Laissez vide si vous ne souhaitez pas changer votre mot de passe.</p>
+    {{ form_row(form.currentPassword) }}
+    {{ form_row(form.plainPassword.first) }}
+    {{ form_row(form.plainPassword.second) }}
+
+    <button type="submit">Enregistrer</button>
+    {{ form_end(form) }}
+
+    <p><a href="{{ path('app_profile') }}">Retour au profil</a></p>
+{% endblock %}
