@@ -1,0 +1,137 @@
+{# templates/home/index.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ page_title }} - Événements Locaux{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/darkmode-terracotta.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="main-nav">
+    <div class="page-title">🎉 Événements Locaux</div>
+    <div class="page-nav">
+        <div class="nav-item active">Accueil</div>
+       {# <a href="{{ path('app_events_search') }}" class="nav-item">Événements</a>
+        <a href="{{ path('app_login') }}" class="btn btn-primary" style="margin: 0;">Connexion</a>#}
+    </div>
+</div>
+
+<div class="container">
+    {# Hero Section #}
+    <div class="hero">
+        <div class="hero-content">
+            <h1>{{ page_title }}</h1>
+            <p>Festivals, concerts, expositions... Ne ratez plus rien dans votre région !</p>
+            
+            {#<form action="{{ path('app_events_search') }}" method="GET" class="search-box">#}
+                <input type="text" name="query" class="search-input" placeholder="🔍 Ville, code postal ou département...">
+                <button type="submit" class="btn btn-primary btn-large">Rechercher</button>
+            </form>
+        </div>
+    </div>
+    
+    {# Événements sponsorisés #}
+    <div class="section">
+        <h2 style="text-align: center; font-size: 32px; margin-bottom: 40px; color: #ffffff;">
+            ⭐ Événements sponsorisés dans votre région
+        </h2>
+        
+        <div class="grid-3">
+            {% for event in sponsored_events %}
+            <div class="event-card">
+                <div class="event-image">
+                    {% if event.sponsored %}
+                    <div class="sponsored-badge">⭐ SPONSORISÉ</div>
+                    {% endif %}
+                    {# Si vous avez des images #}
+                    {# <img src="{{ asset('uploads/events/' ~ event.image) }}" alt="{{ event.title }}"> #}
+                    [IMAGE]
+                </div>
+                <div class="event-content">
+                    <h3 class="event-title">{{ event.title }}</h3>
+                    <div class="event-meta">
+                        <div>📍 {{ event.location }}</div>
+                        <div>📅 {{ event.date }}</div>
+                        <div>
+                            {% for tag in event.tags %}
+                            <span class="tag">{{ tag }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {#<a href="{{ path('app_event_detail', {'id': event.id}) }}" class="btn btn-primary" style="width: 100%;">#}
+                        Voir les détails →
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px;">
+            {#<a href="{{ path('app_events_search') }}" class="btn btn-primary btn-large">#}
+                Voir tous les événements
+            </a>
+        </div>
+    </div>
+    
+    {# Comment ça marche #}
+    <div class="section">
+        <h2 style="text-align: center; font-size: 32px; margin-bottom: 40px; color: #ffffff;">
+            💡 Comment ça marche ?
+        </h2>
+        
+        <div class="grid-4">
+            {% for feature in features %}
+            <div class="feature-card">
+                <div class="feature-icon">{{ feature.icon }}</div>
+                <h3>{{ feature.title }}</h3>
+                <p>{{ feature.description }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    {# Statistiques #}
+    <div class="section">
+        <h2 style="text-align: center; font-size: 32px; margin-bottom: 40px; color: #ffffff;">
+            📊 La plateforme en chiffres
+        </h2>
+        
+        <div class="grid-4">
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.users }}</div>
+                <div class="stat-label">Utilisateurs actifs</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.events }}</div>
+                <div class="stat-label">Événements disponibles</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.departments }}</div>
+                <div class="stat-label">Départements couverts</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.organizers }}</div>
+                <div class="stat-label">Organisateurs</div>
+            </div>
+        </div>
+    </div>
+    
+    {# CTA Final #}
+    <div class="section" style="text-align: center; padding: 60px 40px;">
+        <h2 style="font-size: 36px; margin-bottom: 20px; color: #ffffff;">
+            Prêt à découvrir votre prochain événement ?
+        </h2>
+        <p style="font-size: 18px; color: #9ca3af; margin-bottom: 30px;">
+            Rejoignez la communauté et ne ratez plus rien près de chez vous
+        </p>
+        {#<a href="{{ path('app_register') }}" class="btn btn-primary btn-large">#}
+            Créer un compte gratuitement
+        </a>
+    </div>
+</div>
+{% endblock %}
