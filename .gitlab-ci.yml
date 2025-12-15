@@ -13,35 +13,53 @@ variables:
 
 test_app:
   stage: test
-  image: composer:2.6  # Image PHP avec Composer préinstallé
+  image: php:8.2-cli
+
   services:
     - name: mysql:8
       alias: db
+
   variables:
-    # Définis les variables pour MySQL pour que le service soit accessible
-    MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
-    MYSQL_DATABASE: $MYSQL_DATABASE
-    MYSQL_USER: $MYSQL_USER
-    MYSQL_PASSWORD: $MYSQL_PASSWORD
+    MYSQL_DATABASE: symfony
+    MYSQL_USER: symfony_user
+    MYSQL_PASSWORD: symfony_pass
+    MYSQL_ROOT_PASSWORD: rootpass
+    DATABASE_URL: "mysql://symfony_user:symfony_pass@db:3306/symfony_test?serverVersion=8.0"
+
   before_script:
-    # Installer les extensions PHP nécessaires
-    - apt-get update && apt-get install -y zip unzip git
+    # outils système
+    - apt-get update
+    - apt-get install -y zip unzip git mariadb-client
+
+    # extensions PHP
     - docker-php-ext-install pdo pdo_mysql
-    # Copier le fichier .env de test
+
+    # attendre que MySQL soit prêt
+    - |
+      until mysql -h db -u root -p"$MYSQL_ROOT_PASSWORD" -e "SELECT 1"; do
+        echo "Waiting for MySQL..."
+        sleep 2
+      done
+
+    # création DB + droits (LE POINT CLÉ)
+    - mysql -h db -u root -p"$MYSQL_ROOT_PASSWORD" -e "CREATE DATABASE IF NOT EXISTS ${MYSQL_DATABASE}_test;"
+    - mysql -h db -u root -p"$MYSQL_ROOT_PASSWORD" -e "GRANT ALL PRIVILEGES ON ${MYSQL_DATABASE}_test.* TO '${MYSQL_USER}'@'%'; FLUSH PRIVILEGES;"
+
+    # env Symfony
     - cp .env.test .env
-    - export DATABASE_URL="mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE}?serverVersion=8.0"
-    # Installer les dépendances PHP
-    - composer install --no-interaction
+
+    # dépendances
+    - curl -sS https://getcomposer.org/installer | php
+    - php composer.phar install --no-interaction
+
   script:
-    # Créer la base de données de test
-    - php bin/console doctrine:database:create --env=test
-    # Appliquer les migrations
     - php bin/console doctrine:migrations:migrate -n --env=test
-    # Lancer les tests PHPUnit
     - php bin/phpunit
+
   only:
     - main
     - test-deploiement
+
 
 
 build_image:
