@@ -13,22 +13,35 @@ variables:
 
 test_app:
   stage: test
-  image: php:8.2
+  image: composer:2.6  # Image PHP avec Composer préinstallé
   services:
     - name: mysql:8
       alias: db
+  variables:
+    # Définis les variables pour MySQL pour que le service soit accessible
+    MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
+    MYSQL_DATABASE: $MYSQL_DATABASE
+    MYSQL_USER: $MYSQL_USER
+    MYSQL_PASSWORD: $MYSQL_PASSWORD
   before_script:
+    # Installer les extensions PHP nécessaires
     - apt-get update && apt-get install -y zip unzip git
     - docker-php-ext-install pdo pdo_mysql
+    # Copier le fichier .env de test
     - cp .env.test .env
+    # Installer les dépendances PHP
     - composer install --no-interaction
   script:
+    # Créer la base de données de test
     - php bin/console doctrine:database:create --env=test
+    # Appliquer les migrations
     - php bin/console doctrine:migrations:migrate -n --env=test
+    # Lancer les tests PHPUnit
     - php bin/phpunit
   only:
     - main
     - test-deploiement
+
 
 build_image:
   stage: build
