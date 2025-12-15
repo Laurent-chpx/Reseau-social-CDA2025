@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer un événement{% endblock %}
+
+{% block body %}
+    <h1>Créer un événement</h1>
+
+    {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
+    {{ form_row(form.title) }}
+    {{ form_row(form.description) }}
+    {{ form_row(form.address) }}
+    {{ form_row(form.city) }}
+    {{ form_row(form.dateStart) }}
+    {{ form_row(form.dateEnd) }}
+    {{ form_row(form.schedule) }}
+    {{ form_row(form.price) }}
+    {{ form_row(form.categories) }}
+    {{ form_row(form.images) }}
+
+    <button type="submit">Créer l'événement</button>
+    {{ form_end(form) }}
+
+    <p><a href="{{ path('app_profile_events') }}">Retour à mes événements</a></p>
+{% endblock %}

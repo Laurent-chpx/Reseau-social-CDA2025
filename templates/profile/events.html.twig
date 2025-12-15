@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes événements{% endblock %}
+
+{% block body %}
+    <h1>Mes événements</h1>
+
+    {% for message in app.flashes('success') %}
+        <p style="color: green;">{{ message }}</p>
+    {% endfor %}
+
+    {% for message in app.flashes('error') %}
+        <p style="color: red;">{{ message }}</p>
+    {% endfor %}
+
+    <p><a href="{{ path('app_profile_event_new') }}">+ Créer un événement</a></p>
+
+    {% if events is empty %}
+        <p>Vous n'avez pas encore créé d'événement.</p>
+    {% else %}
+        <table border="1">
+            <thead>
+            <tr>
+                <th>Image</th>
+                <th>Titre</th>
+                <th>Date</th>
+                <th>Ville</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for event in events %}
+                <tr>
+                    <td>
+                        {% if event.images|length > 0 %}
+                            <img src="{{ asset('uploads/events/' ~ event.images[0].url) }}" width="80" alt="{{ event.title }}">
+                        {% else %}
+                            Pas d'image
+                        {% endif %}
+                    </td>
+                    <td>{{ event.title }}</td>
+                    <td>{{ event.dateStart|date('d/m/Y H:i') }}</td>
+                    <td>{{ event.city }}</td>
+                    <td>
+                        <a href="{{ path('app_profile_event_edit', {id: event.id}) }}">Modifier</a>
+                        <form action="{{ path('app_profile_event_delete', {id: event.id}) }}" method="POST" style="display:inline;">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ event.id) }}">
+                            <button type="submit" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet événement ?')">Supprimer</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    <p><a href="{{ path('app_profile') }}">Retour au dashboard</a></p>
+{% endblock %}
