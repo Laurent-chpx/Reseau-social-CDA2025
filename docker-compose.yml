@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   php:
     image: php:8.2-fpm
@@ -36,7 +34,7 @@ services:
     volumes:
       - db_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqlamdin", "ping", "-h", "localhost"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
       timeout: 5s
       retries: 5
