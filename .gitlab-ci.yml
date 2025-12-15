@@ -1,0 +1,57 @@
+stages:
+  - test
+  - build
+  - deploy
+
+variables:
+  MYSQL_PASSWORD: $MYSQL_PASSWORD
+  MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
+  MYSQL_USER: $MYSQL_USER
+  VPS_HOST: $VPS_HOST
+  VPS_USER: $VPS_USER
+  VPS_PASSWORD: $VPS_PASSWORD
+
+test_app:
+  stage: test
+  image: php:8.2
+  services:
+    - name: mysql:8
+      alias: db
+  before_script:
+    - apt-get update && apt-get install -y zip unzip git
+    - docker-php-ext-install pdo pdo_mysql
+    - cp .env.test .env
+    - composer install --no-interaction
+  script:
+    - php bin/console doctrine:database:create --env=test
+    - php bin/console doctrine:migrations:migrate -n --env=test
+    - php bin/phpunit
+  only:
+    - main
+
+build_image:
+  stage: build
+  image: docker:25.0.0
+  services:
+    - docker:25.0.0-dind
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE:latest .
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker push $CI_REGISTRY_IMAGE:latest
+  only:
+    - main
+
+deploy_to_vps:
+  stage: deploy
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache sshpass openssh
+  script:
+    - sshpass -p "$VPS_PASSWORD" ssh -o StrictHostKeyChecking=no $VPS_USER@$VPS_HOST "
+        cd /var/www/projet &&
+        git pull &&
+        docker-compose pull &&
+        docker-compose up -d --remove-orphans
+      "
+  only:
+    - main

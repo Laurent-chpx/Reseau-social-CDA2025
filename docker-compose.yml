@@ -1,6 +1,6 @@
 services:
   php:
-    image: php:8.2-fpm
+    build: .
     container_name: symfony-php
     working_dir: /var/www/html
     volumes:
@@ -41,7 +41,6 @@ services:
       start_period: 30s
     networks:
       - symfony
-
 volumes:
   db_data:
 
