@@ -4,46 +4,40 @@ stages:
   - deploy
 
 
-variables:
-  DATABASE_URL: "mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE}_test?serverVersion=8.0"
-
 test_app:
   stage: test
-  image: php:8.2-cli
+  image: composer:2.6
   services:
     - name: mysql:8
       alias: db
       command: ["--default-authentication-plugin=mysql_native_password", "--skip-host-cache", "--skip-name-resolve"]
+
   variables:
     MYSQL_DATABASE: "${MYSQL_DATABASE}_test"
-    MYSQL_USER: $MYSQL_USER
-    MYSQL_PASSWORD: $MYSQL_PASSWORD
-    MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
-    DATABASE_URL: "mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE}?serverVersion=8.0"
+    DATABASE_URL: "mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE}_test?serverVersion=8.0"
+
   before_script:
-    - apt-get update && apt-get install -y zip unzip git mariadb-client
-    - docker-php-ext-install pdo pdo_mysql
-    - |
-      MAX_TRIES=60
+    - apt-get update && apt-get install -y mariadb-client unzip git zip
+    - MAX_TRIES=90
       TRIES=0
-      echo "Waiting for MySQL to be ready..."
       until mysql -h db -u root -p"$MYSQL_ROOT_PASSWORD" --ssl-mode=DISABLED -e "SELECT 1;" >/dev/null 2>&1; do
+        echo "Waiting for MySQL..."
         sleep 2
         TRIES=$((TRIES+1))
         if [ $TRIES -ge $MAX_TRIES ]; then
           echo "MySQL did not start in time, exiting."
-          docker logs db || true
           exit 1
         fi
       done
-    - mysql -h db -u root -p"$MYSQL_ROOT_PASSWORD" -e "CREATE DATABASE IF NOT EXISTS ${MYSQL_DATABASE};"
-    - mysql -h db -u root -p"$MYSQL_ROOT_PASSWORD" -e "GRANT ALL PRIVILEGES ON ${MYSQL_DATABASE}.* TO '${MYSQL_USER}'@'%'; FLUSH PRIVILEGES;"
+    - mysql -h db -u root -p"$MYSQL_ROOT_PASSWORD" -e "CREATE DATABASE IF NOT EXISTS ${MYSQL_DATABASE}_test;"
+    - mysql -h db -u root -p"$MYSQL_ROOT_PASSWORD" -e "GRANT ALL PRIVILEGES ON ${MYSQL_DATABASE}_test.* TO '${MYSQL_USER}'@'%'; FLUSH PRIVILEGES;"
     - cp .env.test .env
-    - curl -sS https://getcomposer.org/installer | php
-    - php composer.phar install --no-interaction
+    - composer install --no-interaction
+
   script:
     - php bin/console doctrine:migrations:migrate -n --env=test
     - php bin/phpunit
+
   only:
     - main
     - test-deploiement
