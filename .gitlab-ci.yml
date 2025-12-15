@@ -30,7 +30,7 @@ test_app:
     # attendre que MySQL soit prêt
     - |
       echo "Waiting for MySQL to be ready..."
-      until mysql -h db -u root -p"$MYSQL_ROOT_PASSWORD" -e "SELECT 1;" >/dev/null 2>&1; do
+      until mysql -h db -u root -p"$MYSQL_ROOT_PASSWORD" --ssl-mode=DISABLED -e "SELECT 1;" >/dev/null 2>&1; do
         echo "Waiting for MySQL..."
         sleep 2
       done
