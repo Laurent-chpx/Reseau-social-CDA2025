@@ -29,7 +29,7 @@ test_app:
     - docker-php-ext-install pdo pdo_mysql
     # Copier le fichier .env de test
     - cp .env.test .env
-    - export DATABASE_URL="mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE}_test?serverVersion=8.0"
+    - export DATABASE_URL="mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE}?serverVersion=8.0"
     # Installer les dépendances PHP
     - composer install --no-interaction
   script:
