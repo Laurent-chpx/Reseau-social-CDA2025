@@ -25,11 +25,58 @@ final class ProfileController extends AbstractController
     public function index(EventRepository $eventRepository): Response
     {
         $user = $this->getUser();
-        $events = $eventRepository->findBy(['createdBy' => $user], ['dateStart' => 'DESC']);
+
+        // Événements créés par l'utilisateur
+        $userEvents = $eventRepository->findBy(['createdBy' => $user], ['dateStart' => 'DESC']);
+
+        // Nombre de followers
+        $followersCount = $user->getFollowers()->count();
+
+        // Événements des villes suivies (limité à 3 derniers)
+        $followedCitiesEvents = [];
+        $followedCities = $user->getFollowedCities();
+        if (!$followedCities->isEmpty()) {
+            $cityIds = [];
+            foreach ($followedCities as $userCity) {
+                $cityIds[] = $userCity->getCity()->getId();
+            }
+            if (!empty($cityIds)) {
+                $followedCitiesEvents = $eventRepository->createQueryBuilder('e')
+                    ->where('e.city IN (:cityIds)')
+                    ->setParameter('cityIds', $cityIds)
+                    ->orderBy('e.createdAt', 'DESC')
+                    ->setMaxResults(3)
+                    ->getQuery()
+                    ->getResult();
+            }
+        }
+
+        // Événements récents des créateurs suivis (limité à 5 derniers)
+        $followedCreatorsEvents = [];
+        $followedUsers = $user->getFollowing();
+        if (!$followedUsers->isEmpty()) {
+            $creatorIds = [];
+            foreach ($followedUsers as $userFollow) {
+                $creatorIds[] = $userFollow->getFollowed()->getId();
+            }
+            if (!empty($creatorIds)) {
+                $followedCreatorsEvents = $eventRepository->createQueryBuilder('e')
+                    ->where('e.createdBy IN (:creatorIds)')
+                    ->setParameter('creatorIds', $creatorIds)
+                    ->orderBy('e.createdAt', 'DESC')
+                    ->setMaxResults(5)
+                    ->getQuery()
+                    ->getResult();
+            }
+        }
 
         return $this->render('profile/index.html.twig', [
             'user' => $user,
-            'events' => $events,
+            'events' => $userEvents,
+            'eventsCount' => count($userEvents),
+            'followersCount' => $followersCount,
+            'followedCitiesEvents' => $followedCitiesEvents,
+            'followedCreatorsEvents' => $followedCreatorsEvents,
         ]);
     }
 

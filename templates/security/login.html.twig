@@ -10,7 +10,9 @@
     <div class="page-container">
         {# Header Navigation #}
         <header class="main-header">
-            <div class="logo">La Vie<br>en Rose</div>
+            <a href="{{ path('app_home') }}" class="logo-link">
+                <div class="logo">La Vie<br>en Rose</div>
+            </a>
             <nav class="nav-menu">
                 <a href="{{ path('app_home') }}" class="nav-link">Accueil</a>
                 <a href="{{ path('app_event_index') }}" class="nav-link">Événements</a>
@@ -77,12 +79,8 @@
 
                 {# Registration Section #}
                 <section class="auth-card">
-                    <h2 class="auth-title">Créer un compte</h2>
-                    <p class="auth-subtitle">Rejoignez la communauté gratuitement !</p>
-
-                    <div class="registration-notice">
-                        <p>Pour créer un compte, veuillez utiliser notre <a href="{{ path('app_register') }}" class="link">formulaire d'inscription</a>.</p>
-                    </div>
+                    <h2 class="auth-title">Nouveau sur La Vie en Rose ?</h2>
+                    <p class="auth-subtitle">Rejoignez notre communauté pour profiter de tous les avantages</p>
 
                     <div class="registration-preview">
                         <h3>Types de compte disponibles :</h3>
@@ -91,7 +89,9 @@
                             <li><strong>Association</strong> - Compte organisateur pour créer et gérer des événements</li>
                             <li><strong>Municipalité</strong> - Compte collectivité pour promouvoir des événements locaux</li>
                         </ul>
-                        <a href="{{ path('app_register') }}" class="btn-primary">S'inscrire maintenant</a>
+                        <div style="text-align: center; margin-top: 1.5rem;">
+                            <a href="{{ path('app_register') }}" class="btn-primary">Créer un compte</a>
+                        </div>
                     </div>
                 </section>
             </div>

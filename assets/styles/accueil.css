@@ -16,6 +16,15 @@ body {
     border-bottom: 1px solid #1e293b;
 }
 
+.logo-link {
+    text-decoration: none;
+    transition: opacity 0.3s ease;
+}
+
+.logo-link:hover {
+    opacity: 0.8;
+}
+
 .logo {
     font-family: 'Vast Shadow', serif;
     font-size: 41px;
@@ -227,6 +236,7 @@ body {
 }
 
 .event-btn {
+    display: block;
     width: 100%;
     padding: 14px;
     background: #ea580c;
@@ -237,6 +247,8 @@ body {
     font-weight: 600;
     cursor: pointer;
     transition: background 0.3s ease;
+    text-decoration: none;
+    text-align: center;
 }
 
 .event-btn:hover {
@@ -244,17 +256,17 @@ body {
 }
 
 .view-all-btn {
-    display: block;
-    margin: 0 auto;
-    padding: 16px 48px;
+    display: inline-block;
+    padding: 14px 40px;
     background: #ea580c;
     color: white;
     border: none;
     border-radius: 8px;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 600;
     cursor: pointer;
     transition: background 0.3s ease;
+    text-decoration: none;
 }
 
 .view-all-btn:hover {
@@ -285,6 +297,7 @@ body {
 }
 
 .cta-btn {
+    display: inline-block;
     padding: 18px 40px;
     background: #ea580c;
     color: white;
@@ -294,6 +307,7 @@ body {
     font-weight: 600;
     cursor: pointer;
     transition: background 0.3s ease;
+    text-decoration: none;
 }
 
 .cta-btn:hover {

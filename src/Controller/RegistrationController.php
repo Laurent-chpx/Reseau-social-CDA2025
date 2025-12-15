@@ -32,8 +32,7 @@ final class RegistrationController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
-            // do anything else you need here, like send an email
-
+            // Log in the user and redirect to dashboard
             return $security->login($user, AppAuthenticator::class, 'main');
         }
 

@@ -10,11 +10,17 @@
 {% block body %}
     <!-- Header Navigation -->
     <header class="main-header">
-        <div class="logo">La Vie<br>en Rose</div>
+        <a href="{{ path('app_home') }}" class="logo-link">
+            <div class="logo">La Vie<br>en Rose</div>
+        </a>
         <nav class="nav-menu">
             <a href="{{ path('app_home') }}" class="nav-link">Accueil</a>
-            <a href="#" class="nav-link">Événements</a>
-            <a href="#" class="nav-link">Connexion</a>
+            <a href="{{ path('app_event_index') }}" class="nav-link">Événements</a>
+            {% if app.user %}
+                <a href="{{ path('app_profile') }}" class="nav-link">Mon profil</a>
+            {% else %}
+                <a href="{{ path('app_login') }}" class="nav-link">Connexion</a>
+            {% endif %}
         </nav>
     </header>
 
@@ -54,13 +60,15 @@
                         <span class="tag">{{ tag }}</span>
                         {% endfor %}
                     </div>
-                    <button class="event-btn">Voir les détails →</button>
+                    <a href="{{ path('app_event_show', {id: event.id}) }}" class="event-btn">Voir les détails →</a>
                 </div>
             </div>
             {% endfor %}
         </div>
 
-        <button class="view-all-btn">Voir tous les événements</button>
+        <div style="text-align: center;">
+            <a href="{{ path('app_event_index') }}" class="view-all-btn">Voir tous les événements</a>
+        </div>
     </section>
 
     <!-- CTA Section -->
@@ -68,7 +76,7 @@
         <div class="cta-section">
             <h2>Prêt à découvrir votre prochain événement ?</h2>
             <p>Rejoignez la communauté et ne ratez plus rien près de chez vous</p>
-            <button class="cta-btn">Créer un compte gratuitement</button>
+            <a href="{{ path('app_register') }}" class="cta-btn">Créer un compte gratuitement</a>
         </div>
     </section>
 {% endblock %}
