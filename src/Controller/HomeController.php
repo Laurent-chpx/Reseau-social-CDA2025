@@ -2,6 +2,9 @@
 
 namespace App\Controller;
 
+use App\Repository\EventRepository;
+use App\Repository\UserRepository;
+use App\Repository\DepartmentRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -9,45 +12,89 @@ use Symfony\Component\Routing\Annotation\Route;
 class HomeController extends AbstractController
 {
     #[Route('/', name: 'app_home')]
-    public function index(): Response
+    public function index(
+        EventRepository $eventRepository,
+        UserRepository $userRepository,
+        DepartmentRepository $departmentRepository
+    ): Response
     {
-        // Données fictives pour les événements sponsorisés
-        $sponsoredEvents = [
-            [
-                'id' => 1,
-                'title' => 'Festival de Jazz 2025',
-                'location' => 'Toulouse (31)',
-                'date' => '15 juin 2025 à 18h00',
-                'image' => 'festival-jazz.jpg', // À remplacer par le vrai chemin
-                'tags' => ['Concert', 'Festival'],
-                'sponsored' => true
-            ],
-            [
-                'id' => 2,
-                'title' => 'Fête de la musique 2025',
-                'location' => 'Toulouse (31)',
-                'date' => '21 juin 2025',
-                'image' => 'fete-musique.jpg',
-                'tags' => ['Concert', 'Festival'],
-                'sponsored' => true
-            ],
-            [
-                'id' => 3,
-                'title' => 'Marathon de Paris',
-                'location' => 'Paris (75)',
-                'date' => '7 avril 2025',
-                'image' => 'marathon-paris.jpg',
-                'tags' => ['Sport'],
-                'sponsored' => true
-            ]
-        ];
+        // Récupérer les événements sponsorisés (avec promotion)
+        $allEvents = $eventRepository->findAll();
+        $sponsoredEventsData = [];
 
-        // Statistiques de la plateforme
+        foreach ($allEvents as $event) {
+            if ($event->getPromote() !== null) {
+                // Formater les catégories
+                $tags = [];
+                foreach ($event->getCategories() as $category) {
+                    $tags[] = $category->getName();
+                }
+
+                // Formater la date
+                $dateFormatted = $event->getDateStart()->format('d/m/Y');
+                if ($event->getSchedule()) {
+                    $dateFormatted .= ' à ' . $event->getSchedule();
+                }
+
+                // Formater la localisation
+                $location = $event->getCity()->getName();
+                if ($event->getCity()->getDepartment()) {
+                    $location .= ' (' . $event->getCity()->getDepartment()->getCode() . ')';
+                }
+
+                $sponsoredEventsData[] = [
+                    'id' => $event->getId(),
+                    'title' => $event->getTitle(),
+                    'location' => $location,
+                    'date' => $dateFormatted,
+                    'image' => $event->getImages()->first() ? $event->getImages()->first()->getPath() : null,
+                    'tags' => $tags,
+                    'sponsored' => true
+                ];
+            }
+        }
+
+        // Si pas d'événements sponsorisés, prendre les 3 derniers événements
+        if (empty($sponsoredEventsData)) {
+            $recentEvents = $eventRepository->findBy([], ['createdAt' => 'DESC'], 3);
+
+            foreach ($recentEvents as $event) {
+                $tags = [];
+                foreach ($event->getCategories() as $category) {
+                    $tags[] = $category->getName();
+                }
+
+                $dateFormatted = $event->getDateStart()->format('d/m/Y');
+                if ($event->getSchedule()) {
+                    $dateFormatted .= ' à ' . $event->getSchedule();
+                }
+
+                $location = $event->getCity()->getName();
+                if ($event->getCity()->getDepartment()) {
+                    $location .= ' (' . $event->getCity()->getDepartment()->getCode() . ')';
+                }
+
+                $sponsoredEventsData[] = [
+                    'id' => $event->getId(),
+                    'title' => $event->getTitle(),
+                    'location' => $location,
+                    'date' => $dateFormatted,
+                    'image' => $event->getImages()->first() ? $event->getImages()->first()->getPath() : null,
+                    'tags' => $tags,
+                    'sponsored' => false
+                ];
+            }
+        }
+
+        // Limiter à 3 événements
+        $sponsoredEventsData = array_slice($sponsoredEventsData, 0, 3);
+
+        // Statistiques réelles de la plateforme
         $stats = [
-            'users' => '12,487',
-            'events' => '3,621',
-            'departments' => '94',
-            'organizers' => '1,247'
+            'users' => number_format($userRepository->count([]), 0, ',', ' '),
+            'events' => number_format($eventRepository->count([]), 0, ',', ' '),
+            'departments' => number_format($departmentRepository->count([]), 0, ',', ' '),
+            'organizers' => number_format($userRepository->count([]), 0, ',', ' ')
         ];
 
         // Features (Comment ça marche)
@@ -75,7 +122,7 @@ class HomeController extends AbstractController
         ];
 
         return $this->render('index.html.twig', [
-            'sponsored_events' => $sponsoredEvents,
+            'sponsored_events' => $sponsoredEventsData,
             'stats' => $stats,
             'features' => $features,
             'page_title' => 'Découvrez les événements près de chez vous'
