@@ -6,11 +6,6 @@ body, html {
     height: 100%;
 }
 
-/* Hide login message on event form page */
-.mb-3 {
-    display: none;
-}
-
 /* Event Form Container */
 .event-form-container {
     background: linear-gradient(180deg, #2d3e50 0%, #1a2332 100%);

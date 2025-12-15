@@ -1,3 +1,11 @@
+/* Reset body and html */
+body, html {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100%;
+    height: 100%;
+}
+
 /* Dashboard Container */
 .dashboard-container {
     background: linear-gradient(180deg, #2d3e50 0%, #1a2332 100%);
@@ -5,6 +13,7 @@
     color: #ffffff;
     padding: 0;
     margin: 0;
+    width: 100%;
 }
 
 /* Header */

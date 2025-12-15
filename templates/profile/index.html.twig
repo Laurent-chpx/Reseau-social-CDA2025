@@ -1,156 +1,134 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Mon Profil | La Vie en Rose{% endblock %}
+{% block title %}Tableau de bord | La Vie en Rose{% endblock %}
 
 {% block stylesheets %}
-    <link rel="stylesheet" href="{{ asset('styles/profile.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/logo.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/dashboard.css') }}">
 {% endblock %}
 
 {% block body %}
-    <div class="page-container">
+    <div class="dashboard-container">
         {# Header Navigation #}
-        <header class="main-header">
-            <a href="{{ path('app_home') }}" class="logo">La Vie en R.</a>
-            <nav class="nav-menu">
+        <header class="dashboard-header">
+            {% include '_components/_logo.html.twig' %}
+            <nav class="dashboard-nav">
                 <a href="{{ path('app_event_index') }}" class="nav-link">Événements</a>
                 <a href="{{ path('app_profile_events') }}" class="nav-link">Mes événements</a>
             </nav>
-            <div class="user-menu">
-                <div class="user-avatar" onclick="toggleUserMenu()">
-                    {{ user.firstName|slice(0, 1)|upper }}{{ user.lastName|slice(0, 1)|upper }}
-                </div>
-                <div class="user-dropdown" id="userDropdown">
-                    <a href="{{ path('app_profile') }}" class="dropdown-item">Mon profil</a>
-                    <a href="{{ path('app_profile_edit') }}" class="dropdown-item">Paramètres</a>
-                    <a href="{{ path('app_logout') }}" class="dropdown-item">Déconnexion</a>
-                </div>
+            <div class="user-avatar">
+                {% if app.user %}
+                    {{ app.user.email|first|upper }}{{ app.user.email|slice(app.user.email|split('@')[0]|length - 1, 1)|upper }}
+                {% else %}
+                    JD
+                {% endif %}
             </div>
         </header>
 
-        {# Main Content #}
-        <main class="profile-container">
-            {# Flash Messages #}
-            {% for message in app.flashes('success') %}
-                <div class="alert alert-success">{{ message }}</div>
-            {% endfor %}
+        {# Welcome Section #}
+        <section class="welcome-section">
+            <h1 class="welcome-title">
+                Bonjour {% if app.user %}{{ app.user.email|split('@')[0]|capitalize }}{% else %}Jean{% endif %} !
+            </h1>
+        </section>
 
-            {% for message in app.flashes('error') %}
-                <div class="alert alert-error">{{ message }}</div>
-            {% endfor %}
-
-            {# Welcome Section #}
-            <section class="welcome-section">
-                <h1 class="welcome-title">Bonjour {{ user.firstName }} !</h1>
-            </section>
-
-            {# Stats Cards #}
-            <section class="stats-section">
+        {# Stats Cards #}
+        <section class="stats-section">
+            <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-number">{{ eventsCount }}</div>
+                    <div class="stat-number">{{ eventsCount|default(0) }}</div>
                     <div class="stat-label">Événements créés</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number">{{ followersCount }}</div>
-                    <div class="stat-label">Abonnées</div>
+                    <div class="stat-number">{{ followersCount|default(0) }}</div>
+                    <div class="stat-label">Abonnés</div>
                 </div>
-            </section>
+            </div>
+        </section>
 
-            {# Content Grid #}
+        {# Main Content - Two Columns #}
+        <section class="content-section">
             <div class="content-grid">
-                {# Left Column - Events from Followed Cities #}
-                <section class="content-section">
-                    <h2 class="section-title">Nouveaux événements dans vos villes</h2>
+                {# Left Column - New Events #}
+                <div class="content-column">
+                    <h2 class="column-title">Nouveaux événements dans vos villes</h2>
 
-                    {% if followedCitiesEvents is empty %}
-                        <div class="empty-state">
-                            <p>Aucun nouvel événement dans vos villes suivies.</p>
-                            <p class="empty-state-hint">Suivez des villes pour voir les événements locaux ici.</p>
-                        </div>
-                    {% else %}
-                        <div class="events-list">
+                    <div class="events-list">
+                        {% if followedCitiesEvents is not empty %}
                             {% for event in followedCitiesEvents %}
-                                <article class="event-card">
-                                    <div class="event-image">
+                                <div class="event-card-dashboard">
+                                    <div class="event-image-placeholder">
                                         {% if event.images|length > 0 %}
-                                            <img src="{{ asset('uploads/events/' ~ event.images.first.url) }}" alt="{{ event.title }}">
+                                            <img src="{{ asset('uploads/events/' ~ event.images.first.url) }}" alt="{{ event.title }}" style="width: 100%; height: 100%; object-fit: cover;">
                                         {% else %}
-                                            <div class="event-image-placeholder">[IMAGE PRINCIPALE]</div>
+                                            [IMAGE PRINCIPALE]
                                         {% endif %}
                                     </div>
                                     <div class="event-info">
-                                        <h3 class="event-title">{{ event.title }}</h3>
-                                        <p class="event-meta">
-                                            <span class="event-location">{{ event.city.name }}</span>
-                                            <span class="event-date">{{ event.dateStart|date('d/m/Y') }}</span>
-                                        </p>
-                                        <a href="{{ path('app_event_show', {id: event.id}) }}" class="btn-see-more">Voir ></a>
+                                        <h3 class="event-title-dashboard">{{ event.title }}</h3>
+                                        <p class="event-location-dashboard">📍 {{ event.city.name }}</p>
+                                        <p class="event-date-dashboard">📅 {{ event.dateStart|date('d F Y') }}</p>
                                     </div>
-                                </article>
+                                    <a href="{{ path('app_event_show', {id: event.id}) }}" class="event-btn-dashboard">Voir ></a>
+                                </div>
                             {% endfor %}
-                        </div>
-                    {% endif %}
-                </section>
+                        {% else %}
+                            <div class="event-card-dashboard">
+                                <div class="event-image-placeholder">[IMAGE PRINCIPALE]</div>
+                                <div class="event-info">
+                                    <h3 class="event-title-dashboard">Aucun événement</h3>
+                                    <p class="event-location-dashboard">📍 Suivez des villes</p>
+                                    <p class="event-date-dashboard">📅 Pour voir les événements</p>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
 
-                {# Right Column - Events from Followed Creators #}
-                <section class="content-section">
-                    <h2 class="section-title">Vos créateurs favoris ont publié</h2>
+                {# Right Column - Activity Feed #}
+                <div class="content-column">
+                    <h2 class="column-title">Vos créateurs favoris ont publié</h2>
 
-                    {% if followedCreatorsEvents is empty %}
-                        <div class="empty-state">
-                            <p>Aucune activité récente de vos créateurs favoris.</p>
-                            <p class="empty-state-hint">Suivez des organisateurs pour voir leurs publications.</p>
-                        </div>
-                    {% else %}
-                        <div class="activity-list">
+                    <div class="activity-feed">
+                        {% if followedCreatorsEvents is not empty %}
                             {% for event in followedCreatorsEvents %}
                                 <div class="activity-item">
-                                    <div class="activity-content">
-                                        <p class="activity-text">
-                                            <strong>{{ event.createdBy.firstName }} {{ event.createdBy.lastName }}</strong> a publié
-                                        </p>
-                                        <p class="activity-event">{{ event.title }}</p>
-                                        <p class="activity-time">
+                                    <p class="activity-text">
+                                        <strong>{{ event.createdBy.firstName ?? 'Organisateur' }} {{ event.createdBy.lastName ?? '' }}</strong> a publié<br>
+                                        <span class="activity-detail">
+                                            {{ event.title }} •
                                             {% set diff = date().diff(event.createdAt) %}
                                             {% if diff.d > 1 %}
-                                                Il y a {{ diff.d }} jours
+                                                il y a {{ diff.d }} jours
                                             {% elseif diff.d == 1 %}
                                                 Hier
                                             {% elseif diff.h > 0 %}
-                                                Il y a {{ diff.h }}h
+                                                il y a {{ diff.h }}h
                                             {% else %}
-                                                Il y a {{ diff.i }}m
+                                                il y a quelques minutes
                                             {% endif %}
-                                        </p>
-                                    </div>
+                                        </span>
+                                    </p>
                                 </div>
                             {% endfor %}
-                        </div>
-                        <a href="{{ path('app_event_index') }}" class="btn-secondary">Voir tous les événements</a>
-                    {% endif %}
-                </section>
+                        {% else %}
+                            <div class="activity-item">
+                                <p class="activity-text">
+                                    <strong>Aucune activité récente</strong><br>
+                                    <span class="activity-detail">Suivez des organisateurs pour voir leurs publications</span>
+                                </p>
+                            </div>
+                        {% endif %}
+
+                        <a href="{{ path('app_event_index') }}" class="btn-view-all">Voir tous les événements</a>
+                    </div>
+                </div>
             </div>
+        </section>
 
-            {# Create Event Button #}
-            <section class="cta-section">
-                <a href="{{ path('app_profile_event_new') }}" class="btn-cta">Créer un nouvel événement</a>
-            </section>
-        </main>
+        {# Create Event Button #}
+        <section class="create-event-section">
+            <a href="{{ path('app_profile_event_new') }}" class="btn-create-event">Créer un nouvel événement</a>
+        </section>
     </div>
-
-    <script>
-        function toggleUserMenu() {
-            const dropdown = document.getElementById('userDropdown');
-            dropdown.classList.toggle('show');
-        }
-
-        // Close dropdown when clicking outside
-        window.onclick = function(event) {
-            if (!event.target.matches('.user-avatar')) {
-                const dropdown = document.getElementById('userDropdown');
-                if (dropdown && dropdown.classList.contains('show')) {
-                    dropdown.classList.remove('show');
-                }
-            }
-        }
-    </script>
 {% endblock %}

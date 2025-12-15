@@ -52,7 +52,7 @@ final class EventController extends AbstractController
             $em->flush();
 
             $this->addFlash('success', 'Événement créé avec succès !');
-            return $this->redirectToRoute('app_dashboard_events');
+            return $this->redirectToRoute('app_profile_events');
         }
 
         return $this->render('event/new.html.twig', [
@@ -68,7 +68,7 @@ final class EventController extends AbstractController
         // Vérifie que l'utilisateur est bien le propriétaire
         if ($event->getCreatedBy() !== $this->getUser()) {
             $this->addFlash('error', 'Vous ne pouvez pas modifier cet événement.');
-            return $this->redirectToRoute('app_dashboard_events');
+            return $this->redirectToRoute('app_profile_events');
         }
 
         $form = $this->createForm(EventFormType::class, $event);
@@ -79,7 +79,7 @@ final class EventController extends AbstractController
             $em->flush();
 
             $this->addFlash('success', 'Événement modifié avec succès !');
-            return $this->redirectToRoute('app_dashboard_events');
+            return $this->redirectToRoute('app_profile_events');
         }
 
         return $this->render('event/edit.html.twig', [
@@ -96,7 +96,7 @@ final class EventController extends AbstractController
         // Vérifie que l'utilisateur est bien le propriétaire
         if ($event->getCreatedBy() !== $this->getUser()) {
             $this->addFlash('error', 'Vous ne pouvez pas supprimer cet événement.');
-            return $this->redirectToRoute('app_dashboard_events');
+            return $this->redirectToRoute('app_profile_events');
         }
 
         if ($this->isCsrfTokenValid('delete' . $event->getId(), $request->request->get('_token'))) {
@@ -105,6 +105,6 @@ final class EventController extends AbstractController
             $this->addFlash('success', 'Événement supprimé avec succès !');
         }
 
-        return $this->redirectToRoute('app_dashboard_events');
+        return $this->redirectToRoute('app_profile_events');
     }
 }
