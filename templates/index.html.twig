@@ -1,137 +1,74 @@
-{# templates/home/index.html.twig #}
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ page_title }} - Événements Locaux{% endblock %}
+{% block title %}La Vie en Rose - Découvrez les événements près de chez vous{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('css/darkmode-terracotta.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/accueil.css') }}">
 {% endblock %}
 
 {% block body %}
-<div class="main-nav">
-    <div class="page-title">🎉 Événements Locaux</div>
-    <div class="page-nav">
-        <div class="nav-item active">Accueil</div>
-       {# <a href="{{ path('app_events_search') }}" class="nav-item">Événements</a>
-        <a href="{{ path('app_login') }}" class="btn btn-primary" style="margin: 0;">Connexion</a>#}
-    </div>
-</div>
+    <!-- Header Navigation -->
+    <header class="main-header">
+        <div class="logo">La Vie<br>en Rose</div>
+        <nav class="nav-menu">
+            <a href="{{ path('app_home') }}" class="nav-link">Accueil</a>
+            <a href="#" class="nav-link">Événements</a>
+            <a href="#" class="nav-link">Connexion</a>
+        </nav>
+    </header>
 
-<div class="container">
-    {# Hero Section #}
-    <div class="hero">
+    <!-- Hero Section -->
+    <section class="hero-section">
         <div class="hero-content">
-            <h1>{{ page_title }}</h1>
-            <p>Festivals, concerts, expositions... Ne ratez plus rien dans votre région !</p>
-            
-            {#<form action="{{ path('app_events_search') }}" method="GET" class="search-box">#}
-                <input type="text" name="query" class="search-input" placeholder="🔍 Ville, code postal ou département...">
-                <button type="submit" class="btn btn-primary btn-large">Rechercher</button>
-            </form>
+            <h1>Découvrez les événements<br>près de chez vous</h1>
+            <div class="search-container">
+                <input type="text" class="search-input-hero" placeholder="🔍 Ville, code postal ou département...">
+                <input type="text" class="search-input-hero" placeholder="Type d'événements">
+                <button class="search-button">🔍</button>
+            </div>
         </div>
-    </div>
-    
-    {# Événements sponsorisés #}
-    <div class="section">
-        <h2 style="text-align: center; font-size: 32px; margin-bottom: 40px; color: #ffffff;">
-            ⭐ Événements sponsorisés dans votre région
-        </h2>
-        
-        <div class="grid-3">
+    </section>
+
+    <!-- Sponsored Events Section -->
+    <section class="events-section">
+        <h2 class="section-title">Événements sponsorisés dans votre région</h2>
+
+        <div class="events-grid">
             {% for event in sponsored_events %}
             <div class="event-card">
-                <div class="event-image">
-                    {% if event.sponsored %}
-                    <div class="sponsored-badge">⭐ SPONSORISÉ</div>
-                    {% endif %}
-                    {# Si vous avez des images #}
-                    {# <img src="{{ asset('uploads/events/' ~ event.image) }}" alt="{{ event.title }}"> #}
-                    [IMAGE]
+                <div class="event-image-container">
+                    <span class="sponsored-badge">⭐ SPONSORISÉ</span>
+                    <span>[IMAGE]</span>
                 </div>
-                <div class="event-content">
+                <div class="event-details">
                     <h3 class="event-title">{{ event.title }}</h3>
-                    <div class="event-meta">
-                        <div>📍 {{ event.location }}</div>
-                        <div>📅 {{ event.date }}</div>
-                        <div>
-                            {% for tag in event.tags %}
-                            <span class="tag">{{ tag }}</span>
-                            {% endfor %}
-                        </div>
+                    <div class="event-location">
+                        📍 {{ event.location }}
                     </div>
-                    {#<a href="{{ path('app_event_detail', {'id': event.id}) }}" class="btn btn-primary" style="width: 100%;">#}
-                        Voir les détails →
-                    </a>
+                    <div class="event-date">
+                        📅 {{ event.date }}
+                    </div>
+                    <div class="event-tags">
+                        {% for tag in event.tags %}
+                        <span class="tag">{{ tag }}</span>
+                        {% endfor %}
+                    </div>
+                    <button class="event-btn">Voir les détails →</button>
                 </div>
             </div>
             {% endfor %}
         </div>
-        
-        <div style="text-align: center; margin-top: 30px;">
-            {#<a href="{{ path('app_events_search') }}" class="btn btn-primary btn-large">#}
-                Voir tous les événements
-            </a>
+
+        <button class="view-all-btn">Voir tous les événements</button>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="events-section">
+        <div class="cta-section">
+            <h2>Prêt à découvrir votre prochain événement ?</h2>
+            <p>Rejoignez la communauté et ne ratez plus rien près de chez vous</p>
+            <button class="cta-btn">Créer un compte gratuitement</button>
         </div>
-    </div>
-    
-    {# Comment ça marche #}
-    <div class="section">
-        <h2 style="text-align: center; font-size: 32px; margin-bottom: 40px; color: #ffffff;">
-            💡 Comment ça marche ?
-        </h2>
-        
-        <div class="grid-4">
-            {% for feature in features %}
-            <div class="feature-card">
-                <div class="feature-icon">{{ feature.icon }}</div>
-                <h3>{{ feature.title }}</h3>
-                <p>{{ feature.description }}</p>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-    
-    {# Statistiques #}
-    <div class="section">
-        <h2 style="text-align: center; font-size: 32px; margin-bottom: 40px; color: #ffffff;">
-            📊 La plateforme en chiffres
-        </h2>
-        
-        <div class="grid-4">
-            <div class="stat-card">
-                <div class="stat-number">{{ stats.users }}</div>
-                <div class="stat-label">Utilisateurs actifs</div>
-            </div>
-            
-            <div class="stat-card">
-                <div class="stat-number">{{ stats.events }}</div>
-                <div class="stat-label">Événements disponibles</div>
-            </div>
-            
-            <div class="stat-card">
-                <div class="stat-number">{{ stats.departments }}</div>
-                <div class="stat-label">Départements couverts</div>
-            </div>
-            
-            <div class="stat-card">
-                <div class="stat-number">{{ stats.organizers }}</div>
-                <div class="stat-label">Organisateurs</div>
-            </div>
-        </div>
-    </div>
-    
-    {# CTA Final #}
-    <div class="section" style="text-align: center; padding: 60px 40px;">
-        <h2 style="font-size: 36px; margin-bottom: 20px; color: #ffffff;">
-            Prêt à découvrir votre prochain événement ?
-        </h2>
-        <p style="font-size: 18px; color: #9ca3af; margin-bottom: 30px;">
-            Rejoignez la communauté et ne ratez plus rien près de chez vous
-        </p>
-        {#<a href="{{ path('app_register') }}" class="btn btn-primary btn-large">#}
-            Créer un compte gratuitement
-        </a>
-    </div>
-</div>
+    </section>
 {% endblock %}
