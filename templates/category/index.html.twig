@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Catégories{% endblock %}
+
+{% block body %}
+    <h1>Catégories</h1>
+
+    {% for message in app.flashes('success') %}
+        <p style="color: green;">{{ message }}</p>
+    {% endfor %}
+
+    {% if is_granted('ROLE_USER') %}
+        <p><a href="{{ path('app_category_new') }}">+ Créer une catégorie</a></p>
+    {% endif %}
+
+    {% if categories is empty %}
+        <p>Aucune catégorie pour le moment.</p>
+    {% else %}
+        <ul>
+            {% for category in categories %}
+                <li>{{ category.name }} ({{ category.events|length }} événement(s))</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}
