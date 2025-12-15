@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Événements de mes abonnements{% endblock %}
+
+{% block body %}
+    <h1>Événements publiés par les utilisateurs que je suis</h1>
+
+    {% for message in app.flashes('success') %}
+        <p style="color: green;">{{ message }}</p>
+    {% endfor %}
+
+    {% if events is empty %}
+        <p>Aucun événement à venir de la part des utilisateurs que vous suivez.</p>
+        <p><a href="{{ path('app_event_index') }}">Découvrir des événements</a> pour trouver des organisateurs à suivre</p>
+    {% else %}
+        <p>{{ events|length }} événement(s) à venir</p>
+
+        <div>
+            {% for event in events %}
+                <div>
+                    {% if event.images|length > 0 %}
+                        <img src="{{ asset('uploads/events/' ~ event.images[0].url) }}" alt="{{ event.title }}">
+                    {% else %}
+                        <div>
+                            Pas d'image
+                        </div>
+                    {% endif %}
+
+                    <h3>{{ event.title }}</h3>
+                    <p><strong>Par :</strong> {{ event.createdBy.firstName }} {{ event.createdBy.lastName }}</p>
+                    <p><strong>Date :</strong> {{ event.dateStart|date('d/m/Y H:i') }}</p>
+                    <p><strong>Lieu :</strong> {{ event.city }}</p>
+                    <p><strong>Prix :</strong> {% if event.price %}{{ event.price }} €{% else %}Gratuit{% endif %}</p>
+
+                    <a href="{{ path('app_event_show', {id: event.id}) }}">Voir le détail</a>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <p style="margin-top: 30px;"><a href="{{ path('app_profile') }}">← Retour au dashboard</a></p>
+{% endblock %}

@@ -4,6 +4,9 @@ namespace App\Controller;
 
 use App\Entity\Event;
 use App\Form\EventFormType;
+use App\Repository\CategoryRepository;
+use App\Repository\CityRepository;
+use App\Repository\DepartmentRepository;
 use App\Repository\EventRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -11,21 +14,50 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[Route('/event')]
 final class EventController extends AbstractController
 {
-    //Liste des événements
+    // Liste des événements avec filtres
     #[Route('', name: 'app_event_index')]
-    public function index(EventRepository $eventRepository): Response
-    {
+    public function index(
+        Request $request,
+        EventRepository $eventRepository,
+        CategoryRepository $categoryRepository,
+        DepartmentRepository $departmentRepository,
+        CityRepository $cityRepository
+    ): Response {
+        // Récupère les filtres depuis la requête
+        $filters = [
+            'city' => $request->query->get('city'),
+            'department' => $request->query->get('department'),
+            'category' => $request->query->get('category'),
+            'dateFrom' => $request->query->get('date_from'),
+            'dateTo' => $request->query->get('date_to'),
+            'freeOnly' => $request->query->getBoolean('free_only'),
+            'search' => $request->query->get('search'),
+        ];
+
+        $events = $eventRepository->findWithFilters(
+            $filters['city'] ? (int) $filters['city'] : null,
+            $filters['department'] ? (int) $filters['department'] : null,
+            $filters['category'] ? (int) $filters['category'] : null,
+            $filters['dateFrom'],
+            $filters['dateTo'],
+            $filters['freeOnly'],
+            $filters['search']
+        );
+
         return $this->render('event/index.html.twig', [
-            'events' => $eventRepository->findBy([], ['dateStart' => 'ASC']),
+            'events' => $events,
+            'categories' => $categoryRepository->findBy([], ['name' => 'ASC']),
+            'departments' => $departmentRepository->findBy([], ['name' => 'ASC']),
+            'cities' => $cityRepository->findBy([], ['name' => 'ASC']),
+            'currentFilters' => $filters,
         ]);
     }
 
-    //Détails d'un événement
+    // Détails d'un événement
     #[Route('/{id}', name: 'app_event_show', requirements: ['id' => '\d+'])]
     public function show(Event $event): Response
     {
@@ -34,7 +66,7 @@ final class EventController extends AbstractController
         ]);
     }
 
-    //Créer un événement
+    // Créer un événement
     #[Route('/new', name: 'app_event_new', priority: 1)]
     #[IsGranted('ROLE_USER')]
     public function new(Request $request, EntityManagerInterface $em): Response
@@ -65,7 +97,6 @@ final class EventController extends AbstractController
     #[IsGranted('ROLE_USER')]
     public function edit(Event $event, Request $request, EntityManagerInterface $em): Response
     {
-        // Vérifie que l'utilisateur est bien le propriétaire
         if ($event->getCreatedBy() !== $this->getUser()) {
             $this->addFlash('error', 'Vous ne pouvez pas modifier cet événement.');
             return $this->redirectToRoute('app_dashboard_events');
@@ -93,7 +124,6 @@ final class EventController extends AbstractController
     #[IsGranted('ROLE_USER')]
     public function delete(Event $event, Request $request, EntityManagerInterface $em): Response
     {
-        // Vérifie que l'utilisateur est bien le propriétaire
         if ($event->getCreatedBy() !== $this->getUser()) {
             $this->addFlash('error', 'Vous ne pouvez pas supprimer cet événement.');
             return $this->redirectToRoute('app_dashboard_events');

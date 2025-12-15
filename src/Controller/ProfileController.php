@@ -30,6 +30,8 @@ final class ProfileController extends AbstractController
         return $this->render('profile/index.html.twig', [
             'user' => $user,
             'events' => $events,
+            'feedCities' => $eventRepository->findByFollowedCities($user, 10),
+            'feedUsers' => $eventRepository->findByFollowedUsers($user, 10),
         ]);
     }
 
@@ -257,4 +259,8 @@ final class ProfileController extends AbstractController
 
         return $this->redirectToRoute('app_profile_event_edit', ['id' => $event->getId()]);
     }
+
+
+
+
 }

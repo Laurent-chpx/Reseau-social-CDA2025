@@ -1,0 +1,65 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes abonnements{% endblock %}
+
+{% block body %}
+    <h1>Mes abonnements</h1>
+
+    {% for message in app.flashes('success') %}
+        <p style="color: green;">{{ message }}</p>
+    {% endfor %}
+
+    {% for message in app.flashes('error') %}
+        <p style="color: red;">{{ message }}</p>
+    {% endfor %}
+
+    <section style="margin-bottom: 40px;">
+        <h2>Utilisateurs suivis ({{ followedUsers|length }})</h2>
+
+        {% if followedUsers is empty %}
+            <p>Vous ne suivez aucun utilisateur pour le moment.</p>
+        {% else %}
+            <ul>
+                {% for follow in followedUsers %}
+                    <li>
+                        {{ follow.followed.firstName }} {{ follow.followed.lastName }}
+                        <small>(suivi depuis le {{ follow.createdAt|date('d/m/Y') }})</small>
+
+                        <form action="{{ path('app_unfollow_user', {id: follow.followed.id}) }}"
+                              method="POST"
+                              style="display: inline;">
+                            <input type="hidden" name="_token" value="{{ csrf_token('unfollow_user' ~ follow.followed.id) }}">
+                            <button type="submit">Ne plus suivre</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </section>
+
+    <section>
+        <h2>Villes suivies ({{ followedCities|length }})</h2>
+
+        {% if followedCities is empty %}
+            <p>Vous ne suivez aucune ville pour le moment.</p>
+        {% else %}
+            <ul>
+                {% for follow in followedCities %}
+                    <li>
+                        {{ follow.city.name }} ({{ follow.city.postalCode }})
+                        <small>(suivi depuis le {{ follow.createdAt|date('d/m/Y') }})</small>
+
+                        <form action="{{ path('app_unfollow_city', {id: follow.city.id}) }}"
+                              method="POST"
+                              style="display: inline;">
+                            <input type="hidden" name="_token" value="{{ csrf_token('unfollow_city' ~ follow.city.id) }}">
+                            <button type="submit">Ne plus suivre</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </section>
+
+    <p><a href="{{ path('app_profile') }}">Retour au dashboard</a></p>
+{% endblock %}
