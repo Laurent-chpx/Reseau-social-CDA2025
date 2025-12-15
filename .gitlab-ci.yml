@@ -31,11 +31,11 @@ test_app:
 
     - |
       echo "Waiting for MySQL to be ready..."
-      MAX_TRIES=60
+      MAX_TRIES=90
       TRIES=0
       until mysql -h db -u root -p"$MYSQL_ROOT_PASSWORD" --ssl-mode=DISABLED -e "SELECT 1;" >/dev/null 2>&1; do
         echo "Waiting for MySQL..."
-        sleep 2
+        sleep 3
         TRIES=$((TRIES+1))
         if [ $TRIES -ge $MAX_TRIES ]; then
           echo "MySQL did not start in time, exiting."
