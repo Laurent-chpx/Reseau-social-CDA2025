@@ -28,6 +28,7 @@ test_app:
     - php bin/phpunit
   only:
     - main
+    - test-deploiement
 
 build_image:
   stage: build
