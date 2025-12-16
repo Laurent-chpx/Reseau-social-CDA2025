@@ -22,7 +22,7 @@ test_app:
 
   before_script:
     # =====================
-    # DEBUG VARIABLES (TEMPORAIRE)
+    # DEBUG VARIABLES
     # =====================
     - echo "DEBUG MYSQL_ROOT_PASSWORD='${MYSQL_ROOT_PASSWORD}'"
     - echo "DEBUG MYSQL_DATABASE='${MYSQL_DATABASE}'"
