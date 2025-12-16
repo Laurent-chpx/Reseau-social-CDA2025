@@ -14,15 +14,19 @@ variables:
 test_app:
   stage: test
   image: php:8.2
+  variables:
+    MYSQL_ROOT_PASSWORD: root
+    MYSQL_DATABASE: symfony_test
   services:
     - name: mysql:8
       alias: db
   before_script:
-    - apt-get update && apt-get install -y zip unzip git
+    - apt-get update && apt-get install -y zip unzip git default-mysql-client
     - docker-php-ext-install pdo pdo_mysql
     - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
     - cp .env.test .env
     - composer install --no-interaction
+    - until mysql -h db -u root -proot -e "SELECT 1"; do sleep 1; done
   script:
     - php bin/console doctrine:database:create --env=test
     - php bin/console doctrine:migrations:migrate -n --env=test
