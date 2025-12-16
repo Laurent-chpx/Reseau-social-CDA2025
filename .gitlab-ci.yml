@@ -53,6 +53,7 @@ build_image:
 deploy_to_vps:
   stage: deploy
   image: alpine:latest
+  when: manual
   before_script:
     - apk add --no-cache sshpass openssh
   script:
