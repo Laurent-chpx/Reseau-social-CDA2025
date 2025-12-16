@@ -21,24 +21,20 @@ test_app:
         MYSQL_PASSWORD: $MYSQL_PASSWORD
 
   before_script:
-    # outils système
     - apt-get update && apt-get install -y zip unzip git mariadb-client
-    # extensions PHP
     - docker-php-ext-install pdo pdo_mysql
-    # copier .env.test
     - cp .env.test .env
-    # Composer
     - curl -sS https://getcomposer.org/installer | php
     - php composer.phar install --no-interaction
 
     # attendre que MySQL soit prêt
     - |
       echo "Waiting for MySQL to be ready..."
-      MAX_TRIES=90
+      MAX_TRIES=10
       TRIES=0
       until mysql -h db -u root -p"$MYSQL_ROOT_PASSWORD" --ssl-mode=DISABLED -e "SELECT 1;" >/dev/null 2>&1; do
         echo "Waiting for MySQL..."
-        sleep 3
+        sleep 35
         TRIES=$((TRIES+1))
         if [ $TRIES -ge $MAX_TRIES ]; then
           echo "MySQL did not start in time, exiting."
@@ -46,7 +42,6 @@ test_app:
         fi
       done
 
-    # création DB + droits
     - mysql -h db -u root -p"$MYSQL_ROOT_PASSWORD" -e "CREATE DATABASE IF NOT EXISTS ${MYSQL_DATABASE};"
     - mysql -h db -u root -p"$MYSQL_ROOT_PASSWORD" -e "GRANT ALL PRIVILEGES ON ${MYSQL_DATABASE}.* TO '${MYSQL_USER}'@'%'; FLUSH PRIVILEGES;"
 
