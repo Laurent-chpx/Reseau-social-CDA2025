@@ -5,6 +5,7 @@
 {% block stylesheets %}
     <link rel="stylesheet" href="{{ asset('styles/logo.css') }}">
     <link rel="stylesheet" href="{{ asset('styles/event-detail.css') }}">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 {% endblock %}
 
 {% block body %}
@@ -95,10 +96,7 @@
                     </p>
 
                     <div class="map-container">
-                        <div class="map-placeholder">
-                            [CARTE INTERACTIVE GOOGLE EARTH]<br>
-                            Voir sur Google Maps
-                        </div>
+                        <div id="event-map" style="height: 300px; border-radius: 12px; overflow: hidden;"></div>
                     </div>
 
                     <p class="location-footer">
@@ -149,4 +147,57 @@
             </p>
         </footer>
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configuration de la carte
+            const cityName = "{{ event.city.name }}, {{ event.city.postalCode }}, France";
+            const address = "{{ event.address }}";
+
+            // Géocoder la ville avec Nominatim (OpenStreetMap)
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(cityName)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.length > 0) {
+                        const lat = parseFloat(data[0].lat);
+                        const lon = parseFloat(data[0].lon);
+
+                        // Initialiser la carte
+                        const map = L.map('event-map').setView([lat, lon], 13);
+
+                        // Ajouter le layer OpenStreetMap
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                            maxZoom: 19
+                        }).addTo(map);
+
+                        // Ajouter un marqueur
+                        const marker = L.marker([lat, lon]).addTo(map);
+                        marker.bindPopup(`
+                            <div style="text-align: center;">
+                                <strong>{{ event.title }}</strong><br>
+                                <em>${address}</em><br>
+                                {{ event.city.name }}
+                            </div>
+                        `).openPopup();
+                    } else {
+                        // En cas d'erreur de géocodage, afficher un message
+                        document.getElementById('event-map').innerHTML =
+                            '<div style="display: flex; align-items: center; justify-content: center; height: 100%; background: #374b5f; color: #cbd5e0;">' +
+                            'Carte non disponible pour cette localisation' +
+                            '</div>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur lors du chargement de la carte:', error);
+                    document.getElementById('event-map').innerHTML =
+                        '<div style="display: flex; align-items: center; justify-content: center; height: 100%; background: #374b5f; color: #cbd5e0;">' +
+                        'Erreur de chargement de la carte' +
+                        '</div>';
+                });
+        });
+    </script>
 {% endblock %}

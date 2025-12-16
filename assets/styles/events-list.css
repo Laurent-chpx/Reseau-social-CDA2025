@@ -199,6 +199,30 @@ body {
     object-fit: cover;
 }
 
+.gradient-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.placeholder-overlay {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.placeholder-icon {
+    font-size: 64px;
+    opacity: 0.7;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
 .placeholder-text {
     color: #64748b;
     font-size: 14px;
@@ -237,21 +261,24 @@ body {
 }
 
 .btn-event {
-    display: inline-block;
+    display: block;
     width: 100%;
-    padding: 12px 24px;
+    padding: 14px 28px;
     background: #ea580c;
     color: #ffffff;
     text-decoration: none;
-    border-radius: 8px;
-    font-size: 14px;
+    border-radius: 25px;
+    font-size: 15px;
     font-weight: 600;
     text-align: center;
-    transition: background 0.3s ease;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
 }
 
 .btn-event:hover {
     background: #c2410c;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(234, 88, 12, 0.4);
 }
 
 /* Pagination */
