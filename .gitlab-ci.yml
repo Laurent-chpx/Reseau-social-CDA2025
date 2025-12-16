@@ -13,10 +13,6 @@ test_app:
       command: ["--default-authentication-plugin=mysql_native_password"]
 
   variables:
-    MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
-    MYSQL_DATABASE: "${MYSQL_DATABASE}"
-    MYSQL_USER: "${MYSQL_USER}"
-    MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
     DATABASE_URL: "mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@mysql:3306/${MYSQL_DATABASE}?serverVersion=8.0"
 
   before_script:
