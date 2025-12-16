@@ -28,6 +28,8 @@ test_app:
     - php bin/phpunit
   only:
     - main
+    - front
+    - backend-donnee
 
 build_image:
   stage: build
@@ -40,6 +42,8 @@ build_image:
     - docker push $CI_REGISTRY_IMAGE:latest
   only:
     - main
+    - front
+    - backend-donnee
 
 deploy_to_vps:
   stage: deploy
@@ -55,3 +59,5 @@ deploy_to_vps:
       "
   only:
     - main
+    - front
+    - backend-donnee
