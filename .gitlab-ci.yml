@@ -26,11 +26,9 @@ test_app:
     - docker-php-ext-install pdo pdo_mysql
     - cp .env.test .env
 
-    # Composer
     - curl -sS https://getcomposer.org/installer | php
     - php composer.phar install --no-interaction
 
-    # Attente MySQL
     - |
       echo "Waiting for MySQL..."
       for i in {1..30}; do
@@ -39,7 +37,6 @@ test_app:
         sleep 2
       done
 
-    # Création DB + droits
     - mysql -h db -u root -p"$MYSQL_ROOT_PASSWORD" -e "CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\`;"
     - mysql -h db -u root -p"$MYSQL_ROOT_PASSWORD" -e "GRANT ALL PRIVILEGES ON \`${MYSQL_DATABASE}\`.* TO '${MYSQL_USER}'@'%'; FLUSH PRIVILEGES;"
 
