@@ -22,7 +22,6 @@ test_app:
     - curl -sS https://getcomposer.org/installer | php
     - php composer.phar install --no-interaction
 
-        # 🔹 Debug des variables MySQL
     - echo "DEBUG MYSQL_ROOT_PASSWORD='${MYSQL_ROOT_PASSWORD}'"
     - echo "DEBUG MYSQL_DATABASE='${MYSQL_DATABASE}'"
     - echo "DEBUG MYSQL_USER='${MYSQL_USER}'"
@@ -31,11 +30,11 @@ test_app:
     # Attente de MySQL
     - |
       echo "Waiting for MySQL..."
-      MAX_TRIES=30
+      MAX_TRIES=60
       TRIES=0
       until mysql -h mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "SELECT 1;" >/dev/null 2>&1; do
         echo "MySQL not ready yet..."
-        sleep 2
+        sleep 5
         TRIES=$((TRIES+1))
         if [ $TRIES -ge $MAX_TRIES ]; then
           echo "MySQL did not start in time, exiting."
