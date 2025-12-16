@@ -3,14 +3,6 @@ stages:
   - build
   - deploy
 
-variables:
-  MYSQL_PASSWORD: $MYSQL_PASSWORD
-  MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
-  MYSQL_USER: $MYSQL_USER
-  VPS_HOST: $VPS_HOST
-  VPS_USER: $VPS_USER
-  VPS_PASSWORD: $VPS_PASSWORD
-
 test_app:
   stage: test
   image: php:8.2
