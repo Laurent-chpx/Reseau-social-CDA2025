@@ -1,0 +1,186 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Promouvoir mon événement | La Vie en Rose{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('styles/logo.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/event-promote.css') }}">
+{% endblock %}
+
+{% block body %}
+    <div class="page-container">
+        {# Header Navigation #}
+        <header class="main-header">
+            {% include '_components/_logo.html.twig' %}
+            <nav class="nav-menu">
+                <a href="{{ path('app_event_index') }}" class="nav-link">Événements</a>
+                <a href="{{ path('app_profile_events') }}" class="nav-link">Mes événements</a>
+            </nav>
+            <div class="user-avatar">
+                {% if app.user %}
+                    {{ app.user.email|first|upper }}{{ app.user.email|slice(app.user.email|split('@')[0]|length - 1, 1)|upper }}
+                {% else %}
+                    JD
+                {% endif %}
+            </div>
+        </header>
+
+        {# Main Content #}
+        <div class="promote-container">
+            {# Hero Section #}
+            <section class="hero-section">
+                <h1 class="hero-title">Mettez votre événement en avant</h1>
+                <p class="hero-subtitle">Augmentez la visibilité de votre événement et touchez plus de monde !</p>
+            </section>
+
+            {# Selected Event #}
+            <section class="selected-event-section">
+                <h2 class="section-title">Événement sélectionné</h2>
+                <div class="event-card-preview">
+                    <div class="event-image">
+                        {% if event.images|length > 0 %}
+                            <img src="{{ asset('uploads/events/' ~ event.images.first.url) }}" alt="{{ event.title }}">
+                        {% else %}
+                            <div class="image-placeholder">[img]</div>
+                        {% endif %}
+                    </div>
+                    <div class="event-details">
+                        <h3 class="event-title">{{ event.title }}</h3>
+                        <div class="event-info">
+                            <p class="event-location">📍 {{ event.city.name }} ({{ event.city.postalCode|slice(0, 2) }})</p>
+                            <p class="event-date">📅 {{ event.dateStart|date('d M Y') }}</p>
+                        </div>
+                        <div class="event-stats">
+                            <span class="stat-item">👁 1,247 vues</span>
+                            <span class="tag tag-free">Gratuit</span>
+                            <span class="tag tag-festive">Festive</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {# Pricing Plans #}
+            <section class="pricing-section">
+                <h2 class="section-title">Choisissez votre formule</h2>
+
+                <div class="pricing-grid">
+                    {# Plan 7 jours #}
+                    <div class="pricing-card">
+                        <div class="pricing-header">
+                            <h3 class="plan-duration">7 jours</h3>
+                            <div class="plan-price">
+                                <span class="price-amount">29</span>
+                                <span class="price-currency">€</span>
+                            </div>
+                            <p class="plan-tagline">Idéal pour un événement ponctuel</p>
+                        </div>
+                        <div class="pricing-features">
+                            <ul class="features-list">
+                                <li class="feature-item">
+                                    <span class="feature-icon">✓</span>
+                                    <span class="feature-text">Mise en avant</span>
+                                </li>
+                                <li class="feature-item">
+                                    <span class="feature-icon">✓</span>
+                                    <span class="feature-text">Paiement prioritaire</span>
+                                </li>
+                                <li class="feature-item">
+                                    <span class="feature-icon">✓</span>
+                                    <span class="feature-text">Visibilité régionale</span>
+                                </li>
+                                <li class="feature-item">
+                                    <span class="feature-icon">✓</span>
+                                    <span class="feature-text">Statistiques basiques</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <button class="btn-choose">choisir</button>
+                    </div>
+
+                    {# Plan 15 jours - Recommandé #}
+                    <div class="pricing-card recommended">
+                        <div class="recommended-badge">Recommandé</div>
+                        <div class="pricing-header">
+                            <h3 class="plan-duration">15 jours</h3>
+                            <div class="plan-price">
+                                <span class="price-amount">49</span>
+                                <span class="price-currency">€</span>
+                            </div>
+                            <p class="plan-tagline">Le meilleur rapport qualité/prix</p>
+                        </div>
+                        <div class="pricing-features">
+                            <ul class="features-list">
+                                <li class="feature-item">
+                                    <span class="feature-icon">✓</span>
+                                    <span class="feature-text">Augmentation</span>
+                                </li>
+                                <li class="feature-item">
+                                    <span class="feature-icon">✓</span>
+                                    <span class="feature-text">Paiement prioritaire</span>
+                                </li>
+                                <li class="feature-item">
+                                    <span class="feature-icon">✓</span>
+                                    <span class="feature-text">Visibilité régionale</span>
+                                </li>
+                                <li class="feature-item">
+                                    <span class="feature-icon">✓</span>
+                                    <span class="feature-text">Statistiques détaillées</span>
+                                </li>
+                                <li class="feature-item">
+                                    <span class="feature-icon">✓</span>
+                                    <span class="feature-text">Support prioritaire</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <button class="btn-choose">choisir</button>
+                    </div>
+
+                    {# Plan 30 jours #}
+                    <div class="pricing-card">
+                        <div class="pricing-header">
+                            <h3 class="plan-duration">30 jours</h3>
+                            <div class="plan-price">
+                                <span class="price-amount">89</span>
+                                <span class="price-currency">€</span>
+                            </div>
+                            <p class="plan-tagline">Maximum de visibilité</p>
+                        </div>
+                        <div class="pricing-features">
+                            <ul class="features-list">
+                                <li class="feature-item">
+                                    <span class="feature-icon">✓</span>
+                                    <span class="feature-text">Badges sponsorisé</span>
+                                </li>
+                                <li class="feature-item">
+                                    <span class="feature-icon">✓</span>
+                                    <span class="feature-text">Paiement prioritaire</span>
+                                </li>
+                                <li class="feature-item">
+                                    <span class="feature-icon">✓</span>
+                                    <span class="feature-text">Visibilité régionale</span>
+                                </li>
+                                <li class="feature-item">
+                                    <span class="feature-icon">✓</span>
+                                    <span class="feature-text">Visibilité nationale</span>
+                                </li>
+                                <li class="feature-item">
+                                    <span class="feature-icon">✓</span>
+                                    <span class="feature-text">Support prioritaire</span>
+                                </li>
+                                <li class="feature-item">
+                                    <span class="feature-icon">✓</span>
+                                    <span class="feature-text">Rapport personnalisé</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <button class="btn-choose">choisir</button>
+                    </div>
+                </div>
+
+                <div class="disclaimer">
+                    <p>⚠️ <strong>Important:</strong> Choisir les transactions sont sécurisées par notre système. Votre événement sera listé immédiatement après le paiement.</p>
+                </div>
+            </section>
+        </div>
+    </div>
+{% endblock %}

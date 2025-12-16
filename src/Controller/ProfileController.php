@@ -80,6 +80,38 @@ final class ProfileController extends AbstractController
         ]);
     }
 
+    #[Route('/information', name: 'app_profile_information')]
+    public function information(Request $request, EntityManagerInterface $em): Response
+    {
+        $user = $this->getUser();
+        $form = $this->createForm(ProfileFormType::class, $user);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $user->setUpdatedAt(new \DateTimeImmutable());
+            $em->flush();
+
+            $this->addFlash('success', 'Informations mises à jour avec succès.');
+            return $this->redirectToRoute('app_profile_information');
+        }
+
+        // Récupérer les villes suivies avec le nombre d'événements
+        $followedCities = [];
+        foreach ($user->getFollowedCities() as $userCity) {
+            $city = $userCity->getCity();
+            $followedCities[] = [
+                'city' => $city,
+                'eventsCount' => $city->getEvents()->count(),
+            ];
+        }
+
+        return $this->render('profile/information.html.twig', [
+            'form' => $form,
+            'user' => $user,
+            'followedCities' => $followedCities,
+        ]);
+    }
+
     #[Route('/edit', name: 'app_profile_edit')]
     public function edit(Request $request, EntityManagerInterface $em, UserPasswordHasherInterface $passwordHasher): Response
     {
@@ -303,5 +335,20 @@ final class ProfileController extends AbstractController
         }
 
         return $this->redirectToRoute('app_profile_event_edit', ['id' => $event->getId()]);
+    }
+
+    // Promouvoir un événement
+    #[Route('/events/{id}/promote', name: 'app_profile_event_promote', requirements: ['id' => '\d+'])]
+    public function promoteEvent(Event $event): Response
+    {
+        // Vérifie que l'utilisateur est bien le propriétaire
+        if ($event->getCreatedBy() !== $this->getUser()) {
+            $this->addFlash('error', 'Vous ne pouvez pas promouvoir cet événement.');
+            return $this->redirectToRoute('app_profile_events');
+        }
+
+        return $this->render('profile/event_promote.html.twig', [
+            'event' => $event,
+        ]);
     }
 }
