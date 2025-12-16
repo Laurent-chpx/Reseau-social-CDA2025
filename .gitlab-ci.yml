@@ -57,6 +57,9 @@ deploy_to_vps:
   before_script:
     - apk add --no-cache sshpass openssh
   script:
+    - echo "VPS_HOST=$VPS_HOST"
+    - echo "VPS_USER=$VPS_USER"
+    - echo "Testing SSH connection..."
     - sshpass -p "$VPS_PASSWORD" ssh -o StrictHostKeyChecking=no $VPS_USER@$VPS_HOST "
         cd /var/www/projet &&
         git pull &&
