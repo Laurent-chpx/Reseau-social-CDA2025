@@ -10,53 +10,46 @@ test_app:
   services:
     - name: mysql:8
       alias: mysql
-      command: ["--default-authentication-plugin=mysql_native_password"]
-      variables:
-        MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
-        MYSQL_DATABASE: $MYSQL_DATABASE
-        MYSQL_USER: $MYSQL_USER
-        MYSQL_PASSWORD: $MYSQL_PASSWORD
+      command:
+        - --default-authentication-plugin=mysql_native_password
 
   variables:
+    MYSQL_ROOT_PASSWORD: "$MYSQL_ROOT_PASSWORD"
+    MYSQL_DATABASE: "$MYSQL_DATABASE"
+    MYSQL_USER: "$MYSQL_USER"
+    MYSQL_PASSWORD: "$MYSQL_PASSWORD"
     DATABASE_URL: "mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@mysql:3306/${MYSQL_DATABASE}?serverVersion=8.0"
 
   before_script:
-    # =====================
-    # DEBUG VARIABLES
-    # =====================
-    - echo "DEBUG MYSQL_ROOT_PASSWORD='${MYSQL_ROOT_PASSWORD}'"
-    - echo "DEBUG MYSQL_DATABASE='${MYSQL_DATABASE}'"
-    - echo "DEBUG MYSQL_USER='${MYSQL_USER}'"
-
-    # outils système
-    - apt-get update && apt-get install -y zip unzip git mariadb-client
-
-    # extensions PHP
+    - apt-get update
+    - apt-get install -y zip unzip git mariadb-client
     - docker-php-ext-install pdo pdo_mysql
 
-    # env Symfony
+    # DEBUG (à enlever après succès)
+    - echo "MYSQL_DATABASE=${MYSQL_DATABASE}"
+    - echo "MYSQL_USER=${MYSQL_USER}"
+
     - cp .env.test .env
 
-    # composer
     - curl -sS https://getcomposer.org/installer | php
-    - php composer.phar install --no-interaction
+    - php composer.phar install --no-interaction --no-progress
 
-    # attente MySQL
+    # Attente MySQL
     - |
       echo "Waiting for MySQL..."
-      MAX_TRIES=30
-      TRIES=0
-      until mysql -h mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "SELECT 1;" >/dev/null 2>&1; do
+      for i in $(seq 1 30); do
+        if mysql -h mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "SELECT 1;" >/dev/null 2>&1; then
+          echo "MySQL is ready"
+          break
+        fi
         echo "MySQL not ready yet..."
         sleep 2
-        TRIES=$((TRIES+1))
-        if [ $TRIES -ge $MAX_TRIES ]; then
-          echo "MySQL did not start in time, exiting."
-          exit 1
-        fi
       done
 
-    # création DB
+    # Sécurité finale
+    - mysql -h mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "SELECT 1;"
+
+    # DB
     - mysql -h mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\`;"
     - mysql -h mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "GRANT ALL PRIVILEGES ON \`${MYSQL_DATABASE}\`.* TO '${MYSQL_USER}'@'%'; FLUSH PRIVILEGES;"
 
