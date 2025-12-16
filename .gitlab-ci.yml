@@ -16,7 +16,7 @@ test_app:
     DATABASE_URL: "mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@mysql:3306/${MYSQL_DATABASE}?serverVersion=8.0"
 
   before_script:
-    - apt-get update && apt-get install -y zip unzip git mariadb-client
+    - apt-get update && apt-get install -y zip unzip git mariadb-client dnsutils
     - docker-php-ext-install pdo pdo_mysql
     - cp .env.test .env
     - curl -sS https://getcomposer.org/installer | php
@@ -26,6 +26,11 @@ test_app:
     - echo "DEBUG MYSQL_DATABASE='${MYSQL_DATABASE}'"
     - echo "DEBUG MYSQL_USER='${MYSQL_USER}'"
     - echo "DEBUG MYSQL_PASSWORD='${MYSQL_PASSWORD}'"
+
+    - |
+      echo "DEBUG: Vérification résolution DNS et ping"
+      nslookup mysql || echo "nslookup failed"
+      ping -c 3 mysql || echo "ping failed"
 
     # Attente de MySQL
     - |
