@@ -25,7 +25,7 @@ test_app:
     - apt-get install -y zip unzip git mariadb-client
     - docker-php-ext-install pdo pdo_mysql
 
-    # DEBUG (à enlever après succès)
+    # DEBUG
     - echo "MYSQL_DATABASE=${MYSQL_DATABASE}"
     - echo "MYSQL_USER=${MYSQL_USER}"
 
