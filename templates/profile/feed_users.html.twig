@@ -11,7 +11,6 @@
 
     {% if events is empty %}
         <p>Aucun événement à venir de la part des utilisateurs que vous suivez.</p>
-        <p><a href="{{ path('app_event_index') }}">Découvrir des événements</a> pour trouver des organisateurs à suivre</p>
     {% else %}
         <p>{{ events|length }} événement(s) à venir</p>
 

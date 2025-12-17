@@ -25,6 +25,7 @@
                 <th>Titre</th>
                 <th>Date</th>
                 <th>Ville</th>
+                <th>Promotion</th>
                 <th>Actions</th>
             </tr>
             </thead>
@@ -41,6 +42,13 @@
                     <td>{{ event.title }}</td>
                     <td>{{ event.dateStart|date('d/m/Y H:i') }}</td>
                     <td>{{ event.city }}</td>
+                    <td>
+                        {% if event.promote %}
+                            <span style="color: green;">En promotion</span>
+                        {% else %}
+                            <a href="{{ path('app_profile_event_promote', {id: event.id}) }}">Promouvoir</a>
+                        {% endif %}
+                    </td>
                     <td>
                         <a href="{{ path('app_profile_event_edit', {id: event.id}) }}">Modifier</a>
                         <form action="{{ path('app_profile_event_delete', {id: event.id}) }}" method="POST" style="display:inline;">

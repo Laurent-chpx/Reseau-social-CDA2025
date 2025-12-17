@@ -66,10 +66,17 @@ class Event
     #[ORM\OneToOne(mappedBy: 'event', cascade: ['persist', 'remove'])]
     private ?Promote $promote = null;
 
+    /**
+     * @var Collection<int, PromoteRequest>
+     */
+    #[ORM\OneToMany(targetEntity: PromoteRequest::class, mappedBy: 'event', orphanRemoval: true)]
+    private Collection $promoteRequests;
+
     public function __construct()
     {
         $this->categories = new ArrayCollection();
         $this->images = new ArrayCollection();
+        $this->promoteRequests = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -283,5 +290,35 @@ class Event
     public function __toString(): string
     {
         return $this->title;
+    }
+
+    /**
+     * @return Collection<int, PromoteRequest>
+     */
+    public function getPromoteRequests(): Collection
+    {
+        return $this->promoteRequests;
+    }
+
+    public function addPromoteRequest(PromoteRequest $promoteRequest): static
+    {
+        if (!$this->promoteRequests->contains($promoteRequest)) {
+            $this->promoteRequests->add($promoteRequest);
+            $promoteRequest->setEvent($this);
+        }
+
+        return $this;
+    }
+
+    public function removePromoteRequest(PromoteRequest $promoteRequest): static
+    {
+        if ($this->promoteRequests->removeElement($promoteRequest)) {
+            // set the owning side to null (unless already changed)
+            if ($promoteRequest->getEvent() === $this) {
+                $promoteRequest->setEvent(null);
+            }
+        }
+
+        return $this;
     }
 }

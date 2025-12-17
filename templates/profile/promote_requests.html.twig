@@ -1,0 +1,65 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes demandes de promotion{% endblock %}
+
+{% block body %}
+    <h1>Mes demandes de promotion</h1>
+
+    {% for message in app.flashes('success') %}
+        <p style="color: green;">{{ message }}</p>
+    {% endfor %}
+
+    {% for message in app.flashes('warning') %}
+        <p style="color: orange;">{{ message }}</p>
+    {% endfor %}
+
+    {% for message in app.flashes('error') %}
+        <p style="color: red;">{{ message }}</p>
+    {% endfor %}
+
+    {% if requests is empty %}
+        <p>Vous n'avez aucune demande de promotion.</p>
+        <p><a href="{{ path('app_profile_events') }}">Voir mes événements</a></p>
+    {% else %}
+        <table border="1" style="width: 100%; border-collapse: collapse;">
+            <thead>
+            <tr>
+                <th>Événement</th>
+                <th>Formule</th>
+                <th>Période</th>
+                <th>Prix</th>
+                <th>Statut</th>
+                <th>Demandé le</th>
+                <th>Note admin</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for request in requests %}
+                <tr>
+                    <td>
+                        <a href="{{ path('app_event_show', {id: request.event.id}) }}">
+                            {{ request.event.title }}
+                        </a>
+                    </td>
+                    <td>{{ request.formulaLabel }}</td>
+                    <td>{{ request.dateStart|date('d/m/Y') }} → {{ request.dateEnd|date('d/m/Y') }}</td>
+                    <td>{{ request.totalPrice }} €</td>
+                    <td>
+                        {% if request.isPending %}
+                            <span style="color: orange;">⏳ {{ request.statusLabel }}</span>
+                        {% elseif request.isApproved %}
+                            <span style="color: green;">✅ {{ request.statusLabel }}</span>
+                        {% else %}
+                            <span style="color: red;">❌ {{ request.statusLabel }}</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ request.createdAt|date('d/m/Y H:i') }}</td>
+                    <td>{{ request.adminNote|default('-') }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    <p style="margin-top: 20px;"><a href="{{ path('app_profile') }}">← Retour au dashboard</a></p>
+{% endblock %}

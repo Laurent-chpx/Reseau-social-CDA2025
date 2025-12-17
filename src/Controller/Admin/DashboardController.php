@@ -7,6 +7,8 @@ use App\Entity\Department;
 use App\Entity\City;
 use App\Entity\Category;
 use App\Entity\Event;
+use App\Entity\PromoteRequest;
+use App\Repository\PromoteRequestRepository;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
@@ -17,6 +19,10 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class DashboardController extends AbstractDashboardController
 {
+    public function __construct(
+        private PromoteRequestRepository $promoteRequestRepository
+    ) {}
+
     #[Route('/admin', name: 'admin')]
     #[IsGranted('ROLE_ADMIN')]
     public function index(): Response
@@ -33,6 +39,8 @@ class DashboardController extends AbstractDashboardController
 
     public function configureMenuItems(): iterable
     {
+        $pendingCount = $this->promoteRequestRepository->countPending();
+
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
 
         yield MenuItem::section('Utilisateurs');
@@ -43,7 +51,14 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Villes', 'fas fa-city', City::class);
 
         yield MenuItem::section('Événements');
-        yield MenuItem::linkToCrud('Categories', 'fas fa-tags', Category::class);
+        yield MenuItem::linkToCrud('Catégories', 'fas fa-tags', Category::class);
         yield MenuItem::linkToCrud('Événements', 'fas fa-calendar', Event::class);
+
+        yield MenuItem::section('Promotions');
+        yield MenuItem::linkToCrud(
+            'Demandes' . ($pendingCount > 0 ? ' (' . $pendingCount . ')' : ''),
+            'fas fa-star',
+            PromoteRequest::class
+        );
     }
 }

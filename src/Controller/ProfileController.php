@@ -4,8 +4,11 @@ namespace App\Controller;
 
 use App\Entity\Event;
 use App\Entity\EventImage;
+use App\Entity\PromoteRequest;
 use App\Form\ProfileFormType;
 use App\Form\EventFormType;
+use App\Form\PromoteRequestFormType;
+use App\Repository\PromoteRequestRepository;
 use App\Repository\EventRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -260,7 +263,55 @@ final class ProfileController extends AbstractController
         return $this->redirectToRoute('app_profile_event_edit', ['id' => $event->getId()]);
     }
 
+    //Liste des demandes coté user
+    #[Route('/promote-requests', name: 'app_profile_promote_requests')]
+    public function promoteRequests(PromoteRequestRepository $promoteRequestRepository): Response
+    {
+        $user = $this->getUser();
+        $requests = $promoteRequestRepository->findRequestsByUser($user);
+        return $this->render('profile/promote_requests.html.twig', [
+            'requests' => $requests,
+        ]);
+    }
+
+    //Formulaire de demande
+    #[Route('/events/{id}/promote', name: 'app_profile_event_promote', requirements: ['id' => '\d+'])]
+    public function promoteEvent(Event $event, Request $request, EntityManagerInterface $em, PromoteRequestRepository $promoteRequestRepository): Response
+    {
+
+        $pendingRequest = $promoteRequestRepository->findPendingByEvent($event);
+        if ($pendingRequest) {
+            $this->addFlash('warning', 'Une demande de promotion est déjà en attente pour cet événement.');
+            return $this->redirectToRoute('app_profile_promote_requests');
+        }
+
+        if ($event->getPromote()) {
+            $this->addFlash('warning', 'Cet événement est déjà mis en avant.');
+            return $this->redirectToRoute('app_profile_events');
+        }
+
+        $promoteRequest = new PromoteRequest();
+        $promoteRequest->setEvent($event);
+
+        $form = $this->createForm(PromoteRequestFormType::class, $promoteRequest);
+        $form->handleRequest($request);
 
 
+        if ($form->isSubmitted() && $form->isValid()) {
+            $promoteRequest->setCreatedAt(new \DateTimeImmutable());
+            $promoteRequest->setStatus(PromoteRequest::STATUS_PENDING);
 
+            $em->persist($promoteRequest);
+            $em->flush();
+
+            $this->addFlash('success', 'Votre demande de promotion a été envoyée !');
+            return $this->redirectToRoute('app_profile_promote_requests');
+        }
+
+        return $this->render('profile/event_promote.html.twig', [
+            'form' => $form,
+            'event' => $event,
+            'formulas' => PromoteRequest::FORMULAS,
+        ]);
+    }
 }
