@@ -3,6 +3,8 @@
 namespace App\Repository;
 
 use App\Entity\UserCity;
+use App\Entity\User;
+use App\Entity\City;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -16,28 +18,22 @@ class UserCityRepository extends ServiceEntityRepository
         parent::__construct($registry, UserCity::class);
     }
 
-    //    /**
-    //     * @return UserCity[] Returns an array of UserCity objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('u')
-    //            ->andWhere('u.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('u.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function findFollow(User $user, City $city): ?UserCity
+    {
+        return $this->findOneBy([
+            'user' => $user,
+            'city' => $city,
+        ]);
+    }
 
-    //    public function findOneBySomeField($value): ?UserCity
-    //    {
-    //        return $this->createQueryBuilder('u')
-    //            ->andWhere('u.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    public function findFollowedCities(User $user): array
+    {
+        return $this->createQueryBuilder('uc')
+            ->innerJoin('uc.city', 'c')
+            ->andWhere('uc.user = :user')
+            ->setParameter('user', $user)
+            ->orderBy('c.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }

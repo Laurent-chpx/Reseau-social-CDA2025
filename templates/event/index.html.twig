@@ -1,0 +1,137 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tous les événements{% endblock %}
+
+{% block body %}
+    <div >
+
+        <aside>
+            <h2>Filtres</h2>
+
+            <form method="GET" action="{{ path('app_event_index') }}">
+                <div>
+                    <label for="search"><strong>Recherche</strong></label><br>
+                    <input type="text"
+                           id="search"
+                           name="search"
+                           value="{{ currentFilters.search }}"
+                           placeholder="Mot-clé..."
+                           style="width: 100%;">
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <label for="department"><strong>Département</strong></label><br>
+                    <select id="department" name="department">
+                        <option value="">Tous les départements</option>
+                        {% for department in departments %}
+                            <option value="{{ department.id }}"
+                                    {% if currentFilters.department == department.id %}selected{% endif %}>
+                                {{ department }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <label for="city"><strong>Ville</strong></label><br>
+                    <select id="city" name="city" style="width: 100%;">
+                        <option value="">Toutes les villes</option>
+                        {% for city in cities %}
+                            <option value="{{ city.id }}"
+                                    {% if currentFilters.city == city.id %}selected{% endif %}>
+                                {{ city }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <label for="category"><strong>Catégorie</strong></label><br>
+                    <select id="category" name="category" style="width: 100%;">
+                        <option value="">Toutes les catégories</option>
+                        {% for category in categories %}
+                            <option value="{{ category.id }}"
+                                    {% if currentFilters.category == category.id %}selected{% endif %}>
+                                {{ category }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <label for="date_from"><strong>Date de début</strong></label><br>
+                    <input type="date"
+                           id="date_from"
+                           name="date_from"
+                           value="{{ currentFilters.dateFrom }}"
+                           style="width: 100%;">
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <label for="date_to"><strong>Date de fin</strong></label><br>
+                    <input type="date"
+                           id="date_to"
+                           name="date_to"
+                           value="{{ currentFilters.dateTo }}"
+                           style="width: 100%;">
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <label>
+                        <input type="checkbox"
+                               name="free_only"
+                               value="1"
+                               {% if currentFilters.freeOnly %}checked{% endif %}>
+                        Événements gratuits uniquement
+                    </label>
+                </div>
+
+                <button type="submit">Filtrer</button>
+                <a href="{{ path('app_event_index') }}" style="margin-left: 10px;">Réinitialiser</a>
+            </form>
+        </aside>
+
+        <main style="flex-grow: 1;">
+            <h1>Tous les événements</h1>
+
+            <p>{{ events|length }} événement(s) trouvé(s)</p>
+
+            {% if events is empty %}
+                <p>Aucun événement ne correspond à vos critères.</p>
+            {% else %}
+                <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                    {% for event in events %}
+                        <div style="border: 1px solid #ccc; padding: 15px; width: 280px;">
+                            {% if event.images|length > 0 %}
+                                <img src="{{ asset('uploads/events/' ~ event.images[0].url) }}"
+                                     alt="{{ event.title }}"
+                                     style="width: 100%; height: 150px; object-fit: cover;">
+                            {% else %}
+                                <div style="width: 100%; height: 150px; background: #eee; display: flex; align-items: center; justify-content: center;">
+                                    Pas d'image
+                                </div>
+                            {% endif %}
+
+                            <h3>{{ event.title }}</h3>
+                            <p><strong>Date :</strong> {{ event.dateStart|date('d/m/Y H:i') }}</p>
+                            <p><strong>Lieu :</strong> {{ event.city }}</p>
+                            <p><strong>Prix :</strong> {% if event.price %}{{ event.price }} €{% else %}Gratuit{% endif %}</p>
+
+                            {% if event.categories|length > 0 %}
+                                <p>
+                                    {% for category in event.categories %}
+                                        <span style="background: #eee; padding: 2px 6px; border-radius: 3px; font-size: 12px;">
+                                            {{ category.name }}
+                                        </span>
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+
+                            <a href="{{ path('app_event_show', {id: event.id}) }}">Voir le détail</a>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </main>
+    </div>
+{% endblock %}

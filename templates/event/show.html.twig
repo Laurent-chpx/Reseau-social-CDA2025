@@ -1,0 +1,101 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ event.title }}{% endblock %}
+
+{% block body %}
+    <article>
+        <h1>{{ event.title }}</h1>
+
+        {% if event.promote %}
+            <p style="background: gold; padding: 5px 10px; display: inline-block;">⭐ Événement sponsorisé</p>
+        {% endif %}
+
+        {% if event.images|length > 0 %}
+            <div style="margin: 20px 0;">
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    {% for image in event.images %}
+                        <img src="{{ asset('uploads/events/' ~ image.url) }}"
+                             alt="{{ event.title }} - Image {{ loop.index }}"
+                             style="max-width: 300px; max-height: 200px; object-fit: cover;">
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+
+        <section style="margin: 20px 0;">
+            <h2>Informations</h2>
+            <p><strong>Date de début :</strong> {{ event.dateStart|date('d/m/Y à H:i') }}</p>
+            {% if event.dateEnd %}
+                <p><strong>Date de fin :</strong> {{ event.dateEnd|date('d/m/Y à H:i') }}</p>
+            {% endif %}
+            {% if event.schedule %}
+                <p><strong>Horaires :</strong> {{ event.schedule }}</p>
+            {% endif %}
+            <p><strong>Prix :</strong> {% if event.price %}{{ event.price }} €{% else %}Gratuit{% endif %}</p>
+        </section>
+
+        <section style="margin: 20px 0;">
+            <h2>Lieu</h2>
+            <p><strong>Adresse :</strong> {{ event.address }}</p>
+            <p><strong>Ville :</strong> {{ event.city.name }} ({{ event.city.postalCode }})</p>
+            <p><strong>Département :</strong> {{ event.city.department }}</p>
+
+            {# Bouton follow ville #}
+            {% if app.user %}
+                {% if is_following_city(event.city) %}
+                    <form action="{{ path('app_unfollow_city', {id: event.city.id}) }}" method="POST" style="display: inline;">
+                        <input type="hidden" name="_token" value="{{ csrf_token('unfollow_city' ~ event.city.id) }}">
+                        <button type="submit">✓ Ville suivie - Ne plus suivre</button>
+                    </form>
+                {% else %}
+                    <form action="{{ path('app_follow_city', {id: event.city.id}) }}" method="POST" style="display: inline;">
+                        <input type="hidden" name="_token" value="{{ csrf_token('follow_city' ~ event.city.id) }}">
+                        <button type="submit">+ Suivre {{ event.city.name }}</button>
+                    </form>
+                {% endif %}
+            {% endif %}
+        </section>
+
+        <section style="margin: 20px 0;">
+            <h2>Description</h2>
+            <p>{{ event.description|nl2br }}</p>
+        </section>
+
+        {% if event.categories|length > 0 %}
+            <section style="margin: 20px 0;">
+                <h2>Catégories</h2>
+                <p>
+                    {% for category in event.categories %}
+                        <span style="background: #eee; padding: 5px 10px; border-radius: 5px; margin-right: 5px;">
+                            {{ category.name }}
+                        </span>
+                    {% endfor %}
+                </p>
+            </section>
+        {% endif %}
+
+        <section>
+            <p><strong>Publié par :</strong> {{ event.createdBy.firstName }} {{ event.createdBy.lastName }}</p>
+            <p><strong>Publié le :</strong> {{ event.createdAt|date('d/m/Y à H:i') }}</p>
+
+            {# Bouton follow utilisateur #}
+            {% if app.user and app.user != event.createdBy %}
+                {% if is_following_user(event.createdBy) %}
+                    <form action="{{ path('app_unfollow_user', {id: event.createdBy.id}) }}" method="POST" style="display: inline;">
+                        <input type="hidden" name="_token" value="{{ csrf_token('unfollow_user' ~ event.createdBy.id) }}">
+                        <button type="submit">✓ Utilisateur suivi - Ne plus suivre</button>
+                    </form>
+                {% else %}
+                    <form action="{{ path('app_follow_user', {id: event.createdBy.id}) }}" method="POST" style="display: inline;">
+                        <input type="hidden" name="_token" value="{{ csrf_token('follow_user' ~ event.createdBy.id) }}">
+                        <button type="submit">+ Suivre {{ event.createdBy.firstName }}</button>
+                    </form>
+                {% endif %}
+            {% endif %}
+        </section>
+
+        <p style="margin-top: 30px;">
+            <a href="{{ path('app_event_index') }}"> Retour à la liste des événements</a>
+        </p>
+    </article>
+{% endblock %}
