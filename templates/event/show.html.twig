@@ -32,7 +32,7 @@
         <section class="event-main-card">
             <div class="event-image-container">
                 {% if event.images|length > 0 %}
-                    <img src="{{ asset('uploads/events/' ~ event.images.first.filename) }}" alt="{{ event.title }}">
+                    <img src="{{ asset('uploads/events/' ~ event.images.first.url) }}" alt="{{ event.title }}">
                 {% else %}
                     <div class="event-image-placeholder">[IMAGE PRINCIPALE]</div>
                 {% endif %}
@@ -94,6 +94,19 @@
                         Adresse | {{ event.address }}<br>
                         {{ event.city.name }}, {{ event.city.department.name }}
                     </p>
+                    {% if app.user %}
+                        {% if is_following_city(event.city) %}
+                            <form action="{{ path('app_unfollow_city', {id: event.city.id}) }}" method="POST" style="margin: 10px 0;">
+                                <input type="hidden" name="_token" value="{{ csrf_token('unfollow_city' ~ event.city.id) }}">
+                                <button type="submit" class="btn-follow">✓ Ville suivie - Ne plus suivre</button>
+                            </form>
+                        {% else %}
+                            <form action="{{ path('app_follow_city', {id: event.city.id}) }}" method="POST" style="margin: 10px 0;">
+                                <input type="hidden" name="_token" value="{{ csrf_token('follow_city' ~ event.city.id) }}">
+                                <button type="submit" class="btn-follow">+ Suivre {{ event.city.name }}</button>
+                            </form>
+                        {% endif %}
+                    {% endif %}
 
                     <div class="map-container">
                         <div id="event-map" style="height: 300px; border-radius: 12px; overflow: hidden;"></div>
@@ -126,12 +139,16 @@
                     </div>
 
                     <div class="organizer-actions">
-                        {% if app.user and app.user != event.createdBy %}
-                            <a href="#" class="btn-follow">Suivre cet organisateur</a>
-                            <a href="#" class="btn-contact">📧 Contacter</a>
-                        {% elseif not app.user %}
-                            <a href="{{ path('app_login') }}" class="btn-follow">Suivre cet organisateur</a>
-                            <a href="{{ path('app_login') }}" class="btn-contact">📧 Contacter</a>
+                        {% if is_following_user(event.createdBy) %}
+                            <form action="{{ path('app_unfollow_user', {id: event.createdBy.id}) }}" method="POST" style="display: inline;">
+                                <input type="hidden" name="_token" value="{{ csrf_token('unfollow_user' ~ event.createdBy.id) }}">
+                                <button type="submit" class="btn-follow">✓ Suivi - Ne plus suivre</button>
+                            </form>
+                        {% else %}
+                            <form action="{{ path('app_follow_user', {id: event.createdBy.id}) }}" method="POST" style="display: inline;">
+                                <input type="hidden" name="_token" value="{{ csrf_token('follow_user' ~ event.createdBy.id) }}">
+                                <button type="submit" class="btn-follow">+ Suivre</button>
+                            </form>
                         {% endif %}
                     </div>
                 </div>

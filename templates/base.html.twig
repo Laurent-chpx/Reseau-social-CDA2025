@@ -17,20 +17,41 @@
     </head>
     <body>
 
-    <header class="main-header">
-        <a href="{{ path('app_home') }}" class="logo-link">
-            <div class="logo">La Vie<br>en Rose</div>
-        </a>
-        <nav class="nav-menu">
-            <a href="{{ path('app_home') }}" class="nav-link">Accueil</a>
-            <a href="{{ path('app_event_index') }}" class="nav-link">Événements</a>
+    {% if app.request.pathinfo starts with '/profile' %}
+        {# Header pour les pages profil #}
+        <header class="event-form-header">
+            <a href="{{ path('app_home') }}" class="event-form-logo">
+                La Vie<br>en Rose
+            </a>
+            <nav class="event-form-nav">
+                <a href="{{ path('app_event_index') }}" class="nav-link">Événements</a>
+                <a href="{{ path('app_profile_events') }}" class="nav-link">Mes événements</a>
+            </nav>
             {% if app.user %}
-                <a href="{{ path('app_profile') }}" class="nav-link">Mon profil</a>
-            {% else %}
-                <a href="{{ path('app_login') }}" class="nav-link">Connexion</a>
+                <div class="user-avatar">
+                    {{ app.user.email|first|upper }}{{ app.user.email|slice(app.user.email|split('@')[0]|length - 1, 1)|upper }}
+                </div>
             {% endif %}
-        </nav>
-    </header>
+        </header>
+    {% else %}
+        {# Header standard #}
+        <header class="main-header">
+            <a href="{{ path('app_home') }}" class="logo-link">
+                <div class="logo">La Vie<br>en Rose</div>
+            </a>
+            <nav class="nav-menu">
+                <a href="{{ path('app_home') }}" class="nav-link">Accueil</a>
+                <a href="{{ path('app_event_index') }}" class="nav-link">Événements</a>
+                {% if app.user %}
+                    <a href="{{ path('app_profile') }}" class="nav-link">Mon profil</a>
+                {% else %}
+                    <a href="{{ path('app_login') }}" class="nav-link">Connexion</a>
+                {% endif %}
+            </nav>
+        </header>
+    {% endif %}
+
+
         {% block body %}{% endblock %}
         {# Footer #}
         <footer class="main-footer">

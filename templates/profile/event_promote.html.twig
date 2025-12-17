@@ -9,22 +9,6 @@
 
 {% block body %}
     <div class="page-container">
-        {# Header Navigation #}
-        <header class="main-header">
-            {% include '_components/_logo.html.twig' %}
-            <nav class="nav-menu">
-                <a href="{{ path('app_event_index') }}" class="nav-link">Événements</a>
-                <a href="{{ path('app_profile_events') }}" class="nav-link">Mes événements</a>
-            </nav>
-            <div class="user-avatar">
-                {% if app.user %}
-                    {{ app.user.email|first|upper }}{{ app.user.email|slice(app.user.email|split('@')[0]|length - 1, 1)|upper }}
-                {% else %}
-                    JD
-                {% endif %}
-            </div>
-        </header>
-
         {# Main Content #}
         <div class="promote-container">
             {# Hero Section #}
