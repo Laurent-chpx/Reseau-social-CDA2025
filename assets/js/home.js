@@ -63,7 +63,6 @@ async function loadEvents(reset = false) {
     const loadingMsg = document.getElementById('loading-message');
 
     if (!container) {
-        console.error('Container non trouvé');
         return;
     }
 
@@ -134,21 +133,20 @@ function updateLocationInfo(city, departmentName) {
 
 async function initGeolocationByIP() {
     try {
-        const response = await fetch('https://ipapi.co/json/');
+        const response = await fetch('http://ip-api.com/json/?fields=status,country,countryCode,region,regionName,city,zip');
         const data = await response.json();
 
         console.log('Localisation IP détectée :', {
-            ip: data.ip,
             ville: data.city,
-            région: data.region,
-            codePostal: data.postal,
-            pays: data.country_name
+            région: data.regionName,
+            codePostal: data.zip,
+            pays: data.country
         });
 
-        if (data.country_code === 'FR' && data.postal) {
-            let departmentCode = data.postal.substring(0, 2);
+        if (data.status === 'success' && data.countryCode === 'FR' && data.zip) {
+            let departmentCode = data.zip.substring(0, 2);
             if (departmentCode === '97' || departmentCode === '98') {
-                departmentCode = data.postal.substring(0, 3);
+                departmentCode = data.zip.substring(0, 3);
             }
 
             console.log('Code département détecté :', departmentCode);
@@ -176,11 +174,10 @@ async function initGeolocationByIP() {
 }
 
 function initHomePage() {
-    const loadMoreBtn = document.getElementById('load-more-btn');
     const container = document.getElementById('events-container');
 
-
-    if (!container || !loadMoreBtn) {
+    // Vérifier qu'on est sur la page d'accueil
+    if (!container) {
         return;
     }
 
@@ -191,19 +188,16 @@ function initHomePage() {
     currentDepartmentId = null;
     detectedDepartmentName = null;
 
-    // Supprimer les anciens listeners pour éviter les doublons
-    const newLoadMoreBtn = loadMoreBtn.cloneNode(true);
-    loadMoreBtn.parentNode.replaceChild(newLoadMoreBtn, loadMoreBtn);
-    newLoadMoreBtn.addEventListener('click', () => loadEvents(false));
+    // Vider le container
+    container.innerHTML = '';
+
+    // Gérer le bouton load more
+    const loadMoreBtn = document.getElementById('load-more-btn');
+    if (loadMoreBtn) {
+        loadMoreBtn.onclick = () => loadEvents(false);
+    }
 
     initGeolocationByIP();
 }
 
-
-document.addEventListener('DOMContentLoaded', initHomePage);
-
-
 document.addEventListener('turbo:load', initHomePage);
-
-
-document.addEventListener('turbo:render', initHomePage);
