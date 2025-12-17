@@ -1,6 +1,3 @@
-
-
-
 let currentOffset = 0;
 const limit = 3;
 let currentDepartmentId = null;
@@ -60,9 +57,19 @@ function createEventCard(event) {
 }
 
 async function loadEvents(reset = false) {
+    const container = document.getElementById('events-container');
+    const loadMoreBtn = document.getElementById('load-more-btn');
+    const noEventsMsg = document.getElementById('no-events-message');
+    const loadingMsg = document.getElementById('loading-message');
+
+    if (!container) {
+        console.error('Container non trouvé');
+        return;
+    }
+
     if (reset) {
         currentOffset = 0;
-        document.getElementById('events-container').innerHTML = '';
+        container.innerHTML = '';
     }
 
     const params = new URLSearchParams({
@@ -78,24 +85,19 @@ async function loadEvents(reset = false) {
         const response = await fetch(`/api/events?${params}`);
         const data = await response.json();
 
-        const container = document.getElementById('events-container');
-        const loadMoreBtn = document.getElementById('load-more-btn');
-        const noEventsMsg = document.getElementById('no-events-message');
-        const loadingMsg = document.getElementById('loading-message');
-
         if (loadingMsg) loadingMsg.remove();
 
         if (data.events.length === 0 && currentOffset === 0) {
-            noEventsMsg.style.display = 'block';
-            loadMoreBtn.style.display = 'none';
+            if (noEventsMsg) noEventsMsg.style.display = 'block';
+            if (loadMoreBtn) loadMoreBtn.style.display = 'none';
         } else {
-            noEventsMsg.style.display = 'none';
+            if (noEventsMsg) noEventsMsg.style.display = 'none';
             data.events.forEach(event => {
                 container.innerHTML += createEventCard(event);
             });
 
             currentOffset += data.events.length;
-            loadMoreBtn.style.display = data.hasMore ? 'inline-block' : 'none';
+            if (loadMoreBtn) loadMoreBtn.style.display = data.hasMore ? 'inline-block' : 'none';
         }
     } catch (error) {
         console.error('Erreur lors du chargement des événements:', error);
@@ -104,6 +106,8 @@ async function loadEvents(reset = false) {
 
 function findDepartmentIdByCode(code) {
     const select = document.getElementById('department-select');
+    if (!select) return null;
+
     const options = select.querySelectorAll('option[data-code]');
 
     for (const option of options) {
@@ -120,11 +124,11 @@ function updateLocationInfo(city, departmentName) {
     const title = document.getElementById('events-title');
 
     if (city && departmentName) {
-        locationInfo.textContent = `📍 ${city} (${departmentName})`;
-        title.textContent = `Événements dans le ${departmentName}`;
+        if (locationInfo) locationInfo.textContent = `📍 ${city} (${departmentName})`;
+        if (title) title.textContent = `Événements dans le ${departmentName}`;
     } else {
-        locationInfo.textContent = '';
-        title.textContent = 'Tous les événements';
+        if (locationInfo) locationInfo.textContent = '';
+        if (title) title.textContent = 'Tous les événements';
     }
 }
 
@@ -152,7 +156,8 @@ async function initGeolocationByIP() {
             currentDepartmentId = findDepartmentIdByCode(departmentCode);
 
             if (currentDepartmentId) {
-                document.getElementById('department-select').value = currentDepartmentId;
+                const select = document.getElementById('department-select');
+                if (select) select.value = currentDepartmentId;
                 updateLocationInfo(data.city, detectedDepartmentName);
             } else {
                 console.log('Département non trouvé en base');
@@ -167,11 +172,38 @@ async function initGeolocationByIP() {
         updateLocationInfo(null, null);
     }
 
-    loadEvents(true);
+    await loadEvents(true);
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('load-more-btn').addEventListener('click', () => loadEvents(false));
-    initGeolocationByIP();
-});
+function initHomePage() {
+    const loadMoreBtn = document.getElementById('load-more-btn');
+    const container = document.getElementById('events-container');
 
+
+    if (!container || !loadMoreBtn) {
+        return;
+    }
+
+    console.log('Initialisation page accueil');
+
+    // Réinitialiser les variables
+    currentOffset = 0;
+    currentDepartmentId = null;
+    detectedDepartmentName = null;
+
+    // Supprimer les anciens listeners pour éviter les doublons
+    const newLoadMoreBtn = loadMoreBtn.cloneNode(true);
+    loadMoreBtn.parentNode.replaceChild(newLoadMoreBtn, loadMoreBtn);
+    newLoadMoreBtn.addEventListener('click', () => loadEvents(false));
+
+    initGeolocationByIP();
+}
+
+
+document.addEventListener('DOMContentLoaded', initHomePage);
+
+
+document.addEventListener('turbo:load', initHomePage);
+
+
+document.addEventListener('turbo:render', initHomePage);
