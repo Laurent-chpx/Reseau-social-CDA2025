@@ -8,9 +8,12 @@ test_app:
   image: php:8.2-cli
 
   services:
-    - mysql:latest
+    - name: mysql/mysql-server:8.0
+      alias: mysql
+      command: ['--default-authentication-plugin=mysql_native_password']
 
   variables:
+    MYSQL_ROOT_HOST: '%'
     DATABASE_URL: "mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@mysql:3306/${MYSQL_DATABASE}?serverVersion=8.0"
 
   before_script:
