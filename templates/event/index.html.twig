@@ -9,19 +9,6 @@
 
 {% block body %}
     <div class="page-container">
-        {# Header Navigation #}
-        <header class="main-header">
-            {% include '_components/_logo.html.twig' %}
-            <nav class="nav-menu">
-                <a href="{{ path('app_home') }}" class="nav-link">Accueil</a>
-                <a href="{{ path('app_event_index') }}" class="nav-link active">Événements</a>
-                {% if app.user %}
-                    <a href="{{ path('app_profile') }}" class="nav-link">Mon profil</a>
-                {% else %}
-                    <a href="{{ path('app_login') }}" class="nav-link">Connexion</a>
-                {% endif %}
-            </nav>
-        </header>
 
         {# Main Content #}
         <div class="events-container">
@@ -31,97 +18,129 @@
             <div class="content-layout">
                 {# Sidebar Filters #}
                 <aside class="filters-sidebar">
-                    <div class="filter-section">
-                        <h3 class="filter-title">Type d'événement</h3>
-                        <div class="filter-options">
+                    <form method="GET" action="{{ path('app_event_index') }}" id="filters-form">
+
+                        {# Recherche #}
+                        <div class="filter-section">
+                            <h3 class="filter-title">Recherche</h3>
+                            <input
+                                type="text"
+                                name="search"
+                                placeholder="Rechercher un événement..."
+                                value="{{ currentFilters.search }}"
+                                class="filter-input"
+                            >
+                        </div>
+
+                        {# Catégories #}
+                        <div class="filter-section">
+                            <h3 class="filter-title">Catégorie</h3>
+                            <div class="filter-options">
+                                {% for category in categories %}
+                                    <label class="filter-option">
+                                        <input
+                                            type="radio"
+                                            name="category"
+                                            value="{{ category.id }}"
+                                            {{ currentFilters.category == category.id ? 'checked' : '' }}
+                                        >
+                                        <span class="filter-label">{{ category.name }}</span>
+                                    </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        {# Dates #}
+                        <div class="filter-section">
+                            <h3 class="filter-title">Date</h3>
+                            <div class="filter-options">
+                                <label class="filter-option">
+                                    <span class="filter-label">Du</span>
+                                    <input
+                                        type="date"
+                                        name="date_from"
+                                        value="{{ currentFilters.dateFrom }}"
+                                        class="filter-input"
+                                    >
+                                </label>
+                                <label class="filter-option">
+                                    <span class="filter-label">Au</span>
+                                    <input
+                                        type="date"
+                                        name="date_to"
+                                        value="{{ currentFilters.dateTo }}"
+                                        class="filter-input"
+                                    >
+                                </label>
+                            </div>
+                        </div>
+
+                        {# Département #}
+                        <div class="filter-section">
+                            <h3 class="filter-title">Département</h3>
+                            <select name="department" class="filter-select">
+                                <option value="">Tous les départements</option>
+                                {% for department in departments %}
+                                    <option
+                                        value="{{ department.id }}"
+                                        {{ currentFilters.department == department.id ? 'selected' : '' }}
+                                    >
+                                        {{ department.code }} - {{ department.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        {# Ville #}
+                        <div class="filter-section">
+                            <h3 class="filter-title">Ville</h3>
+                            <select name="city" class="filter-select">
+                                <option value="">Toutes les villes</option>
+                                {% for city in cities %}
+                                    <option
+                                        value="{{ city.id }}"
+                                        {{ currentFilters.city == city.id ? 'selected' : '' }}
+                                    >
+                                        {{ city.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        {# Gratuit uniquement #}
+                        <div class="filter-section">
                             <label class="filter-option">
-                                <input type="checkbox" name="type" value="concert">
-                                <span class="filter-icon">🎵</span>
-                                <span class="filter-label">Concert</span>
-                            </label>
-                            <label class="filter-option">
-                                <input type="checkbox" name="type" value="sport">
-                                <span class="filter-icon">⚽</span>
-                                <span class="filter-label">Sport</span>
-                            </label>
-                            <label class="filter-option">
-                                <input type="checkbox" name="type" value="nature">
-                                <span class="filter-icon">🌳</span>
-                                <span class="filter-label">Nature</span>
-                            </label>
-                            <label class="filter-option">
-                                <input type="checkbox" name="type" value="festival">
-                                <span class="filter-icon">🎪</span>
-                                <span class="filter-label">Festival</span>
-                            </label>
-                            <label class="filter-option">
-                                <input type="checkbox" name="type" value="theatre">
-                                <span class="filter-icon">🎭</span>
-                                <span class="filter-label">Théâtre</span>
-                            </label>
-                            <label class="filter-option">
-                                <input type="checkbox" name="type" value="conference">
-                                <span class="filter-icon">💼</span>
-                                <span class="filter-label">Conférence</span>
-                            </label>
-                            <label class="filter-option">
-                                <input type="checkbox" name="type" value="autre">
-                                <span class="filter-icon">📌</span>
-                                <span class="filter-label">Autre</span>
+                                <input
+                                    type="checkbox"
+                                    name="free_only"
+                                    value="1"
+                                    {{ currentFilters.freeOnly ? 'checked' : '' }}
+                                >
+                                <span class="filter-label">Événements gratuits uniquement</span>
                             </label>
                         </div>
-                    </div>
 
-                    <div class="filter-section">
-                        <h3 class="filter-title">Date</h3>
-                        <div class="filter-options">
-                            <label class="filter-option">
-                                <input type="radio" name="date" value="all" checked>
-                                <span class="filter-label">Toutes les dates</span>
-                            </label>
-                            <label class="filter-option">
-                                <input type="radio" name="date" value="today">
-                                <span class="filter-label">Aujourd'hui</span>
-                            </label>
-                            <label class="filter-option">
-                                <input type="radio" name="date" value="week">
-                                <span class="filter-label">Cette semaine</span>
-                            </label>
-                            <label class="filter-option">
-                                <input type="radio" name="date" value="month">
-                                <span class="filter-label">Ce mois-ci</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="filter-section">
-                        <h3 class="filter-title">Localisation</h3>
-                        <div class="filter-options">
-                            <label class="filter-option">
-                                <input type="checkbox" name="location" value="origin">
-                                <span class="filter-label">Ville d'origine</span>
-                            </label>
-                            <label class="filter-option">
-                                <input type="checkbox" name="location" value="followed">
-                                <span class="filter-label">Par fonction</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <button class="btn-reset">Annulation</button>
+                        <button type="submit" class="btn-filter">Filtrer</button>
+                        <a href="{{ path('app_event_index') }}" class="btn-reset">Réinitialiser</a>
+                    </form>
                 </aside>
 
                 {# Events Grid #}
                 <main class="events-main">
                     {% if events is empty %}
                         <div class="empty-state">
-                            <p>Aucun événement disponible pour le moment.</p>
+                            <p>Aucun événement trouvé avec ces critères.</p>
+                            <a href="{{ path('app_event_index') }}" class="btn-reset">Voir tous les événements</a>
                         </div>
                     {% else %}
+                        <p class="results-count">{{ events|length }} événement{{ events|length > 1 ? 's' : '' }} trouvé{{ events|length > 1 ? 's' : '' }}</p>
+
                         <div class="events-grid">
                             {% for event in events %}
                                 <article class="event-card">
-                                    <div class="event-badge">En préparation</div>
+                                    {% if event.promote and event.promote.dateStart <= "now"|date("Y-m-d") and event.promote.dateEnd >= "now"|date("Y-m-d") %}
+                                        <div class="event-badge promoted">⭐ Sponsorisé</div>
+                                    {% endif %}
                                     <div class="event-image-placeholder">
                                         {% if event.images is not empty and event.images|first.url %}
                                             <img src="{{ asset('uploads/events/' ~ event.images|first.url) }}" alt="{{ event.title }}">
@@ -147,9 +166,21 @@
                                     <div class="event-content">
                                         <h2 class="event-title">{{ event.title }}</h2>
                                         <div class="event-meta">
-                                            <p class="event-location">📍 {{ event.city.name }}</p>
-                                            <p class="event-date">📅 {{ event.dateStart|date('d/m/Y') }}</p>
+                                            <p class="event-location">📍 {{ event.city.name }} ({{ event.city.department.code }})</p>
+                                            <p class="event-date">📅 {{ event.dateStart|date('d/m/Y à H:i') }}</p>
+                                            {% if event.price is not null and event.price > 0 %}
+                                                <p class="event-price">💰 {{ event.price }}€</p>
+                                            {% else %}
+                                                <p class="event-price free">✨ Gratuit</p>
+                                            {% endif %}
                                         </div>
+                                        {% if event.categories is not empty %}
+                                            <div class="event-categories">
+                                                {% for category in event.categories %}
+                                                    <span class="category-tag">{{ category.name }}</span>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
                                         {% if event.description %}
                                             <p class="event-description">{{ event.description|length > 120 ? event.description|slice(0, 120) ~ '...' : event.description }}</p>
                                         {% endif %}
@@ -158,22 +189,9 @@
                                 </article>
                             {% endfor %}
                         </div>
-
-                        {# Pagination #}
-                        <div class="pagination">
-                            <button class="btn-pagination btn-prev">Précédent</button>
-                            <span class="pagination-info">Page 1 à {{ (events|length / 10)|round(0, 'ceil') }}</span>
-                            <button class="btn-pagination btn-next">Suivant</button>
-                        </div>
                     {% endif %}
                 </main>
             </div>
         </div>
-
-        {# Footer #}
-        <footer class="main-footer">
-            <p>Liens: <a href="#">A propos</a> / <a href="#">Contact</a> / <a href="#">CGU/Confidentialité</a></p>
-            <p>@2025 Réseau Social d'Événements</p>
-        </footer>
     </div>
 {% endblock %}
