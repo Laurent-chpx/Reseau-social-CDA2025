@@ -15,3 +15,4 @@ deploy_to_vps:
       "
   only:
     - main
+    - test-deploiement
