@@ -21,9 +21,9 @@ services:
     networks:
       - symfony
 
-  db:
+  mysql:
     image: mysql:8.0
-    container_name: symfony_db
+    container_name: symfony_mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: symfony_db
