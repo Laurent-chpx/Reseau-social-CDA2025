@@ -7,7 +7,7 @@ deploy_to_vps:
   before_script:
     - apk add --no-cache sshpass openssh
   script:
-    - sshpass -p "$VPS_PASSWORD" ssh -o StrictHostKeyChecking=no $VPS_USER@$VPS_HOST "
+    - ssh $VPS_USER:$VPS_PASSWORD@$VPS_HOST
         cd /var/www/projet &&
         git pull &&
         docker-compose pull &&
