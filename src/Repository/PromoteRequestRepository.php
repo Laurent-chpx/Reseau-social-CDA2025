@@ -24,7 +24,7 @@ class PromoteRequestRepository extends ServiceEntityRepository
             ->innerJoin('pr.event', 'e')
             ->andWhere('e.createdBy = :user')
             ->setParameter('user', $user)
-            ->orderBy('pr.createdBy', 'DESC')
+            ->orderBy('pr.createdAt', 'DESC')
             ->getQuery()
             ->getResult();
     }
