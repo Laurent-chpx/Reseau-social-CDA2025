@@ -9,20 +9,6 @@
 
 {% block body %}
     <div class="my-events-container">
-        {# Header Navigation #}
-        <header class="my-events-header">
-            {% include '_components/_logo.html.twig' %}
-            <nav class="my-events-nav">
-                <a href="{{ path('app_event_index') }}" class="nav-link">Événements</a>
-                <a href="{{ path('app_profile_events') }}" class="nav-link active">Mes événements</a>
-            </nav>
-            {% if app.user %}
-                <div class="user-avatar">
-                    {{ app.user.email|first|upper }}{{ app.user.email|slice(app.user.email|split('@')[0]|length - 1, 1)|upper }}
-                </div>
-            {% endif %}
-        </header>
-
         {# Main Content #}
         <main class="events-content">
             <div class="events-wrapper">
