@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <title>{% block title %}Événements Locaux!{% endblock %}</title>
-        
+
          {# Google Fonts #}
          <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
          <link href="https://fonts.googleapis.com/css2?family=Vast+Shadow&display=swap" rel="stylesheet">
@@ -16,6 +16,21 @@
         {% endblock %}
     </head>
     <body>
+
+    <header class="main-header">
+        <a href="{{ path('app_home') }}" class="logo-link">
+            <div class="logo">La Vie<br>en Rose</div>
+        </a>
+        <nav class="nav-menu">
+            <a href="{{ path('app_home') }}" class="nav-link">Accueil</a>
+            <a href="{{ path('app_event_index') }}" class="nav-link">Événements</a>
+            {% if app.user %}
+                <a href="{{ path('app_profile') }}" class="nav-link">Mon profil</a>
+            {% else %}
+                <a href="{{ path('app_login') }}" class="nav-link">Connexion</a>
+            {% endif %}
+        </nav>
+    </header>
         {% block body %}{% endblock %}
     </body>
 </html>
