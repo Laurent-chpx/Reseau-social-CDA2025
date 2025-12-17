@@ -129,29 +129,39 @@ class EventRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+    public function findByDepartmentWithPromotedFirst(?int $departmentId, int $offset = 0, int $limit = 3): array
+    {
+        $qb = $this->createQueryBuilder('e')
+            ->leftJoin('e.city', 'c')
+            ->leftJoin('c.department', 'd')
+            ->leftJoin('e.promote', 'p')
+            ->addSelect('CASE WHEN p.id IS NOT NULL AND p.dateStart <= :now AND p.dateEnd >= :now THEN 1 ELSE 0 END AS HIDDEN isPromoted')
+            ->setParameter('now', new \DateTimeImmutable())
+            ->orderBy('isPromoted', 'DESC')
+            ->addOrderBy('e.dateStart', 'DESC')
+            ->setFirstResult($offset)
+            ->setMaxResults($limit);
 
-    //    /**
-    //     * @return Event[] Returns an array of Event objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('e')
-    //            ->andWhere('e.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('e.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+        if ($departmentId) {
+            $qb->andWhere('d.id = :departmentId')
+                ->setParameter('departmentId', $departmentId);
+        }
 
-    //    public function findOneBySomeField($value): ?Event
-    //    {
-    //        return $this->createQueryBuilder('e')
-    //            ->andWhere('e.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        return $qb->getQuery()->getResult();
+    }
+
+    public function countByDepartment(?int $departmentId): int
+    {
+        $qb = $this->createQueryBuilder('e')
+            ->select('COUNT(e.id)')
+            ->leftJoin('e.city', 'c')
+            ->leftJoin('c.department', 'd');
+
+        if ($departmentId) {
+            $qb->andWhere('d.id = :departmentId')
+                ->setParameter('departmentId', $departmentId);
+        }
+
+        return (int) $qb->getQuery()->getSingleScalarResult();
+    }
 }

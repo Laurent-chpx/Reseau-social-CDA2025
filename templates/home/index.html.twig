@@ -6,77 +6,36 @@
     {{ parent() }}
     <link rel="stylesheet" href="{{ asset('styles/accueil.css') }}">
 {% endblock %}
-{% block body %}
 
+{% block body %}
     <section class="hero-section">
         <div class="hero-content">
             <h1>Découvrez les événements<br>près de chez vous</h1>
             <div class="search-container">
                 <form action="{{ path('app_event_index') }}" method="GET">
                     <div>
-
-                        {# Champ de recherche texte #}
                         <input type="text" name="search" placeholder="Rechercher un événement...">
 
-                        {# Filtre par catégorie #}
-                        <select name="category" >
+                        <select name="category">
                             <option value="">Toutes catégories</option>
                             {% for category in categories %}
                                 <option value="{{ category.id }}">{{ category.name }}</option>
                             {% endfor %}
                         </select>
 
-                        {# Filtre par département #}
-                        <select name="department">
+                        <select name="department" id="department-select">
                             <option value="">Tous départements</option>
                             {% for department in departments %}
-                                <option value="{{ department.id }}">{{ department.code }} - {{ department.name }}</option>
+                                <option value="{{ department.id }}" data-code="{{ department.code }}">
+                                    {{ department.code }} - {{ department.name }}
+                                </option>
                             {% endfor %}
                         </select>
 
-                        {# Bouton de recherche #}
                         <button type="submit">Rechercher</button>
                     </div>
                 </form>
             </div>
-        </div>
-    </section>
-
-    <section class="events-section">
-        <h2 class="section-title">Événements sponsorisés dans votre région</h2>
-
-        <div class="events-grid">
-            {% for event in promotedEvents %}
-                <div class="event-card">
-                    <div class="event-image-container">
-                        <span class="sponsored-badge">⭐ SPONSORISÉ</span>
-                        <span>
-                           {% if event.images|length > 0 %}
-                               <img src="{{ asset('uploads/events/' ~ event.images[0].url) }}" alt="{{ event.title }}">
-                           {% else %}
-                               <img src="{{ asset('images/placeholder.jpg') }}" alt="Pas d'image">
-                           {% endif %}
-                        </span>
-                    </div>
-                    <div class="event-details">
-                        <h3 class="event-title">{{ event.title }}</h3>
-                        <div class="event-location">
-                            📍 {{ event.city.name }} ({{ event.city.department.code }})
-                        </div>
-                        <div class="event-date">
-                            📅 {{ event.dateStart|date('d/m/Y à H:i') }}
-                        </div>
-                        {% for category in event.categories %}
-                            <span class="tag">{{ category.name }}</span>
-                        {% endfor %}
-                        <a href="{{ path('app_event_show', {id: event.id}) }}" class="event-btn">Voir les détails →</a>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-
-        <div style="text-align: center;">
-            <a href="{{ path('app_event_index') }}" class="view-all-btn">Voir tous les événements</a>
         </div>
     </section>
 
@@ -87,4 +46,180 @@
             <a href="{{ path('app_register') }}" class="cta-btn">Créer un compte gratuitement</a>
         </div>
     </section>
+
+    <section class="events-section">
+        <h2 class="section-title" id="events-title">Événements près de chez vous</h2>
+        <p id="location-info" style="text-align: center; color: #666;"></p>
+
+        <div class="events-grid" id="events-container">
+            <p id="loading-message" style="text-align: center;">Chargement des événements...</p>
+        </div>
+
+        <div style="text-align: center; margin-top: 2rem;">
+            <button id="load-more-btn" class="view-all-btn" style="display: none;">
+                Afficher plus d'événements
+            </button>
+            <p id="no-events-message" style="display: none;">Aucun événement trouvé dans votre région</p>
+        </div>
+    </section>
+
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        let currentOffset = 0;
+        const limit = 3;
+        let currentDepartmentId = null;
+        let detectedDepartmentName = null;
+
+        function createEventCard(event) {
+            const promotedBadge = event.isPromoted
+                ? '<span class="sponsored-badge">⭐ SPONSORISÉ</span>'
+                : '';
+
+            const categories = event.categories
+                .map(cat => `<span class="tag">${cat}</span>`)
+                .join('');
+
+            return `
+                <div class="event-card">
+                    <div class="event-image-container">
+                        ${promotedBadge}
+                        <img src="${event.image}" alt="${event.title}">
+                    </div>
+                    <div class="event-details">
+                        <h3 class="event-title">${event.title}</h3>
+                        <div class="event-location">
+                            📍 ${event.city} (${event.departmentCode})
+                        </div>
+                        <div class="event-date">
+                            📅 ${event.dateStart}
+                        </div>
+                        <div class="event-tags">
+                            ${categories}
+                        </div>
+                        <a href="/event/${event.id}" class="event-btn">Voir les détails →</a>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function loadEvents(reset = false) {
+            if (reset) {
+                currentOffset = 0;
+                document.getElementById('events-container').innerHTML = '';
+            }
+
+            const params = new URLSearchParams({
+                offset: currentOffset,
+                limit: limit
+            });
+
+            if (currentDepartmentId) {
+                params.append('department', currentDepartmentId);
+            }
+
+            try {
+                const response = await fetch(`/api/events?${params}`);
+                const data = await response.json();
+
+                const container = document.getElementById('events-container');
+                const loadMoreBtn = document.getElementById('load-more-btn');
+                const noEventsMsg = document.getElementById('no-events-message');
+                const loadingMsg = document.getElementById('loading-message');
+
+                if (loadingMsg) loadingMsg.remove();
+
+                if (data.events.length === 0 && currentOffset === 0) {
+                    noEventsMsg.style.display = 'block';
+                    loadMoreBtn.style.display = 'none';
+                } else {
+                    noEventsMsg.style.display = 'none';
+                    data.events.forEach(event => {
+                        container.innerHTML += createEventCard(event);
+                    });
+
+                    currentOffset += data.events.length;
+                    loadMoreBtn.style.display = data.hasMore ? 'inline-block' : 'none';
+                }
+            } catch (error) {
+                console.error('Erreur lors du chargement des événements:', error);
+            }
+        }
+
+        function findDepartmentIdByCode(code) {
+            const select = document.getElementById('department-select');
+            const options = select.querySelectorAll('option[data-code]');
+
+            for (const option of options) {
+                if (option.dataset.code === code) {
+                    detectedDepartmentName = option.textContent.trim();
+                    return option.value;
+                }
+            }
+            return null;
+        }
+
+        function updateLocationInfo(city, departmentName) {
+            const locationInfo = document.getElementById('location-info');
+            const title = document.getElementById('events-title');
+
+            if (city && departmentName) {
+                locationInfo.textContent = `📍 ${city} (${departmentName})`;
+                title.textContent = `Événements dans le ${departmentName}`;
+            } else {
+                locationInfo.textContent = '';
+                title.textContent = 'Tous les événements';
+            }
+        }
+
+        async function initGeolocationByIP() {
+            try {
+                const response = await fetch('https://ipapi.co/json/');
+                const data = await response.json();
+
+                console.log('Localisation IP détectée :', {
+                    ip: data.ip,
+                    ville: data.city,
+                    région: data.region,
+                    codePostal: data.postal,
+                    pays: data.country_name
+                });
+
+                if (data.country_code === 'FR' && data.postal) {
+                    let departmentCode = data.postal.substring(0, 2);
+                    if (departmentCode === '97' || departmentCode === '98') {
+                        departmentCode = data.postal.substring(0, 3);
+                    }
+
+                    console.log('Code département détecté :', departmentCode);
+
+                    currentDepartmentId = findDepartmentIdByCode(departmentCode);
+
+                    if (currentDepartmentId) {
+                        document.getElementById('department-select').value = currentDepartmentId;
+                        updateLocationInfo(data.city, detectedDepartmentName);
+                    } else {
+                        console.log('Département non trouvé en base');
+                        updateLocationInfo(null, null);
+                    }
+                } else {
+                    console.log('Utilisateur hors de France ou code postal indisponible');
+                    updateLocationInfo(null, null);
+                }
+            } catch (error) {
+                console.error('Erreur géolocalisation IP:', error);
+                updateLocationInfo(null, null);
+            }
+
+            loadEvents(true);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('load-more-btn').addEventListener('click', () => loadEvents(false));
+            initGeolocationByIP();
+        });
+    </script>
 {% endblock %}
