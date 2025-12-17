@@ -1,22 +1,13 @@
-/* Reset body and html */
-body, html {
-    margin: 0 !important;
-    padding: 0 !important;
-    width: 100%;
-    height: 100%;
-}
+
 
 /* Event Form Container */
 .event-form-container {
     background: linear-gradient(180deg, #2d3e50 0%, #1a2332 100%);
     min-height: 100vh;
     color: #ffffff;
-    padding: 0;
-    margin: 0;
-    width: 100%;
 }
 
-/* Header */
+/* Header spécifique form */
 .event-form-header {
     display: flex;
     justify-content: space-between;
@@ -35,7 +26,6 @@ body, html {
 .event-form-nav .nav-link {
     color: #ffffff;
     text-decoration: none;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: 16px;
     font-weight: 500;
     transition: color 0.3s ease;
@@ -43,19 +33,6 @@ body, html {
 
 .event-form-nav .nav-link:hover {
     color: #ff8a65;
-}
-
-.user-avatar {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #ff8a65 0%, #ff6f4a 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.1rem;
-    font-weight: bold;
-    color: #ffffff;
 }
 
 /* Form Section */
@@ -89,7 +66,7 @@ body, html {
     gap: 1.5rem;
 }
 
-.form-group {
+.event-form .form-group {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
@@ -102,7 +79,7 @@ body, html {
     margin: 0;
 }
 
-.form-input,
+.event-form .form-input,
 .form-textarea,
 .form-select {
     background: rgba(26, 35, 50, 0.8);
@@ -115,12 +92,12 @@ body, html {
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.form-input::placeholder,
+.event-form .form-input::placeholder,
 .form-textarea::placeholder {
     color: #b0bec5;
 }
 
-.form-input:focus,
+.event-form .form-input:focus,
 .form-textarea:focus,
 .form-select:focus {
     outline: none;
@@ -138,7 +115,7 @@ body, html {
     cursor: not-allowed;
 }
 
-/* Form Row (for side-by-side fields) */
+/* Form Row */
 .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -285,7 +262,7 @@ body, html {
 
 /* Form Errors */
 .form-error-message,
-.invalid-feedback,
+.event-form .invalid-feedback,
 ul.form-error-list {
     color: #ff6b6b;
     font-size: 0.85rem;
@@ -298,18 +275,17 @@ ul.form-error-list li {
     margin-bottom: 0.2rem;
 }
 
-.form-input.is-invalid,
+.event-form .form-input.is-invalid,
 .form-textarea.is-invalid,
 .form-select.is-invalid {
     border-color: #ff6b6b;
 }
 
-/* Symfony default error rendering */
 .event-form .invalid-feedback {
     display: block;
 }
 
-/* Responsive Design */
+/* Responsive */
 @media (max-width: 768px) {
     .event-form-header {
         flex-direction: column;

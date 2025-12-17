@@ -19,9 +19,9 @@
                     <div class="alert alert-success">{{ message }}</div>
                 {% endfor %}
 
-    {% for message in app.flashes('error') %}
-        <p style="color: red;">{{ message }}</p>
-    {% endfor %}
+                {% for message in app.flashes('error') %}
+                    <p style="color: red;">{{ message }}</p>
+                {% endfor %}
 
                 {# Tabs Navigation #}
                 <div class="tabs-container">
@@ -30,9 +30,6 @@
                     </button>
                     <button class="tab-btn" data-tab="past">
                         Passés <span class="tab-count">({{ events|filter(e => e.dateStart < date()) |length }})</span>
-                    </button>
-                    <button class="tab-btn" data-tab="drafts">
-                        Brouillons <span class="tab-count">(0)</span>
                     </button>
                 </div>
 

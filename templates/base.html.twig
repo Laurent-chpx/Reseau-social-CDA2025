@@ -1,63 +1,95 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Événements Locaux!{% endblock %}</title>
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Événements Locaux!{% endblock %}</title>
 
-         {# Google Fonts #}
-         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-         <link href="https://fonts.googleapis.com/css2?family=Vast+Shadow&display=swap" rel="stylesheet">
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
-        {% block stylesheets %}
-        {% endblock %}
-
-        {% block javascripts %}
-            {% block importmap %}{{ importmap('app') }}{% endblock %}
-        {% endblock %}
-    </head>
-    <body>
-
-    {% if app.request.pathinfo starts with '/profile' %}
-        {# Header pour les pages profil #}
-        <header class="event-form-header">
-            <a href="{{ path('app_home') }}" class="event-form-logo">
-                La Vie<br>en Rose
-            </a>
-            <nav class="event-form-nav">
-                <a href="{{ path('app_event_index') }}" class="nav-link">Événements</a>
-                <a href="{{ path('app_profile_events') }}" class="nav-link">Mes événements</a>
-            </nav>
-            {% if app.user %}
+    {# Google Fonts #}
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Vast+Shadow&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+    {% block stylesheets %}
+    {% endblock %}
+    <link rel="stylesheet" href="{{ asset('styles/main.css') }}">
+    {% block javascripts %}
+        {% block importmap %}{{ importmap('app') }}{% endblock %}
+    {% endblock %}
+</head>
+<body>
+{# Header #}
+<header class="main-header">
+    <a href="{{ path('app_home') }}" class="logo-link">
+        <div class="logo">La Vie<br>en Rose</div>
+    </a>
+    <nav class="nav-menu">
+        <a href="{{ path('app_home') }}" class="nav-link">Accueil</a>
+        <a href="{{ path('app_event_index') }}" class="nav-link">Événements</a>
+        {% if app.user %}
+            <div class="user-menu">
                 <div class="user-avatar">
                     {{ app.user.email|first|upper }}{{ app.user.email|slice(app.user.email|split('@')[0]|length - 1, 1)|upper }}
                 </div>
-            {% endif %}
-        </header>
-    {% else %}
-        {# Header standard #}
-        <header class="main-header">
-            <a href="{{ path('app_home') }}" class="logo-link">
-                <div class="logo">La Vie<br>en Rose</div>
-            </a>
-            <nav class="nav-menu">
-                <a href="{{ path('app_home') }}" class="nav-link">Accueil</a>
-                <a href="{{ path('app_event_index') }}" class="nav-link">Événements</a>
-                {% if app.user %}
+                <div class="nav-menu-niv2">
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <a href="{{ path('admin') }}" class="nav-link">Administration</a>
+                    {% endif %}
                     <a href="{{ path('app_profile') }}" class="nav-link">Mon profil</a>
-                {% else %}
-                    <a href="{{ path('app_login') }}" class="nav-link">Connexion</a>
-                {% endif %}
-            </nav>
-        </header>
-    {% endif %}
+                    <a href="{{ path('app_profile_events') }}" class="nav-link">Mes événements</a>
+                    <a href="{{ path('app_logout') }}" class="nav-link">Déconnexion</a>
+                </div>
+            </div>
+        {% else %}
+            <a href="{{ path('app_login') }}" class="nav-link">Connexion</a>
+        {% endif %}
+    </nav>
+</header>
 
+{% block body %}{% endblock %}
 
-        {% block body %}{% endblock %}
-        {# Footer #}
-        <footer class="main-footer">
-            <p>Liens: <a href="#">A propos</a> / <a href="#">Contact</a> / <a href="#">CGU/Confidentialité</a></p>
-            <p>@2025 Réseau Social d'Événements</p>
-        </footer>
-    </body>
+{# Footer #}
+<footer class="main-footer">
+    <p>Liens: <a href="#">A propos</a> / <a href="#">Contact</a> / <a href="#">CGU/Confidentialité</a></p>
+    <p>@2025 Réseau Social d'Événements</p>
+</footer>
 
+<script>
+    function initUserMenu() {
+        const userMenu = document.querySelector('.user-menu');
+        const dropdown = document.querySelector('.nav-menu-niv2');
+
+        if (userMenu && dropdown) {
+            let timeoutId;
+
+            // Supprime les anciens listeners pour éviter les doublons
+            userMenu.replaceWith(userMenu.cloneNode(true));
+            const newUserMenu = document.querySelector('.user-menu');
+            const newDropdown = document.querySelector('.nav-menu-niv2');
+
+            newUserMenu.addEventListener('mouseenter', function() {
+                clearTimeout(timeoutId);
+                newDropdown.classList.add('active');
+            });
+
+            newUserMenu.addEventListener('mouseleave', function() {
+                timeoutId = setTimeout(function() {
+                    newDropdown.classList.remove('active');
+                }, 200);
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!newUserMenu.contains(e.target)) {
+                    newDropdown.classList.remove('active');
+                }
+            });
+        }
+    }
+
+    // Au premier chargement
+    document.addEventListener('DOMContentLoaded', initUserMenu);
+
+    // À chaque navigation Turbo
+    document.addEventListener('turbo:load', initUserMenu);
+    document.addEventListener('turbo:render', initUserMenu);
+</script>
+</body>
 </html>

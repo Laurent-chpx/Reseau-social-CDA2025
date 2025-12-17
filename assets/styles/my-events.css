@@ -1,22 +1,13 @@
-/* Reset body and html */
-body, html {
-    margin: 0 !important;
-    padding: 0 !important;
-    width: 100%;
-    height: 100%;
-}
+
 
 /* My Events Container */
 .my-events-container {
     background: linear-gradient(180deg, #2d3e50 0%, #1a2332 100%);
     min-height: 100vh;
     color: #ffffff;
-    padding: 0;
-    margin: 0;
-    width: 100%;
 }
 
-/* Header */
+/* Header spécifique */
 .my-events-header {
     display: flex;
     justify-content: space-between;
@@ -35,7 +26,6 @@ body, html {
 .my-events-nav .nav-link {
     color: #ffffff;
     text-decoration: none;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: 16px;
     font-weight: 500;
     transition: color 0.3s ease;
@@ -44,19 +34,6 @@ body, html {
 .my-events-nav .nav-link:hover,
 .my-events-nav .nav-link.active {
     color: #ff8a65;
-}
-
-.user-avatar {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #ff8a65 0%, #ff6f4a 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.1rem;
-    font-weight: bold;
-    color: #ffffff;
 }
 
 /* Main Content */
@@ -69,31 +46,11 @@ body, html {
     margin: 0 auto;
 }
 
-.page-title {
+.my-events-container .page-title {
     font-size: 2rem;
     font-weight: 600;
     color: #ffffff;
     margin: 0 0 2rem 0;
-}
-
-/* Flash Messages */
-.alert {
-    padding: 1rem 1.5rem;
-    border-radius: 8px;
-    margin-bottom: 1.5rem;
-    font-size: 0.95rem;
-}
-
-.alert-success {
-    background: rgba(76, 175, 80, 0.2);
-    border: 1px solid #4caf50;
-    color: #81c784;
-}
-
-.alert-error {
-    background: rgba(244, 67, 54, 0.2);
-    border: 1px solid #f44336;
-    color: #e57373;
 }
 
 /* Tabs */
@@ -131,15 +88,15 @@ body, html {
     opacity: 0.8;
 }
 
-/* Events Grid */
-.events-grid {
+/* Events Grid spécifique my-events */
+.my-events-container .events-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
     gap: 2rem;
 }
 
-/* Event Card */
-.event-card {
+/* Event Card spécifique */
+.my-events-container .event-card {
     background: rgba(45, 62, 80, 0.6);
     border-radius: 12px;
     overflow: hidden;
@@ -147,13 +104,13 @@ body, html {
     position: relative;
 }
 
-.event-card:hover {
+.my-events-container .event-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
 }
 
 /* Event Badge */
-.event-badge {
+.my-events-container .event-badge {
     position: absolute;
     top: 1rem;
     left: 1rem;
@@ -162,6 +119,8 @@ body, html {
     font-size: 0.75rem;
     font-weight: 700;
     z-index: 2;
+    background: transparent;
+    color: #fff;
 }
 
 .badge-active {
@@ -170,7 +129,7 @@ body, html {
 }
 
 /* Event Image */
-.event-image {
+.my-events-container .event-image {
     width: 100%;
     height: 180px;
     background: rgba(26, 35, 50, 0.6);
@@ -179,7 +138,7 @@ body, html {
     justify-content: center;
 }
 
-.event-image img {
+.my-events-container .event-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -192,11 +151,11 @@ body, html {
 }
 
 /* Event Info */
-.event-info {
+.my-events-container .event-info {
     padding: 1.5rem;
 }
 
-.event-title {
+.my-events-container .event-title {
     font-size: 1.2rem;
     font-weight: 600;
     color: #ffffff;
@@ -204,7 +163,7 @@ body, html {
 }
 
 /* Event Meta */
-.event-meta {
+.my-events-container .event-meta {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
@@ -216,30 +175,14 @@ body, html {
     font-size: 0.9rem;
 }
 
-/* Event Tags */
-.event-tags {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-    margin-bottom: 1rem;
-}
-
-.event-tag {
-    background: rgba(255, 138, 101, 0.2);
-    border: 1px solid #ff8a65;
-    color: #ff8a65;
-    padding: 0.3rem 0.8rem;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    font-weight: 500;
-}
-
 /* Event Actions */
 .event-actions {
     display: flex;
     gap: 0.8rem;
     padding-top: 1rem;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
+    align-items: center;
+    flex-wrap: wrap;
 }
 
 .action-btn {
@@ -284,7 +227,7 @@ body, html {
 }
 
 /* Empty State */
-.empty-state {
+.my-events-container .empty-state {
     text-align: center;
     padding: 4rem 2rem;
 }
@@ -312,13 +255,13 @@ body, html {
     box-shadow: 0 6px 20px rgba(255, 138, 101, 0.5);
 }
 
-/* Responsive Design */
+/* Responsive */
 @media (max-width: 1024px) {
     .events-content {
         padding: 1.5rem 2rem;
     }
 
-    .events-grid {
+    .my-events-container .events-grid {
         grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
         gap: 1.5rem;
     }
@@ -335,7 +278,7 @@ body, html {
         gap: 1rem;
     }
 
-    .events-grid {
+    .my-events-container .events-grid {
         grid-template-columns: 1fr;
     }
 
@@ -348,7 +291,7 @@ body, html {
         font-size: 0.9rem;
     }
 
-    .page-title {
+    .my-events-container .page-title {
         font-size: 1.5rem;
     }
 }

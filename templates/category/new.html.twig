@@ -8,8 +8,8 @@
     {{ form_start(form) }}
     {{ form_row(form.name) }}
 
-    <button type="submit">Créer</button>
+    <button type="submit" class="cta-btn">Créer</button>
     {{ form_end(form) }}
 
-    <p><a href="{{ path('app_category_index') }}">Retour à la liste</a></p>
+    <p><a class="cta-btn" href="{{ path('app_category_index') }}">Retour à la liste</a></p>
 {% endblock %}

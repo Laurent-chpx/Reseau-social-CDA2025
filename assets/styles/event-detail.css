@@ -1,22 +1,13 @@
-/* Reset body and html */
-body, html {
-    margin: 0 !important;
-    padding: 0 !important;
-    width: 100%;
-    height: 100%;
-}
+
 
 /* Event Detail Container */
 .event-detail-container {
     background: linear-gradient(180deg, #2d3e50 0%, #1a2332 100%);
     min-height: 100vh;
     color: #ffffff;
-    padding: 0;
-    margin: 0;
-    width: 100%;
 }
 
-/* Header */
+/* Header spécifique event-detail (si différent du main) */
 .event-header {
     display: flex;
     justify-content: space-between;
@@ -24,8 +15,6 @@ body, html {
     padding: 1.5rem 3rem;
     background-color: rgba(0, 0, 0, 0.2);
 }
-
-/* Logo styles are now in logo.css */
 
 .event-nav {
     display: flex;
@@ -37,7 +26,6 @@ body, html {
 .event-nav .nav-link {
     color: #ffffff;
     text-decoration: none;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: 16px;
     font-weight: 500;
     transition: color 0.3s ease;
@@ -45,19 +33,6 @@ body, html {
 
 .event-nav .nav-link:hover {
     color: #ff8a65;
-}
-
-.user-avatar {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #ff8a65 0%, #ff6f4a 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.1rem;
-    font-weight: bold;
-    color: #ffffff;
 }
 
 .login-btn {
@@ -95,7 +70,7 @@ body, html {
     display: block;
 }
 
-.event-image-placeholder {
+.event-detail-container .event-image-placeholder {
     padding: 8rem 2rem;
     text-align: center;
     color: #b0bec5;
@@ -116,7 +91,7 @@ body, html {
     margin: 0 0 1.5rem 0;
 }
 
-.event-meta {
+.event-detail-container .event-meta {
     display: flex;
     flex-wrap: wrap;
     gap: 1.5rem;
@@ -125,8 +100,8 @@ body, html {
     font-size: 0.95rem;
 }
 
-.event-location,
-.event-date,
+.event-detail-container .event-location,
+.event-detail-container .event-date,
 .event-views {
     color: #e3f2fd;
 }
@@ -175,11 +150,12 @@ body, html {
     border-radius: 12px;
 }
 
-.section-title {
+.event-detail-container .section-title {
     font-size: 1.3rem;
     font-weight: 600;
     color: #ffffff;
     margin: 0 0 1rem 0;
+    text-align: left;
 }
 
 .description-content {
@@ -296,14 +272,14 @@ body, html {
     margin-bottom: 1.5rem;
 }
 
-.stat-item {
+.organizer-stats .stat-item {
     color: #e3f2fd;
     font-size: 0.9rem;
     padding: 0.5rem 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.stat-item:last-child {
+.organizer-stats .stat-item:last-child {
     border-bottom: none;
 }
 
@@ -322,6 +298,8 @@ body, html {
     text-decoration: none;
     font-weight: 600;
     text-align: center;
+    border: none;
+    cursor: pointer;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -347,7 +325,7 @@ body, html {
     box-shadow: 0 4px 15px rgba(66, 165, 245, 0.4);
 }
 
-/* Footer */
+/* Footer spécifique */
 .event-footer {
     background: rgba(0, 0, 0, 0.3);
     padding: 2rem;
@@ -366,7 +344,7 @@ body, html {
     color: #ff8a65;
 }
 
-/* Responsive Design */
+/* Responsive */
 @media (max-width: 1024px) {
     .event-header,
     .event-main-card,
@@ -395,7 +373,7 @@ body, html {
         font-size: 1.5rem;
     }
 
-    .event-meta {
+    .event-detail-container .event-meta {
         flex-direction: column;
         align-items: flex-start;
         gap: 0.8rem;

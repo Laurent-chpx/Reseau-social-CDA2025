@@ -10,7 +10,7 @@
     {% endfor %}
 
     {% if is_granted('ROLE_USER') %}
-        <p><a href="{{ path('app_category_new') }}">+ Créer une catégorie</a></p>
+        <p><a class="cta-btn" href="{{ path('app_category_new') }}">+ Créer une catégorie</a></p>
     {% endif %}
 
     {% if categories is empty %}
