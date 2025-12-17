@@ -3,7 +3,38 @@
 {% block title %}Accueil - Événements Occitanie{% endblock %}
 
 {% block body %}
+    <section class="hero">
+        <h1>Découvrez les événements en Occitanie</h1>
+        <p>Concerts, festivals, expositions, spectacles et bien plus encore...</p>
 
+        {# Barre de recherche #}
+        <form action="{{ path('app_event_index') }}" method="GET">
+            <div>
+
+                {# Champ de recherche texte #}
+                <input type="text" name="search" placeholder="Rechercher un événement...">
+
+                {# Filtre par catégorie #}
+                <select name="category" >
+                    <option value="">Toutes catégories</option>
+                    {% for category in categories %}
+                        <option value="{{ category.id }}">{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+
+                {# Filtre par département #}
+                <select name="department">
+                    <option value="">Tous départements</option>
+                    {% for department in departments %}
+                        <option value="{{ department.id }}">{{ department.code }} - {{ department.name }}</option>
+                    {% endfor %}
+                </select>
+
+                {# Bouton de recherche #}
+                <button type="submit">Rechercher</button>
+            </div>
+        </form>
+    </section>
     <section>
         <h2>Événements à la une</h2>
         {% if promotedEvents is empty %}
