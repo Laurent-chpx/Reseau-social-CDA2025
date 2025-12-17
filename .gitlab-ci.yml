@@ -1,17 +1,35 @@
 stages:
+  - build
+  - test
   - deploy
+
+build:
+  stage: build
+  image: php:8.2-cli
+  before_script:
+    - apt-get update && apt-get install -y unzip git
+    - curl -sS https://getcomposer.org/installer | php
+  script:
+    - php composer.phar install --no-interaction
+  artifacts:
+    paths:
+      - vendor/
+
+test:
+  stage: test
+  image: php:8.2-cli
+  dependencies:
+    - build
+  script:
+    - php tests/unit/tests/unit/EventTest.php
+    - php tests/unit/FilterTest.php
+    - php tests/unit/UserTest.php
 
 deploy_to_vps:
   stage: deploy
   image: alpine:latest
   before_script:
     - apk add --no-cache sshpass openssh
-
-    - |
-      echo "DEBUG: Test ping du VPS"
-      ping -c 3 $VPS_HOST || echo "Ping failed"
-      echo "DEBUG: Test SSH avec sshpass"
-      sshpass -p "$VPS_PASSWORD" ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 $VPS_USER@$VPS_HOST 
 
   script:
     - sshpass -p $VPS_PASSWORD ssh $VPS_USER@$VPS_HOST "
