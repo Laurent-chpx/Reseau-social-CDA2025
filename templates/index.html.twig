@@ -1,0 +1,81 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}La Vie en Rose - Découvrez les événements près de chez vous{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/accueil.css') }}">
+{% endblock %}
+
+{% block body %}
+    <!-- Header Navigation -->
+    <header class="main-header">
+        <a href="{{ path('app_home') }}" class="logo-link">
+            <div class="logo">La Vie<br>en Rose</div>
+        </a>
+        <nav class="nav-menu">
+            <a href="{{ path('app_home') }}" class="nav-link">Accueil</a>
+            <a href="{{ path('app_event_index') }}" class="nav-link">Événements</a>
+            {% if app.user %}
+                <a href="{{ path('app_profile') }}" class="nav-link">Mon profil</a>
+            {% else %}
+                <a href="{{ path('app_login') }}" class="nav-link">Connexion</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <h1>Découvrez les événements<br>près de chez vous</h1>
+            <div class="search-container">
+                <input type="text" class="search-input-hero" placeholder="🔍 Ville, code postal ou département...">
+                <input type="text" class="search-input-hero" placeholder="Type d'événements">
+            </div>
+        </div>
+    </section>
+
+    <!-- Sponsored Events Section -->
+    <section class="events-section">
+        <h2 class="section-title">Événements sponsorisés dans votre région</h2>
+
+        <div class="events-grid">
+            {% for event in sponsored_events %}
+            <div class="event-card">
+                <div class="event-image-container">
+                    <span class="sponsored-badge">⭐ SPONSORISÉ</span>
+                    <span>[IMAGE]</span>
+                </div>
+                <div class="event-details">
+                    <h3 class="event-title">{{ event.title }}</h3>
+                    <div class="event-location">
+                        📍 {{ event.location }}
+                    </div>
+                    <div class="event-date">
+                        📅 {{ event.date }}
+                    </div>
+                    <div class="event-tags">
+                        {% for tag in event.tags %}
+                        <span class="tag">{{ tag }}</span>
+                        {% endfor %}
+                    </div>
+                    <a href="{{ path('app_event_show', {id: event.id}) }}" class="event-btn">Voir les détails →</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div style="text-align: center;">
+            <a href="{{ path('app_event_index') }}" class="view-all-btn">Voir tous les événements</a>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="events-section">
+        <div class="cta-section">
+            <h2>Prêt à découvrir votre prochain événement ?</h2>
+            <p>Rejoignez la communauté et ne ratez plus rien près de chez vous</p>
+            <a href="{{ path('app_register') }}" class="cta-btn">Créer un compte gratuitement</a>
+        </div>
+    </section>
+{% endblock %}

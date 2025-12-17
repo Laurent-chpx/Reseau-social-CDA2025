@@ -1,19 +1,98 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Register{% endblock %}
+{% block title %}Inscription | La Vie en Rose{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('styles/connexion.css') }}">
+{% endblock %}
 
 {% block body %}
-    <h1>Register</h1>
+    <div class="page-container">
+        {# Header Navigation #}
+        <header class="main-header">
+            <div class="logo">La Vie<br>en Rose</div>
+            <nav class="nav-menu">
+                <a href="{{ path('app_home') }}" class="nav-link">Accueil</a>
+                <a href="{{ path('app_event_index') }}" class="nav-link">Événements</a>
+                <a href="{{ path('app_login') }}" class="nav-link">Connexion</a>
+            </nav>
+        </header>
 
-    {{ form_errors(registrationForm) }}
+        {# Main Content - Registration Form #}
+        <main class="auth-container">
+            <div class="registration-form-container">
+                <section class="auth-card registration-full">
+                    <h2 class="auth-title">Créer un compte</h2>
+                    <p class="auth-subtitle">Rejoignez la communauté gratuitement !</p>
 
-    {{ form_start(registrationForm) }}
-        {{ form_row(registrationForm.email) }}
-        {{ form_row(registrationForm.plainPassword, {
-            label: 'Password'
-        }) }}
-        {{ form_row(registrationForm.agreeTerms) }}
+                    {% if app.session.flashBag.has('error') %}
+                        <div class="alert alert-error">
+                            {% for message in app.session.flashBag.get('error') %}
+                                {{ message }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
 
-        <button type="submit" class="btn">Register</button>
-    {{ form_end(registrationForm) }}
+                    {{ form_start(registrationForm, {'attr': {'class': 'auth-form registration-form'}}) }}
+
+                        {# Email Field #}
+                        <div class="form-group">
+                            {{ form_label(registrationForm.email, 'Email', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(registrationForm.email, {'attr': {'class': 'form-input', 'placeholder': 'nom@domaine.com'}}) }}
+                            {{ form_errors(registrationForm.email) }}
+                        </div>
+
+                        {# Password Field #}
+                        <div class="form-group">
+                            {{ form_label(registrationForm.plainPassword, 'Mot de passe', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(registrationForm.plainPassword, {'attr': {'class': 'form-input', 'placeholder': '••••••••'}}) }}
+                            {{ form_errors(registrationForm.plainPassword) }}
+                            <small class="form-help">Minimum 6 caractères</small>
+                        </div>
+
+                        {# Terms Checkbox #}
+                        <div class="form-group">
+                            <label class="checkbox-container">
+                                {{ form_widget(registrationForm.agreeTerms) }}
+                                <span class="checkbox-label">
+                                    J'accepte les conditions d'utilisation et la politique de confidentialité
+                                </span>
+                            </label>
+                            {{ form_errors(registrationForm.agreeTerms) }}
+                        </div>
+
+                        <button type="submit" class="btn-primary">Créer mon compte</button>
+
+                    {{ form_end(registrationForm) }}
+
+                    <div class="auth-footer">
+                        <p>Vous avez déjà un compte ? <a href="{{ path('app_login') }}" class="link">Se connecter</a></p>
+                    </div>
+                </section>
+
+                {# Info Section #}
+                <section class="registration-info">
+                    <h3 class="info-title">Pourquoi s'inscrire ?</h3>
+                    <div class="info-benefits">
+                        <div class="info-item">
+                            <div class="info-icon">⭐</div>
+                            <p>Suivez vos organisateurs favoris</p>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-icon">🔔</div>
+                            <p>Recevez des notifications personnalisées</p>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-icon">📅</div>
+                            <p>Créez vos propres événements</p>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-icon">🌟</div>
+                            <p>Participez à la vie locale</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
 {% endblock %}
