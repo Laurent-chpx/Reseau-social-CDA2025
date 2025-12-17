@@ -8,9 +8,7 @@ test_app:
   image: php:8.2-cli
 
   services:
-    - name: mysql:8
-      alias: mysql
-      command: ["--default-authentication-plugin=mysql_native_password"]
+    - mysql:latest
 
   variables:
     DATABASE_URL: "mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@mysql:3306/${MYSQL_DATABASE}?serverVersion=8.0"
