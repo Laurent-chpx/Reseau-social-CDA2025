@@ -63,6 +63,7 @@ class HomeController extends AbstractController
                 'id' => $event->getId(),
                 'title' => $event->getTitle(),
                 'city' => $event->getCity()->getName(),
+                'description' => $event->getDescription(),
                 'departmentCode' => $event->getCity()->getDepartment()->getCode(),
                 'dateStart' => $event->getDateStart()->format('d/m/Y à H:i'),
                 'isPromoted' => $isPromoted,
