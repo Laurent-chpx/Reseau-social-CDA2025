@@ -2,6 +2,8 @@ services:
   php:
     build: .
     container_name: symfony-php
+    environment: 
+      DEFAULT_URI: http://164.132.226.60:8081/
     working_dir: /var/www/html
     volumes:
       - ./:/var/www/html
