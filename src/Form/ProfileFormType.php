@@ -4,12 +4,9 @@ namespace App\Form;
 
 use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
-use Symfony\Component\Form\Extension\Core\Type\TelType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -28,28 +25,6 @@ class ProfileFormType extends AbstractType
             ])
             ->add('lastName', TextType::class, [
                 'label' => 'Nom',
-            ])
-            ->add('phone', TelType::class, [
-                'label' => 'Téléphone',
-                'required' => false,
-            ])
-            ->add('accountType', ChoiceType::class, [
-                'label' => 'Type de compte',
-                'required' => false,
-                'choices' => [
-                    'Particulier' => 'Particulier',
-                    'Professionnel' => 'Professionnel',
-                    'Association' => 'Association',
-                ],
-                'placeholder' => 'Sélectionner un type de compte',
-            ])
-            ->add('biography', TextareaType::class, [
-                'label' => 'Biographie / Description',
-                'required' => false,
-                'attr' => [
-                    'rows' => 5,
-                    'placeholder' => 'Parlez-nous de vous...',
-                ],
             ])
             ->add('currentPassword', PasswordType::class, [
                 'label' => 'Mot de passe actuel',
