@@ -1,25 +1,48 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Catégories{% endblock %}
+{% block title %}Catégories | La Vie en Rose{% endblock %}
 
 {% block body %}
-    <h1>Catégories</h1>
+    <div class="page page--categories">
+        <div class="page__container">
+            <div class="page__header">
+                <h1 class="page__title">Catégories</h1>
+                {% if is_granted('ROLE_USER') %}
+                    <a href="{{ path('app_category_new') }}" class="btn btn--primary">
+                        + Nouvelle catégorie
+                    </a>
+                {% endif %}
+            </div>
 
-    {% for message in app.flashes('success') %}
-        <p style="color: green;">{{ message }}</p>
-    {% endfor %}
-
-    {% if is_granted('ROLE_USER') %}
-        <p><a class="cta-btn" href="{{ path('app_category_new') }}">+ Créer une catégorie</a></p>
-    {% endif %}
-
-    {% if categories is empty %}
-        <p>Aucune catégorie pour le moment.</p>
-    {% else %}
-        <ul>
-            {% for category in categories %}
-                <li>{{ category.name }} ({{ category.events|length }} événement(s))</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
+            {% if categories is empty %}
+                <div class="empty-state">
+                    <div class="empty-state__icon">🏷️</div>
+                    <h2 class="empty-state__title">Aucune catégorie</h2>
+                    <p class="empty-state__text">Il n'y a pas encore de catégorie créée.</p>
+                    {% if is_granted('ROLE_USER') %}
+                        <a href="{{ path('app_category_new') }}" class="btn btn--primary">
+                            Créer la première catégorie
+                        </a>
+                    {% endif %}
+                </div>
+            {% else %}
+                <div class="categories-grid">
+                    {% for category in categories %}
+                        <article class="category-card">
+                            <div class="category-card__icon">🏷️</div>
+                            <div class="category-card__content">
+                                <h3 class="category-card__name">{{ category.name }}</h3>
+                                <p class="category-card__count">
+                                    {{ category.events|length }} événement{{ category.events|length > 1 ? 's' : '' }}
+                                </p>
+                            </div>
+                            <a href="{{ path('app_event_index', {category: category.id}) }}" class="category-card__link">
+                                Voir les événements →
+                            </a>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
 {% endblock %}

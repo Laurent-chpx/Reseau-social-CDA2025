@@ -1,192 +1,133 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Événements Locaux | La Vie en Rose{% endblock %}
-
-{% block stylesheets %}
-    <link rel="stylesheet" href="{{ asset('styles/logo.css') }}">
-    <link rel="stylesheet" href="{{ asset('styles/events-list.css') }}">
-{% endblock %}
+{% block title %}Événements | La Vie en Rose{% endblock %}
 
 {% block body %}
-    <div class="page-container">
+    <div class="page page--events">
+        <div class="page__container">
+            <div class="page__layout">
+                {# ========== SIDEBAR FILTERS ========== #}
+                <aside class="filters">
+                    <form method="GET" action="{{ path('app_event_index') }}" class="filters__form" id="filters-form">
 
-        {# Main Content #}
-        <div class="events-container">
-            {# Page Title #}
-            <h1 class="page-title">Événements Locaux</h1>
-
-            <div class="content-layout">
-                {# Sidebar Filters #}
-                <aside class="filters-sidebar">
-                    <form method="GET" action="{{ path('app_event_index') }}" id="filters-form">
-
-                        {# Recherche #}
-                        <div class="filter-section">
-                            <h3 class="filter-title">Recherche</h3>
+                        {# Search #}
+                        <div class="filters__section">
+                            <h3 class="filters__title">Recherche</h3>
                             <input
                                 type="text"
                                 name="search"
-                                placeholder="Rechercher un événement..."
+                                class="filters__input"
+                                placeholder="Rechercher..."
                                 value="{{ currentFilters.search }}"
-                                class="filter-input"
                             >
                         </div>
 
-                        {# Catégories #}
-                        <div class="filter-section">
-                            <h3 class="filter-title">Catégorie</h3>
-                            <div class="filter-options">
+                        {# Categories #}
+                        <div class="filters__section">
+                            <h3 class="filters__title">Catégorie</h3>
+                            <div class="filters__options">
                                 {% for category in categories %}
-                                    <label class="filter-option">
+                                    <label class="filters__option">
                                         <input
                                             type="radio"
                                             name="category"
                                             value="{{ category.id }}"
                                             {{ currentFilters.category == category.id ? 'checked' : '' }}
                                         >
-                                        <span class="filter-label">{{ category.name }}</span>
+                                        <span class="filters__label">{{ category.name }}</span>
                                     </label>
                                 {% endfor %}
                             </div>
                         </div>
 
                         {# Dates #}
-                        <div class="filter-section">
-                            <h3 class="filter-title">Date</h3>
-                            <div class="filter-options">
-                                <label class="filter-option">
-                                    <span class="filter-label">Du</span>
+                        <div class="filters__section">
+                            <h3 class="filters__title">Date</h3>
+                            <div class="filters__dates">
+                                <label class="filters__date-field">
+                                    <span class="filters__date-label">Du</span>
                                     <input
                                         type="date"
                                         name="date_from"
+                                        class="filters__input"
                                         value="{{ currentFilters.dateFrom }}"
-                                        class="filter-input"
                                     >
                                 </label>
-                                <label class="filter-option">
-                                    <span class="filter-label">Au</span>
+                                <label class="filters__date-field">
+                                    <span class="filters__date-label">Au</span>
                                     <input
                                         type="date"
                                         name="date_to"
+                                        class="filters__input"
                                         value="{{ currentFilters.dateTo }}"
-                                        class="filter-input"
                                     >
                                 </label>
                             </div>
                         </div>
 
-                        {# Département #}
-                        <div class="filter-section">
-                            <h3 class="filter-title">Département</h3>
-                            <select name="department" class="filter-select">
+                        {# Department #}
+                        <div class="filters__section">
+                            <h3 class="filters__title">Département</h3>
+                            <select name="department" class="filters__select">
                                 <option value="">Tous les départements</option>
                                 {% for department in departments %}
-                                    <option
-                                        value="{{ department.id }}"
-                                        {{ currentFilters.department == department.id ? 'selected' : '' }}
-                                    >
+                                    <option value="{{ department.id }}" {{ currentFilters.department == department.id ? 'selected' : '' }}>
                                         {{ department.code }} - {{ department.name }}
                                     </option>
                                 {% endfor %}
                             </select>
                         </div>
 
-                        {# Ville #}
-                        <div class="filter-section">
-                            <h3 class="filter-title">Ville</h3>
-                            <select name="city" class="filter-select">
+                        {# City #}
+                        <div class="filters__section">
+                            <h3 class="filters__title">Ville</h3>
+                            <select name="city" class="filters__select">
                                 <option value="">Toutes les villes</option>
                                 {% for city in cities %}
-                                    <option
-                                        value="{{ city.id }}"
-                                        {{ currentFilters.city == city.id ? 'selected' : '' }}
-                                    >
+                                    <option value="{{ city.id }}" {{ currentFilters.city == city.id ? 'selected' : '' }}>
                                         {{ city.name }}
                                     </option>
                                 {% endfor %}
                             </select>
                         </div>
 
-                        {# Gratuit uniquement #}
-                        <div class="filter-section">
-                            <label class="filter-option">
+                        {# Free only #}
+                        <div class="filters__section">
+                            <label class="filters__checkbox">
                                 <input
                                     type="checkbox"
                                     name="free_only"
                                     value="1"
                                     {{ currentFilters.freeOnly ? 'checked' : '' }}
                                 >
-                                <span class="filter-label">Événements gratuits uniquement</span>
+                                <span class="filters__checkbox-label">Événements gratuits uniquement</span>
                             </label>
                         </div>
 
-                        <button type="submit" class="btn-filter btn-reset">Filtrer</button>
-                        <a href="{{ path('app_event_index') }}" class="btn-reset">Réinitialiser</a>
+                        {# Actions #}
+                        <div class="filters__actions">
+                            <button type="submit" class="btn btn--primary btn--block">Filtrer</button>
+                            <a href="{{ path('app_event_index') }}" class="btn btn--outline btn--block">Réinitialiser</a>
+                        </div>
                     </form>
                 </aside>
 
-                {# Events Grid #}
-                <main class="events-main">
+                {# ========== EVENTS GRID ========== #}
+                <main class="page__content">
                     {% if events is empty %}
                         <div class="empty-state">
-                            <p>Aucun événement trouvé avec ces critères.</p>
-                            <a href="{{ path('app_event_index') }}" class="btn-reset">Voir tous les événements</a>
+                            <div class="empty-state__icon"><i class="fa-regular fa-calendar-days"></i></div>
+                            <p class="empty-state__text">Aucun événement trouvé avec ces critères.</p>
+                            <a href="{{ path('app_event_index') }}" class="btn btn--outline">Voir tous les événements</a>
                         </div>
                     {% else %}
-                        <p class="results-count">{{ events|length }} événement{{ events|length > 1 ? 's' : '' }} trouvé{{ events|length > 1 ? 's' : '' }}</p>
+                        <p class="page__results">
+                            {{ events|length }} événement{{ events|length > 1 ? 's' : '' }} trouvé{{ events|length > 1 ? 's' : '' }}
+                        </p>
 
                         <div class="events-grid">
                             {% for event in events %}
-                                <article class="event-card">
-                                    {% if event.promote and event.promote.dateStart <= "now"|date("Y-m-d") and event.promote.dateEnd >= "now"|date("Y-m-d") %}
-                                        <div class="event-badge promoted">⭐ Sponsorisé</div>
-                                    {% endif %}
-                                    <div class="event-image-placeholder">
-                                        {% if event.images is not empty and event.images|first.url %}
-                                            <img src="{{ asset('uploads/events/' ~ event.images|first.url) }}" alt="{{ event.title }}">
-                                        {% else %}
-                                            {% set gradients = [
-                                                'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                                                'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-                                                'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-                                                'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-                                                'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
-                                                'linear-gradient(135deg, #30cfd0 0%, #330867 100%)',
-                                                'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
-                                                'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)'
-                                            ] %}
-                                            {% set gradient = gradients[event.id % 8] %}
-                                            <div class="gradient-placeholder" style="background: {{ gradient }};">
-                                                <div class="placeholder-overlay">
-                                                    <span class="placeholder-icon">📅</span>
-                                                </div>
-                                            </div>
-                                        {% endif %}
-                                    </div>
-                                    <div class="event-content">
-                                        <h2 class="event-title">{{ event.title }}</h2>
-                                        <div class="event-meta">
-                                            <p class="event-location">📍 {{ event.city.name }} ({{ event.city.department.code }})</p>
-                                            <p class="event-date">📅 {{ event.dateStart|date('d/m/Y à H:i') }}</p>
-                                            {% if event.price is not null and event.price > 0 %}
-                                                <p class="event-price">💰 {{ event.price }}€</p>
-                                            {% else %}
-                                                <p class="event-price free">✨ Gratuit</p>
-                                            {% endif %}
-                                        </div>
-                                        {% if event.categories is not empty %}
-                                            <div class="event-categories">
-                                                {% for category in event.categories %}
-                                                    <span class="category-tag">{{ category.name }}</span>
-                                                {% endfor %}
-                                            </div>
-                                        {% endif %}
-                                        {% if event.description %}
-                                            <p class="event-description">{{ event.description|length > 120 ? event.description|slice(0, 120) ~ '...' : event.description }}</p>
-                                        {% endif %}
-                                        <a href="{{ path('app_event_show', {id: event.id}) }}" class="btn-event">Voir en détails ></a>
-                                    </div>
-                                </article>
+                                {% include 'event/_card.html.twig' with {'event': event} %}
                             {% endfor %}
                         </div>
                     {% endif %}

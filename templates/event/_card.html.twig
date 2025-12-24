@@ -1,0 +1,91 @@
+{#
+Event Card Component
+Variables: event (Event entity)
+Optional: show_actions (bool), compact (bool)
+#}
+
+{% set is_promoted = event.promote and event.promote.dateStart <= date() and event.promote.dateEnd >= date() %}
+
+<article class="event-card {{ is_promoted ? 'event-card--promoted' : '' }} {{ compact|default(false) ? 'event-card--compact' : '' }}">
+    {# Badge sponsorisé #}
+    {% if is_promoted %}
+        <span class="event-card__badge badge badge--promoted"><i class="fa-solid fa-star"></i> Sponsorisé</span>
+    {% endif %}
+
+    {# Image #}
+    <div class="event-card__image">
+        {% if event.images is not empty and event.images|first.url %}
+            <img
+                src="{{ asset('uploads/events/' ~ event.images|first.url) }}"
+                alt="{{ event.title }}"
+                loading="lazy"
+            >
+        {% else %}
+            {% set gradients = [
+                'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+                'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+                'linear-gradient(135deg, #30cfd0 0%, #330867 100%)',
+                'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+                'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)'
+            ] %}
+            <div class="event-card__placeholder" style="background: {{ gradients[event.id % 8] }};">
+                <span class="event-card__placeholder-icon"><i class="fa-regular fa-calendar-days"></i></span>
+            </div>
+        {% endif %}
+    </div>
+
+    {# Content #}
+    <div class="event-card__content">
+        <h3 class="event-card__title">{{ event.title }}</h3>
+
+        <div class="event-card__meta">
+            <span class="event-card__location">
+                <span class="event-card__icon"><i class="fa-solid fa-map-location-dot"></i></span>
+                {{ event.city.name }} ({{ event.city.department.code }})
+            </span>
+            <span class="event-card__date">
+                <span class="event-card__icon"><i class="fa-regular fa-calendar-days"></i></span>
+                {{ event.dateStart|date('d/m/Y à H\\hi') }}
+            </span>
+            <span class="event-card__price {{ event.price is null or event.price == 0 ? 'event-card__price--free' : '' }}">
+                {% if event.price is not null and event.price > 0 %}
+                    <span class="event-card__icon"><i class="fa-solid fa-hand-holding-dollar"></i></span> {{ event.price|number_format(2, ',', ' ') }}€
+                {% else %}
+                    <span class="event-card__icon"><i class="fa-regular fa-star"></i></span> Gratuit
+                {% endif %}
+            </span>
+        </div>
+
+        {# Categories #}
+        {% if event.categories is not empty %}
+            <div class="event-card__tags">
+                {% for category in event.categories|slice(0, 3) %}
+                    <span class="tag">{{ category.name }}</span>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {# Description (truncated) #}
+        {% if event.description and not (compact|default(false)) %}
+            <p class="event-card__description">
+                {{ event.description|length > 120 ? event.description|slice(0, 120) ~ '...' : event.description }}
+            </p>
+        {% endif %}
+
+        {# Actions #}
+        <div class="event-card__actions">
+            <a href="{{ path('app_event_show', {id: event.id}) }}" class="btn btn--primary btn--sm">
+                Voir les détails
+            </a>
+
+            {% if show_actions|default(false) and app.user == event.createdBy %}
+                <a href="{{ path('app_profile_event_edit', {id: event.id}) }}" class="btn btn--outline btn--sm" title="Modifier">
+                    ✏️
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</article>

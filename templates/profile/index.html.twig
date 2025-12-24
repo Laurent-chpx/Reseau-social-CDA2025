@@ -1,118 +1,124 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Tableau de bord | La Vie en Rose{% endblock %}
-
-{% block stylesheets %}
-    <link rel="stylesheet" href="{{ asset('styles/logo.css') }}">
-    <link rel="stylesheet" href="{{ asset('styles/dashboard.css') }}">
-{% endblock %}
+{% block title %}Mon tableau de bord | La Vie en Rose{% endblock %}
 
 {% block body %}
-    <div class="dashboard-container">
-        {# Welcome Section #}
-        <section class="welcome-section">
-            <h1 class="welcome-title">
-                Bonjour {% if app.user %}{{ app.user.email|split('@')[0]|capitalize }}{% else %}Jean{% endif %} !
-            </h1>
-        </section>
+    <div class="page page--dashboard">
+        <div class="page__container">
 
-        {# Stats Cards #}
-        <section class="stats-section">
-            <div class="stats-grid">
+            {# ========== WELCOME ========== #}
+            <section class="dashboard__welcome">
+                <h1 class="dashboard__title">
+                    Bonjour {{ app.user.firstName }} ! 👋
+                </h1>
+                <p class="dashboard__subtitle">Bienvenue sur votre tableau de bord</p>
+            </section>
+
+            {# ========== STATS ========== #}
+            <section class="dashboard__stats stats-grid">
                 <div class="stat-card">
-                    <div class="stat-number">{{ eventsCount|default(0) }}</div>
-                    <div class="stat-label">Événements créés</div>
+                    <span class="stat-card__value">{{ eventsCount|default(0) }}</span>
+                    <span class="stat-card__label">Événements créés</span>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number">{{ followersCount|default(0) }}</div>
-                    <div class="stat-label">Abonnés</div>
+                    <span class="stat-card__value">{{ followersCount|default(0) }}</span>
+                    <span class="stat-card__label">Abonnés</span>
                 </div>
-            </div>
-        </section>
+                <div class="stat-card">
+                    <span class="stat-card__value">{{ app.user.followedCities|length }}</span>
+                    <span class="stat-card__label">Villes suivies</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-card__value">{{ app.user.following|length }}</span>
+                    <span class="stat-card__label">Abonnements</span>
+                </div>
+            </section>
 
-        {# Main Content - Two Columns #}
-        <section class="content-section">
-            <div class="content-grid">
-                {# Left Column - New Events #}
-                <div class="content-column">
-                    <h2 class="column-title">Nouveaux événements dans vos villes</h2>
+            {# ========== CONTENT GRID ========== #}
+            <div class="dashboard__grid">
+                {# Events from followed cities #}
+                <section class="dashboard__section">
+                    <div class="dashboard__card">
+                        <h2 class="dashboard__card-title">Événements dans vos villes</h2>
 
-                    <div class="events-list">
                         {% if followedCitiesEvents is not empty %}
-                            {% for event in followedCitiesEvents %}
-                                <div class="event-card-dashboard">
-                                    <div class="event-image-placeholder">
-                                        {% if event.images|length > 0 %}
-                                            <img src="{{ asset('uploads/events/' ~ event.images.first.url) }}" alt="{{ event.title }}" style="width: 100%; height: 100%; object-fit: cover;">
-                                        {% else %}
-                                            [IMAGE PRINCIPALE]
-                                        {% endif %}
-                                    </div>
-                                    <div class="event-info">
-                                        <h3 class="event-title-dashboard">{{ event.title }}</h3>
-                                        <p class="event-location-dashboard">📍 {{ event.city.name }}</p>
-                                        <p class="event-date-dashboard">📅 {{ event.dateStart|date('d F Y') }}</p>
-                                    </div>
-                                    <a href="{{ path('app_event_show', {id: event.id}) }}" class="event-btn-dashboard">Voir ></a>
-                                </div>
-                            {% endfor %}
-                        {% else %}
-                            <div class="event-card-dashboard">
-                                <div class="event-image-placeholder">[IMAGE PRINCIPALE]</div>
-                                <div class="event-info">
-                                    <h3 class="event-title-dashboard">Aucun événement</h3>
-                                    <p class="event-location-dashboard">📍 Suivez des villes</p>
-                                    <p class="event-date-dashboard">📅 Pour voir les événements</p>
-                                </div>
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-
-                {# Right Column - Activity Feed #}
-                <div class="content-column">
-                    <h2 class="column-title">Vos créateurs favoris ont publié</h2>
-
-                    <div class="activity-feed">
-                        {% if followedCreatorsEvents is not empty %}
-                            {% for event in followedCreatorsEvents %}
-                                <div class="activity-item">
-                                    <p class="activity-text">
-                                        <strong>{{ event.createdBy.firstName ?? 'Organisateur' }} {{ event.createdBy.lastName ?? '' }}</strong> a publié<br>
-                                        <span class="activity-detail">
-                                            {{ event.title }} •
-                                            {% set diff = date().diff(event.createdAt) %}
-                                            {% if diff.d > 1 %}
-                                                il y a {{ diff.d }} jours
-                                            {% elseif diff.d == 1 %}
-                                                Hier
-                                            {% elseif diff.h > 0 %}
-                                                il y a {{ diff.h }}h
+                            <div class="dashboard__list">
+                                {% for event in followedCitiesEvents|slice(0, 5) %}
+                                    <a href="{{ path('app_event_show', {id: event.id}) }}" class="dashboard__item">
+                                        <div class="dashboard__item-image">
+                                            {% if event.images|length > 0 %}
+                                                <img src="{{ asset('uploads/events/' ~ event.images|first.url) }}" alt="">
                                             {% else %}
-                                                il y a quelques minutes
+                                                <span class="dashboard__item-placeholder">📅</span>
                                             {% endif %}
-                                        </span>
-                                    </p>
-                                </div>
-                            {% endfor %}
+                                        </div>
+                                        <div class="dashboard__item-info">
+                                            <h4 class="dashboard__item-title">{{ event.title }}</h4>
+                                            <p class="dashboard__item-meta">
+                                                📍 {{ event.city.name }} • 📅 {{ event.dateStart|date('d/m/Y') }}
+                                            </p>
+                                        </div>
+                                    </a>
+                                {% endfor %}
+                            </div>
                         {% else %}
-                            <div class="activity-item">
-                                <p class="activity-text">
-                                    <strong>Aucune activité récente</strong><br>
-                                    <span class="activity-detail">Suivez des organisateurs pour voir leurs publications</span>
-                                </p>
+                            <div class="dashboard__empty">
+                                <p>Aucun événement dans vos villes suivies</p>
+                                <a href="{{ path('app_event_index') }}" class="btn btn--outline btn--sm">Découvrir des événements</a>
                             </div>
                         {% endif %}
-
-                        <a href="{{ path('app_event_index') }}" class="btn-view-all">Voir tous les événements</a>
                     </div>
-                </div>
-            </div>
-        </section>
+                </section>
 
-        {# Create Event Button #}
-        <section class="create-event-section">
-            <a href="{{ path('app_profile_event_new') }}" class="btn-create-event">Créer un nouvel événement</a>
-        </section>
+                {# Activity feed #}
+                <section class="dashboard__section">
+                    <div class="dashboard__card">
+                        <h2 class="dashboard__card-title">Activité de vos abonnements</h2>
+
+                        {% if followedCreatorsEvents is not empty %}
+                            <div class="dashboard__feed">
+                                {% for event in followedCreatorsEvents|slice(0, 5) %}
+                                    <div class="dashboard__feed-item">
+                                        <div class="dashboard__feed-avatar avatar">
+                                            {{ event.createdBy.firstName|first|upper }}
+                                        </div>
+                                        <div class="dashboard__feed-content">
+                                            <p class="dashboard__feed-text">
+                                                <strong>{{ event.createdBy.firstName }} {{ event.createdBy.lastName }}</strong>
+                                                a publié
+                                            </p>
+                                            <a href="{{ path('app_event_show', {id: event.id}) }}" class="dashboard__feed-link">
+                                                {{ event.title }}
+                                            </a>
+                                            <span class="dashboard__feed-date">
+                                                {{ event.createdAt|date('d/m/Y') }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="dashboard__empty">
+                                <p>Aucune activité récente</p>
+                                <a href="{{ path('app_event_index') }}" class="btn btn--outline btn--sm">Découvrir des organisateurs</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </section>
+            </div>
+
+            {# ========== QUICK ACTIONS ========== #}
+            <section class="dashboard__actions">
+                <a href="{{ path('app_profile_event_new') }}" class="btn btn--primary btn--lg">
+                    + Créer un événement
+                </a>
+                <a href="{{ path('app_profile_events') }}" class="btn btn--outline">
+                    Gérer mes événements
+                </a>
+                <a href="{{ path('app_profile_edit') }}" class="btn btn--outline">
+                    Modifier mon profil
+                </a>
+            </section>
+        </div>
     </div>
 {% endblock %}

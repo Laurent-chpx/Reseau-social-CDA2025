@@ -17,40 +17,52 @@ function createEventCard(event) {
     const gradient = gradients[event.id % 8];
 
     const promotedBadge = event.isPromoted
-        ? '<div class="event-badge">⭐ Sponsorisé</div>'
+        ? '<span class="event-card__badge badge badge--promoted"><i class="fa-solid fa-star"></i> Sponsorisé</span>'
         : '';
+
+    const promotedClass = event.isPromoted ? 'event-card--promoted' : '';
 
     let imageHtml;
     if (event.image && !event.image.includes('placeholder')) {
-        imageHtml = `<img src="${event.image}" alt="${event.title}">`;
+        imageHtml = `<img src="${event.image}" alt="${event.title}" loading="lazy">`;
     } else {
         imageHtml = `
-            <div class="gradient-placeholder" style="background: ${gradient};">
-                <div class="placeholder-overlay">
-                    <span class="placeholder-icon">📅</span>
-                </div>
+            <div class="event-card__placeholder" style="background: ${gradient};">
+                <span class="event-card__placeholder-icon"><i class="fa-solid fa-map-location-dot"></i></span>
             </div>
         `;
     }
 
     const description = event.description
-        ? `<p class="event-description">${event.description.length > 120 ? event.description.slice(0, 120) + '...' : event.description}</p>`
+        ? `<p class="event-card__description">${event.description.length > 120 ? event.description.slice(0, 120) + '...' : event.description}</p>`
+        : '';
+
+    const categories = event.categories && event.categories.length > 0
+        ? `<div class="event-card__tags">${event.categories.slice(0, 3).map(cat => `<span class="tag">${cat}</span>`).join('')}</div>`
         : '';
 
     return `
-        <article class="event-card">
+        <article class="event-card ${promotedClass}">
             ${promotedBadge}
-            <div class="event-image-placeholder">
+            <div class="event-card__image">
                 ${imageHtml}
             </div>
-            <div class="event-content">
-                <h2 class="event-title">${event.title}</h2>
-                <div class="event-meta">
-                    <p class="event-location">📍 ${event.city}</p>
-                    <p class="event-date">📅 ${event.dateStart}</p>
+            <div class="event-card__content">
+                <h3 class="event-card__title">${event.title}</h3>
+                <div class="event-card__meta">
+                    <span class="event-card__location">
+                        <span class="event-card__icon"><i class="fa-solid fa-map-location-dot"></i></span> ${event.city}
+                    </span>
+                    <span class="event-card__date">
+                        <span class="event-card__icon"><i class="fa-regular fa-calendar-days"></i>
+                        </span> ${event.dateStart}
+                    </span>
                 </div>
+                ${categories}
                 ${description}
-                <a href="/event/${event.id}" class="btn-event">Voir en détails ></a>
+                <div class="event-card__actions">
+                    <a href="/event/${event.id}" class="btn btn--primary btn--sm">Voir les détails</a>
+                </div>
             </div>
         </article>
     `;
@@ -133,20 +145,20 @@ function updateLocationInfo(city, departmentName) {
 
 async function initGeolocationByIP() {
     try {
-        const response = await fetch('http://ip-api.com/json/?fields=status,country,countryCode,region,regionName,city,zip');
+        const response = await fetch('https://ipapi.co/json/');
         const data = await response.json();
 
         console.log('Localisation IP détectée :', {
             ville: data.city,
-            région: data.regionName,
-            codePostal: data.zip,
-            pays: data.country
+            région: data.region,
+            codePostal: data.postal,
+            pays: data.country_name
         });
 
-        if (data.status === 'success' && data.countryCode === 'FR' && data.zip) {
-            let departmentCode = data.zip.substring(0, 2);
+        if (data.country_code === 'FR' && data.postal) {
+            let departmentCode = data.postal.substring(0, 2);
             if (departmentCode === '97' || departmentCode === '98') {
-                departmentCode = data.zip.substring(0, 3);
+                departmentCode = data.postal.substring(0, 3);
             }
 
             console.log('Code département détecté :', departmentCode);
@@ -189,7 +201,7 @@ function initHomePage() {
     detectedDepartmentName = null;
 
     // Vider le container
-    container.innerHTML = '';
+    container.innerHTML = '<p class="events-grid__loading">Chargement des événements...</p>';
 
     // Gérer le bouton load more
     const loadMoreBtn = document.getElementById('load-more-btn');
@@ -200,4 +212,6 @@ function initHomePage() {
     initGeolocationByIP();
 }
 
+// Support Turbo (si installé) + fallback DOMContentLoaded
 document.addEventListener('turbo:load', initHomePage);
+document.addEventListener('DOMContentLoaded', initHomePage);

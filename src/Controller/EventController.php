@@ -97,10 +97,6 @@ final class EventController extends AbstractController
     #[IsGranted('ROLE_USER')]
     public function edit(Event $event, Request $request, EntityManagerInterface $em): Response
     {
-        if ($event->getCreatedBy() !== $this->getUser()) {
-            $this->addFlash('error', 'Vous ne pouvez pas modifier cet événement.');
-            return $this->redirectToRoute('app_profile_events');
-        }
 
         $form = $this->createForm(EventFormType::class, $event);
         $form->handleRequest($request);

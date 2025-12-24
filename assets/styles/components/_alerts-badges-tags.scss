@@ -1,0 +1,228 @@
+
+.alert {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    font-family: $font-primary;
+    font-size: 0.875rem;
+
+    &--success {
+        background-color: rgba($color-success, 0.1);
+        color: darken($color-success, 15%);
+        border: 1px solid rgba($color-success, 0.3);
+    }
+
+    &--error {
+        background-color: rgba($color-error, 0.1);
+        color: darken($color-error, 10%);
+        border: 1px solid rgba($color-error, 0.3);
+    }
+
+    &--warning {
+        background-color: rgba($color-warning, 0.15);
+        color: darken($color-warning, 35%);
+        border: 1px solid rgba($color-warning, 0.4);
+    }
+
+    &--info {
+        background-color: rgba($color-info, 0.1);
+        color: darken($color-info, 20%);
+        border: 1px solid rgba($color-info, 0.3);
+    }
+
+    &__message {
+        flex: 1;
+    }
+
+    &__close {
+        background: none;
+        border: none;
+        font-size: 1.25rem;
+        cursor: pointer;
+        opacity: 0.6;
+        transition: opacity 0.2s;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+}
+
+// ==============================================
+// BADGES
+// ==============================================
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.625rem;
+    font-family: $font-primary;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    border-radius: 100px;
+
+    &--promoted {
+        background-color: $color-yellow;
+        color: darken($color-yellow, 45%);
+    }
+
+    &--success {
+        background-color: rgba($color-success, 0.15);
+        color: darken($color-success, 15%);
+    }
+
+    &--warning {
+        background-color: rgba($color-warning, 0.2);
+        color: darken($color-warning, 35%);
+    }
+
+    &--error {
+        background-color: rgba($color-error, 0.15);
+        color: $color-error;
+    }
+
+    &--muted {
+        background-color: $color-gris-clair;
+        color: $color-gris;
+    }
+}
+
+// ==============================================
+// TAGS
+// ==============================================
+
+.tag {
+    display: inline-block;
+    padding: 0.25rem 0.625rem;
+    font-family: $font-primary;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: $color-gris;
+    background-color: $color-gris-clair;
+    border-radius: 100px;
+
+    &--sm {
+        padding: 0.125rem 0.5rem;
+        font-size: 0.6875rem;
+    }
+}
+
+// ==============================================
+// AVATAR
+// ==============================================
+
+.avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    font-family: $font-primary;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: white;
+    background: linear-gradient(135deg, $color-orange 0%, $color-orange-hover 100%);
+    border-radius: 50%;
+
+    &--sm {
+        width: 32px;
+        height: 32px;
+        font-size: 0.75rem;
+    }
+
+    &--lg {
+        width: 56px;
+        height: 56px;
+        font-size: 1.125rem;
+    }
+}
+
+// ==============================================
+// TABS
+// ==============================================
+
+.tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid $color-gris-clair;
+
+    &__btn {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1rem;
+        font-family: $font-primary;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: $color-gris;
+        background: none;
+        border: none;
+        border-bottom: 2px solid transparent;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        margin-bottom: -1px;
+
+        &:hover {
+            color: $color-black;
+        }
+
+        &--active {
+            color: $color-orange;
+            border-bottom-color: $color-orange;
+        }
+    }
+
+    &__count {
+        font-size: 0.75rem;
+        color: lighten($color-gris, 15%);
+    }
+}
+
+// ==============================================
+// EMPTY STATE
+// ==============================================
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    text-align: center;
+
+    &__icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.7;
+    }
+
+    &__title {
+        font-family: $font-primary;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: $color-black;
+        margin: 0 0 0.5rem 0;
+    }
+
+    &__text {
+        font-size: 0.9375rem;
+        color: $color-gris;
+        margin: 0 0 1.5rem 0;
+        max-width: 400px;
+    }
+
+    &__actions {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}

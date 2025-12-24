@@ -1,41 +1,102 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Événements de mes abonnements{% endblock %}
+{% block title %}Événements de mes abonnements | La Vie en Rose{% endblock %}
 
 {% block body %}
-    <h1>Événements publiés par les utilisateurs que je suis</h1>
+    <div class="page page--feed">
+        <div class="page__container">
+            <div class="page__header">
+                <h1 class="page__title">Événements de mes abonnements</h1>
+                <p class="page__subtitle">Les prochains événements publiés par les organisateurs que vous suivez</p>
+            </div>
 
-    {% for message in app.flashes('success') %}
-        <p style="color: green;">{{ message }}</p>
-    {% endfor %}
-
-    {% if events is empty %}
-        <p>Aucun événement à venir de la part des utilisateurs que vous suivez.</p>
-    {% else %}
-        <p>{{ events|length }} événement(s) à venir</p>
-
-        <div>
-            {% for event in events %}
-                <div>
-                    {% if event.images|length > 0 %}
-                        <img src="{{ asset('uploads/events/' ~ event.images[0].url) }}" alt="{{ event.title }}">
-                    {% else %}
-                        <div>
-                            Pas d'image
-                        </div>
-                    {% endif %}
-
-                    <h3>{{ event.title }}</h3>
-                    <p><strong>Par :</strong> {{ event.createdBy.firstName }} {{ event.createdBy.lastName }}</p>
-                    <p><strong>Date :</strong> {{ event.dateStart|date('d/m/Y H:i') }}</p>
-                    <p><strong>Lieu :</strong> {{ event.city }}</p>
-                    <p><strong>Prix :</strong> {% if event.price %}{{ event.price }} €{% else %}Gratuit{% endif %}</p>
-
-                    <a href="{{ path('app_event_show', {id: event.id}) }}">Voir le détail</a>
+            {% if events is empty %}
+                <div class="empty-state">
+                    <div class="empty-state__icon">👥</div>
+                    <h2 class="empty-state__title">Aucun événement</h2>
+                    <p class="empty-state__text">
+                        Aucun événement à venir de la part des utilisateurs que vous suivez.
+                    </p>
+                    <div class="empty-state__actions">
+                        <a href="{{ path('app_event_index') }}" class="btn btn--primary">
+                            Découvrir des organisateurs
+                        </a>
+                        <a href="{{ path('app_my_follows') }}" class="btn btn--outline">
+                            Gérer mes abonnements
+                        </a>
+                    </div>
                 </div>
-            {% endfor %}
-        </div>
-    {% endif %}
+            {% else %}
+                <p class="page__results">{{ events|length }} événement{{ events|length > 1 ? 's' : '' }} à venir</p>
 
-    <p style="margin-top: 30px;"><a href="{{ path('app_profile') }}">← Retour au dashboard</a></p>
+                <div class="events-grid">
+                    {% for event in events %}
+                        <article class="event-card">
+                            {# Organizer info #}
+                            <div class="event-card__author">
+                                <span class="avatar avatar--sm">
+                                    {{ event.createdBy.firstName|first|upper }}
+                                </span>
+                                <span class="event-card__author-name">
+                                    {{ event.createdBy.firstName }} {{ event.createdBy.lastName }}
+                                </span>
+                            </div>
+
+                            {# Image #}
+                            <div class="event-card__image">
+                                {% if event.images is not empty and event.images|first.url %}
+                                    <img
+                                        src="{{ asset('uploads/events/' ~ event.images|first.url) }}"
+                                        alt="{{ event.title }}"
+                                        loading="lazy"
+                                    >
+                                {% else %}
+                                    {% set gradients = [
+                                        'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                        'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                                        'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                                        'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)'
+                                    ] %}
+                                    <div class="event-card__placeholder" style="background: {{ gradients[event.id % 4] }};">
+                                        <span class="event-card__placeholder-icon">📅</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            {# Content #}
+                            <div class="event-card__content">
+                                <h3 class="event-card__title">{{ event.title }}</h3>
+
+                                <div class="event-card__meta">
+                                    <span class="event-card__location">
+                                        📍 {{ event.city.name }}
+                                    </span>
+                                    <span class="event-card__date">
+                                        📅 {{ event.dateStart|date('d/m/Y à H\\hi') }}
+                                    </span>
+                                    <span class="event-card__price {{ event.price is null or event.price == 0 ? 'event-card__price--free' : '' }}">
+                                        {% if event.price is not null and event.price > 0 %}
+                                            💰 {{ event.price|number_format(2, ',', ' ') }}€
+                                        {% else %}
+                                            ✨ Gratuit
+                                        {% endif %}
+                                    </span>
+                                </div>
+
+                                <div class="event-card__actions">
+                                    <a href="{{ path('app_event_show', {id: event.id}) }}" class="btn btn--primary btn--sm">
+                                        Voir les détails
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="page__back">
+                <a href="{{ path('app_profile') }}" class="btn btn--outline">← Retour au tableau de bord</a>
+            </div>
+        </div>
+    </div>
 {% endblock %}

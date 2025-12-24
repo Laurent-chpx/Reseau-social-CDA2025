@@ -1,0 +1,430 @@
+
+.event-card {
+    display: flex;
+    flex-direction: column;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba($color-black, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba($color-black, 0.12);
+    }
+
+    &--promoted {
+        border: 2px solid $color-yellow;
+    }
+
+    &--compact {
+        .event-card__content {
+            padding: 1rem;
+        }
+    }
+
+    &__badge {
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        z-index: 1;
+    }
+
+    &__image {
+        position: relative;
+        height: 180px;
+        overflow: hidden;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+
+    &__placeholder {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+    }
+
+    &__placeholder-icon {
+        font-size: 3rem;
+        opacity: 0.8;
+    }
+
+    &__author {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid $color-gris-clair;
+    }
+
+    &__author-name {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: $color-gris;
+    }
+
+    &__content {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        padding: 1.25rem;
+    }
+
+    &__title {
+        font-family: $font-primary;
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: $color-black;
+        margin: 0 0 0.75rem 0;
+        line-height: 1.3;
+    }
+
+    &__meta {
+        display: flex;
+        flex-direction: column;
+        gap: 0.375rem;
+        margin-bottom: 0.75rem;
+    }
+
+    &__location,
+    &__date,
+    &__price {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        font-size: 0.8125rem;
+        color: $color-gris;
+    }
+
+    &__icon {
+        flex-shrink: 0;
+    }
+
+    &__price--free {
+        color: $color-success;
+        font-weight: 600;
+    }
+
+    &__tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 0.75rem;
+    }
+
+    &__description {
+        font-size: 0.875rem;
+        color: $color-gris;
+        line-height: 1.5;
+        margin: 0 0 1rem 0;
+        flex: 1;
+    }
+
+    &__actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: auto;
+    }
+}
+
+// ==============================================
+// MY EVENT CARD (profile)
+// ==============================================
+
+.my-event-card {
+    display: flex;
+    flex-direction: column;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba($color-black, 0.08);
+
+    @media (min-width: $breakpoint-md) {
+        flex-direction: row;
+    }
+
+    &__badges {
+        position: absolute;
+        top: 0.75rem;
+        left: 0.75rem;
+        display: flex;
+        gap: 0.5rem;
+        z-index: 1;
+    }
+
+    &__image {
+        position: relative;
+        width: 100%;
+        height: 140px;
+
+        @media (min-width: $breakpoint-md) {
+            width: 200px;
+            height: auto;
+        }
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+
+    &__placeholder {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, $color-orange 0%, $color-orange-hover 100%);
+        font-size: 2.5rem;
+    }
+
+    &__content {
+        flex: 1;
+        padding: 1rem 1.25rem;
+    }
+
+    &__title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: $color-black;
+        margin: 0 0 0.5rem 0;
+    }
+
+    &__meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        font-size: 0.8125rem;
+        color: $color-gris;
+        margin-bottom: 0.5rem;
+    }
+
+    &__tags {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 0.75rem;
+    }
+
+    &__actions {
+        display: flex;
+        gap: 0.5rem;
+        padding: 1rem 1.25rem;
+        border-top: 1px solid $color-gris-clair;
+        background: rgba($color-gris-clair, 0.3);
+
+        @media (min-width: $breakpoint-md) {
+            flex-direction: column;
+            border-top: none;
+            border-left: 1px solid $color-gris-clair;
+            justify-content: center;
+        }
+    }
+
+    &__delete {
+        display: inline;
+    }
+}
+
+// ==============================================
+// CATEGORY CARD
+// ==============================================
+
+.category-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba($color-black, 0.08);
+    transition: transform 0.2s ease;
+
+    &:hover {
+        transform: translateY(-2px);
+    }
+
+    &__icon {
+        font-size: 2rem;
+    }
+
+    &__content {
+        flex: 1;
+    }
+
+    &__name {
+        font-size: 1rem;
+        font-weight: 700;
+        color: $color-black;
+        margin: 0 0 0.25rem 0;
+    }
+
+    &__count {
+        font-size: 0.8125rem;
+        color: $color-gris;
+        margin: 0;
+    }
+
+    &__link {
+        font-size: 0.875rem;
+        color: $color-orange;
+        text-decoration: none;
+        font-weight: 500;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
+
+// ==============================================
+// STAT CARD
+// ==============================================
+
+.stat-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba($color-black, 0.08);
+    text-align: center;
+
+    &__value {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: $color-orange;
+        line-height: 1;
+    }
+
+    &__label {
+        font-size: 0.875rem;
+        color: $color-gris;
+        margin-top: 0.5rem;
+    }
+}
+
+// ==============================================
+// FOLLOW CARD
+// ==============================================
+
+.follow-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid $color-gris-clair;
+
+    &__icon {
+        font-size: 1.5rem;
+    }
+
+    &__info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    &__name {
+        font-size: 0.9375rem;
+        font-weight: 600;
+        color: $color-black;
+        margin: 0 0 0.25rem 0;
+    }
+
+    &__meta {
+        font-size: 0.75rem;
+        color: $color-gris;
+        margin: 0;
+    }
+}
+
+// ==============================================
+// REQUEST CARD
+// ==============================================
+
+.request-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba($color-black, 0.08);
+    overflow: hidden;
+
+    &__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid $color-gris-clair;
+    }
+
+    &__title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: $color-black;
+        margin: 0;
+
+        a {
+            color: inherit;
+            text-decoration: none;
+
+            &:hover {
+                color: $color-orange;
+            }
+        }
+    }
+
+    &__content {
+        padding: 1.25rem;
+    }
+
+    &__info {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    &__detail {
+        font-size: 0.875rem;
+        color: $color-gris;
+
+        strong {
+            color: $color-black;
+        }
+    }
+
+    &__meta {
+        display: flex;
+        gap: 1rem;
+        font-size: 0.75rem;
+        color: lighten($color-gris, 15%);
+    }
+
+    &__note {
+        margin-top: 1rem;
+        padding: 1rem;
+        background: rgba($color-gris-clair, 0.5);
+        border-radius: 8px;
+        font-size: 0.875rem;
+
+        strong {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: $color-black;
+        }
+
+        p {
+            margin: 0;
+            color: $color-gris;
+        }
+    }
+}
