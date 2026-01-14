@@ -1,0 +1,235 @@
+
+.dashboard {
+    &__welcome {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    &__title {
+        font-family: $font-primary;
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: $color-black;
+        margin: 0 0 0.25rem 0;
+
+        @media (min-width: $breakpoint-md) {
+            font-size: 2rem;
+        }
+    }
+
+    &__subtitle {
+        font-size: 1rem;
+        color: $color-gris;
+        margin: 0;
+    }
+
+    &__stats {
+        margin-bottom: 2rem;
+    }
+
+    &__grid {
+        display: grid;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+
+        @media (min-width: $breakpoint-lg) {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    &__section {
+        min-width: 0;
+    }
+
+    &__card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba($color-black, 0.06);
+        height: 100%;
+    }
+
+    &__card-title {
+        font-family: $font-primary;
+        font-size: 1rem;
+        font-weight: 700;
+        color: $color-black;
+        margin: 0 0 1rem 0;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid $color-gris-clair;
+    }
+
+    &__list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    &__item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.75rem;
+        background: #F7F8FA;
+        border-radius: 8px;
+        text-decoration: none;
+        transition: background-color 0.2s ease;
+
+        &:hover {
+            background-color: $color-gris-clair;
+        }
+    }
+
+    &__item-image {
+        width: 60px;
+        height: 60px;
+        border-radius: 8px;
+        overflow: hidden;
+        flex-shrink: 0;
+        background: linear-gradient(135deg, $color-orange 0%, $color-orange-hover 100%);
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+
+    &__item-placeholder {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        font-size: 1.5rem;
+    }
+
+    &__item-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    &__item-title {
+        font-size: 0.9375rem;
+        font-weight: 600;
+        color: $color-black;
+        margin: 0 0 0.25rem 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    &__item-meta {
+        font-size: 0.75rem;
+        color: $color-gris;
+        margin: 0;
+    }
+
+    &__empty {
+        text-align: center;
+        padding: 2rem 1rem;
+
+        p {
+            color: $color-gris;
+            margin: 0 0 1rem 0;
+        }
+    }
+
+    &__feed {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    &__feed-item {
+        display: flex;
+        gap: 0.75rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid $color-gris-clair;
+
+        &:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+    }
+
+    &__feed-avatar {
+        flex-shrink: 0;
+    }
+
+    &__feed-content {
+        flex: 1;
+        min-width: 0;
+    }
+
+    &__feed-text {
+        font-size: 0.875rem;
+        color: $color-gris;
+        margin: 0 0 0.25rem 0;
+
+        strong {
+            color: $color-black;
+        }
+    }
+
+    &__feed-link {
+        display: block;
+        font-size: 0.875rem;
+        color: $color-orange;
+        text-decoration: none;
+        margin-bottom: 0.25rem;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+
+    &__feed-date {
+        font-size: 0.75rem;
+        color: lighten($color-gris, 15%);
+    }
+
+    &__actions {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+}
+
+// ==============================================
+// FOLLOWS PAGE
+// ==============================================
+
+.follows-section {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba($color-black, 0.06);
+
+    &__title {
+        font-family: $font-primary;
+        font-size: 1rem;
+        font-weight: 700;
+        color: $color-black;
+        margin: 0 0 1rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    &__count {
+        font-weight: 400;
+        color: $color-gris;
+    }
+
+    &__empty {
+        text-align: center;
+        padding: 2rem 1rem;
+        color: $color-gris;
+
+        p {
+            margin: 0 0 1rem 0;
+        }
+    }
+}

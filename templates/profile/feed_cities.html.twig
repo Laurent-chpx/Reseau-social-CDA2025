@@ -1,41 +1,44 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Événements de mes villes{% endblock %}
+{% block title %}Événements de mes villes | La Vie en Rose{% endblock %}
 
 {% block body %}
-    <h1>Événements dans les villes que je suis</h1>
+    <div class="page page--feed">
+        <div class="page__container">
+            <div class="page__header">
+                <h1 class="page__title">Événements dans mes villes</h1>
+                <p class="page__subtitle">Les prochains événements dans les villes que vous suivez</p>
+            </div>
 
-    {% for message in app.flashes('success') %}
-        <p style="color: green;">{{ message }}</p>
-    {% endfor %}
-
-    {% if events is empty %}
-        <p>Aucun événement à venir dans les villes que vous suivez.</p>
-        <p><a href="{{ path('app_event_index') }}">Découvrir des événements</a> ou <a href="{{ path('app_my_follows') }}">suivre des villes</a></p>
-    {% else %}
-        <p>{{ events|length }} événement(s) à venir</p>
-
-        <div>
-            {% for event in events %}
-                <div>
-                    {% if event.images|length > 0 %}
-                        <img src="{{ asset('uploads/events/' ~ event.images[0].url) }}" alt="{{ event.title }}">
-                    {% else %}
-                        <div>
-                            Pas d'image
-                        </div>
-                    {% endif %}
-
-                    <h3>{{ event.title }}</h3>
-                    <p><strong>Date :</strong> {{ event.dateStart|date('d/m/Y H:i') }}</p>
-                    <p><strong>Lieu :</strong> {{ event.city }}</p>
-                    <p><strong>Prix :</strong> {% if event.price %}{{ event.price }} €{% else %}Gratuit{% endif %}</p>
-
-                    <a href="{{ path('app_event_show', {id: event.id}) }}">Voir le détail</a>
+            {% if events is empty %}
+                <div class="empty-state">
+                    <div class="empty-state__icon">📍</div>
+                    <h2 class="empty-state__title">Aucun événement</h2>
+                    <p class="empty-state__text">
+                        Aucun événement à venir dans les villes que vous suivez.
+                    </p>
+                    <div class="empty-state__actions">
+                        <a href="{{ path('app_event_index') }}" class="btn btn--primary">
+                            Découvrir des événements
+                        </a>
+                        <a href="{{ path('app_my_follows') }}" class="btn btn--outline">
+                            Gérer mes villes
+                        </a>
+                    </div>
                 </div>
-            {% endfor %}
-        </div>
-    {% endif %}
+            {% else %}
+                <p class="page__results">{{ events|length }} événement{{ events|length > 1 ? 's' : '' }} à venir</p>
 
-    <p style="margin-top: 30px;"><a href="{{ path('app_profile') }}">← Retour au dashboard</a></p>
+                <div class="events-grid">
+                    {% for event in events %}
+                        {% include 'event/_card.html.twig' with {'event': event} %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="page__back">
+                <a href="{{ path('app_profile') }}" class="btn btn--outline">← Retour au tableau de bord</a>
+            </div>
+        </div>
+    </div>
 {% endblock %}

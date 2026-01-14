@@ -1,65 +1,77 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Mes demandes de promotion{% endblock %}
+{% block title %}Mes demandes de promotion | La Vie en Rose{% endblock %}
 
 {% block body %}
-    <h1>Mes demandes de promotion</h1>
+    <div class="page page--promote-requests">
+        <div class="page__container">
+            <h1 class="page__title">Mes demandes de promotion</h1>
 
-    {% for message in app.flashes('success') %}
-        <p style="color: green;">{{ message }}</p>
-    {% endfor %}
+            {% if requests is empty %}
+                <div class="empty-state">
+                    <div class="empty-state__icon">⭐</div>
+                    <h2 class="empty-state__title">Aucune demande</h2>
+                    <p class="empty-state__text">Vous n'avez pas encore fait de demande de promotion.</p>
+                    <a href="{{ path('app_profile_events') }}" class="btn btn--primary">Voir mes événements</a>
+                </div>
+            {% else %}
+                <div class="requests-list">
+                    {% for request in requests %}
+                        <article class="request-card">
+                            <div class="request-card__header">
+                                <h3 class="request-card__title">
+                                    <a href="{{ path('app_event_show', {id: request.event.id}) }}">
+                                        {{ request.event.title }}
+                                    </a>
+                                </h3>
 
-    {% for message in app.flashes('warning') %}
-        <p style="color: orange;">{{ message }}</p>
-    {% endfor %}
+                                <span class="badge {{ request.isPending ? 'badge--warning' : (request.isApproved ? 'badge--success' : 'badge--error') }}">
+                                    {% if request.isPending %}
+                                        ⏳ En attente
+                                    {% elseif request.isApproved %}
+                                        ✅ Approuvée
+                                    {% else %}
+                                        ❌ Refusée
+                                    {% endif %}
+                                </span>
+                            </div>
 
-    {% for message in app.flashes('error') %}
-        <p style="color: red;">{{ message }}</p>
-    {% endfor %}
+                            <div class="request-card__content">
+                                <div class="request-card__info">
+                                    <span class="request-card__detail">
+                                        <strong>Formule :</strong> {{ request.formulaLabel }}
+                                    </span>
+                                    <span class="request-card__detail">
+                                        <strong>Période :</strong>
+                                        {{ request.dateStart|date('d/m/Y') }} → {{ request.dateEnd|date('d/m/Y') }}
+                                    </span>
+                                    <span class="request-card__detail">
+                                        <strong>Prix :</strong> {{ request.totalPrice|number_format(2, ',', ' ') }} €
+                                    </span>
+                                </div>
 
-    {% if requests is empty %}
-        <p>Vous n'avez aucune demande de promotion.</p>
-        <p><a href="{{ path('app_profile_events') }}">Voir mes événements</a></p>
-    {% else %}
-        <table border="1" style="width: 100%; border-collapse: collapse;">
-            <thead>
-            <tr>
-                <th>Événement</th>
-                <th>Formule</th>
-                <th>Période</th>
-                <th>Prix</th>
-                <th>Statut</th>
-                <th>Demandé le</th>
-                <th>Note admin</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for request in requests %}
-                <tr>
-                    <td>
-                        <a href="{{ path('app_event_show', {id: request.event.id}) }}">
-                            {{ request.event.title }}
-                        </a>
-                    </td>
-                    <td>{{ request.formulaLabel }}</td>
-                    <td>{{ request.dateStart|date('d/m/Y') }} → {{ request.dateEnd|date('d/m/Y') }}</td>
-                    <td>{{ request.totalPrice }} €</td>
-                    <td>
-                        {% if request.isPending %}
-                            <span style="color: orange;">⏳ {{ request.statusLabel }}</span>
-                        {% elseif request.isApproved %}
-                            <span style="color: green;">✅ {{ request.statusLabel }}</span>
-                        {% else %}
-                            <span style="color: red;">❌ {{ request.statusLabel }}</span>
-                        {% endif %}
-                    </td>
-                    <td>{{ request.createdAt|date('d/m/Y H:i') }}</td>
-                    <td>{{ request.adminNote|default('-') }}</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    {% endif %}
+                                <div class="request-card__meta">
+                                    <span>Demandé le {{ request.createdAt|date('d/m/Y à H\\hi') }}</span>
+                                    {% if request.processedAt %}
+                                        <span>Traité le {{ request.processedAt|date('d/m/Y') }}</span>
+                                    {% endif %}
+                                </div>
 
-    <p style="margin-top: 20px;"><a href="{{ path('app_profile') }}">← Retour au dashboard</a></p>
+                                {% if request.adminNote %}
+                                    <div class="request-card__note">
+                                        <strong>Note de l'administrateur :</strong>
+                                        <p>{{ request.adminNote }}</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="page__back">
+                <a href="{{ path('app_profile') }}" class="btn btn--outline">← Retour au tableau de bord</a>
+            </div>
+        </div>
+    </div>
 {% endblock %}

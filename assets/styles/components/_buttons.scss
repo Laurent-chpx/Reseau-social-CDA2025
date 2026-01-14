@@ -1,0 +1,73 @@
+
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    font-family: $font-primary;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    // Primary
+    &--primary {
+        background-color: $color-orange;
+        color: white;
+        border-color: $color-orange;
+
+        &:hover:not(:disabled) {
+            background-color: $color-orange-hover;
+            border-color: $color-orange-hover;
+        }
+    }
+
+    // Outline
+    &--outline {
+        background-color: transparent;
+        color: $color-gris;
+        border-color: $color-gris-clair;
+
+        &:hover:not(:disabled) {
+            background-color: $color-gris-clair;
+        }
+    }
+
+    // Danger
+    &--danger {
+        background-color: $color-error;
+        color: white;
+        border-color: $color-error;
+
+        &:hover:not(:disabled) {
+            background-color: darken($color-error, 10%);
+            border-color: darken($color-error, 10%);
+        }
+    }
+
+    // Sizes
+    &--sm {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+    }
+
+    &--lg {
+        padding: 1rem 2rem;
+        font-size: 1rem;
+    }
+
+    // Full width
+    &--block {
+        width: 100%;
+    }
+}

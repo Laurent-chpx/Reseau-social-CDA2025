@@ -1,15 +1,27 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Créer une catégorie{% endblock %}
+{% block title %}Nouvelle catégorie | La Vie en Rose{% endblock %}
 
 {% block body %}
-    <h1>Créer une catégorie</h1>
+    <div class="page page--category-form">
+        <div class="page__container page__container--narrow">
+            <h1 class="page__title">Créer une catégorie</h1>
 
-    {{ form_start(form) }}
-    {{ form_row(form.name) }}
+            {{ form_start(form, {'attr': {'class': 'form'}}) }}
 
-    <button type="submit" class="cta-btn">Créer</button>
-    {{ form_end(form) }}
+            <div class="form__group">
+                {{ form_label(form.name, 'Nom de la catégorie *', {'label_attr': {'class': 'form__label'}}) }}
+                {{ form_widget(form.name, {'attr': {'class': 'form__input', 'placeholder': 'Ex: Concert, Festival, Sport...'}}) }}
+                {{ form_errors(form.name) }}
+                <small class="form__help">Le nom doit contenir entre 2 et 100 caractères</small>
+            </div>
 
-    <p><a class="cta-btn" href="{{ path('app_category_index') }}">Retour à la liste</a></p>
+            <div class="form__actions">
+                <a href="{{ path('app_category_index') }}" class="btn btn--outline">Annuler</a>
+                <button type="submit" class="btn btn--primary">Créer la catégorie</button>
+            </div>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
 {% endblock %}

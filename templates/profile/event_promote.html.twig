@@ -1,96 +1,130 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Promouvoir mon événement{% endblock %}
-
-{% block stylesheets %}
-    <link rel="stylesheet" href="{{ asset('styles/logo.css') }}">
-    <link rel="stylesheet" href="{{ asset('styles/event-promote.css') }}">
-{% endblock %}
+{% block title %}Promouvoir mon événement | La Vie en Rose{% endblock %}
 
 {% block body %}
-    <div class="page-container">
-        <div class="promote-container">
-            {# Hero Section #}
-            <section class="hero-section">
-                <h1 class="hero-title">Mettez votre événement en avant</h1>
-                <p class="hero-subtitle">Augmentez la visibilité de votre événement et touchez plus de monde !</p>
+    <div class="page page--promote">
+        <div class="page__container">
+
+            {# ========== HERO ========== #}
+            <section class="promote-hero">
+                <h1 class="promote-hero__title">Mettez votre événement en avant ⭐</h1>
+                <p class="promote-hero__subtitle">Augmentez votre visibilité et touchez plus de monde !</p>
             </section>
 
-            {# Selected Event #}
-            <section class="selected-event-section">
-                <h2 class="section-title">Événement sélectionné</h2>
-                <div class="event-card-preview">
-                    <div class="event-image">
+            {# ========== SELECTED EVENT ========== #}
+            <section class="promote-event">
+                <h2 class="promote-event__title">Événement sélectionné</h2>
+                <div class="promote-event__card">
+                    <div class="promote-event__image">
                         {% if event.images|length > 0 %}
-                            <img src="{{ asset('uploads/events/' ~ event.images.first.url) }}" alt="{{ event.title }}">
+                            <img src="{{ asset('uploads/events/' ~ event.images|first.url) }}" alt="{{ event.title }}">
                         {% else %}
-                            <div class="image-placeholder">[img]</div>
+                            <span class="promote-event__placeholder">📅</span>
                         {% endif %}
                     </div>
-                    <div class="event-details">
-                        <h3 class="event-title">{{ event.title }}</h3>
-                        <div class="event-info">
-                            <p class="event-location">📍 {{ event.city.name }} ({{ event.city.postalCode|slice(0, 2) }})</p>
-                            <p class="event-date">📅 {{ event.dateStart|date('d M Y') }}</p>
-                        </div>
+                    <div class="promote-event__info">
+                        <h3 class="promote-event__name">{{ event.title }}</h3>
+                        <p class="promote-event__meta">
+                            📍 {{ event.city.name }} ({{ event.city.department.code }}) •
+                            📅 {{ event.dateStart|date('d/m/Y') }}
+                        </p>
                     </div>
                 </div>
             </section>
 
-            {{ form_start(form, {'attr': {'id': 'promote-form'}}) }}
+            {{ form_start(form, {'attr': {'class': 'promote-form', 'id': 'promote-form'}}) }}
 
-            {# Champ caché pour la formule #}
-            <div style="display:none;">
+            {# Hidden formula field #}
+            <div style="display: none;">
                 {{ form_widget(form.formula) }}
             </div>
 
-            <div class="formulas-container">
-                {% for key, formula in formulas %}
-                    <div class="formula-card-wrapper">
-                        {% if key == '15_days' %}
-                            <span class="popular-badge">POPULAIRE</span>
-                        {% endif %}
-                        <div class="formula-card" data-formula="{{ key }}" data-days="{{ formula.days }}" data-price="{{ formula.price }}">
-                            <div class="duration">{{ formula.label }}</div>
-                            <div class="price">{{ formula.price|number_format(0) }}€</div>
-                            <div class="description">{{ formula.description }}</div>
-                            <ul class="features">
+            {# ========== FORMULAS ========== #}
+            <section class="promote-formulas">
+                <h2 class="promote-formulas__title">Choisissez votre formule</h2>
+
+                <div class="formulas-grid">
+                    {% for key, formula in formulas %}
+                        <div class="formula-card {{ key == '15_days' ? 'formula-card--popular' : '' }}"
+                             data-formula="{{ key }}"
+                             data-days="{{ formula.days }}"
+                             data-price="{{ formula.price }}">
+
+                            {% if key == '15_days' %}
+                                <span class="formula-card__badge">Populaire</span>
+                            {% endif %}
+
+                            <h3 class="formula-card__duration">{{ formula.label }}</h3>
+                            <p class="formula-card__price">{{ formula.price|number_format(0) }}€</p>
+                            <p class="formula-card__description">{{ formula.description }}</p>
+
+                            <ul class="formula-card__features">
                                 {% for feature in formula.features %}
-                                    <li>{{ feature }}</li>
+                                    <li>✓ {{ feature }}</li>
                                 {% endfor %}
                             </ul>
-                            <button type="button" class="select-btn">Choisir</button>
+
+                            <button type="button" class="formula-card__btn btn btn--outline btn--block">
+                                Choisir
+                            </button>
                         </div>
+                    {% endfor %}
+                </div>
+            </section>
+
+            {# ========== DATE SELECTION ========== #}
+            <section class="promote-date" id="date-section">
+                <h2 class="promote-date__title">Date de début</h2>
+                <p class="promote-date__text">
+                    La promotion durera <strong id="selected-days">0</strong> jours à partir de cette date.
+                </p>
+
+                <div class="form__group">
+                    {{ form_label(form.dateStart, 'Date de début', {'label_attr': {'class': 'form__label'}}) }}
+                    {{ form_widget(form.dateStart, {'attr': {'class': 'form__input'}}) }}
+                    {{ form_errors(form.dateStart) }}
+                </div>
+            </section>
+
+            {# ========== SUMMARY ========== #}
+            <section class="promote-summary" id="summary">
+                <h2 class="promote-summary__title">Récapitulatif</h2>
+                <div class="promote-summary__content">
+                    <div class="promote-summary__row">
+                        <span>Formule</span>
+                        <strong id="summary-formula">-</strong>
                     </div>
-                {% endfor %}
-            </div>
+                    <div class="promote-summary__row">
+                        <span>Durée</span>
+                        <strong><span id="summary-days">-</span> jours</strong>
+                    </div>
+                    <div class="promote-summary__row">
+                        <span>Période</span>
+                        <strong id="summary-period">-</strong>
+                    </div>
+                    <div class="promote-summary__row promote-summary__row--total">
+                        <span>Total</span>
+                        <strong><span id="summary-price">0</span> €</strong>
+                    </div>
+                </div>
+            </section>
 
-            <div class="date-section" id="date-section">
-                <h3>Date de début de la promotion</h3>
-                <p>La promotion commencera à cette date et durera <strong id="selected-days">0</strong> jours.</p>
-                {{ form_row(form.dateStart) }}
-            </div>
-
-            <div class="summary" id="summary">
-                <h3>Récapitulatif</h3>
-                <p>Formule : <strong id="summary-formula">-</strong></p>
-                <p>Durée : <strong id="summary-days">-</strong> jours</p>
-                <p>Période : <strong id="summary-period">-</strong></p>
-                <p class="total-price">Total : <span id="summary-price">0</span> €</p>
-            </div>
-
-            <div style="text-align: center; margin-top: 20px;">
-                <button type="submit" class="submit-btn" id="submit-btn">Envoyer ma demande de promotion</button>
+            {# ========== SUBMIT ========== #}
+            <div class="promote-actions">
+                <a href="{{ path('app_profile_events') }}" class="btn btn--outline">Annuler</a>
+                <button type="submit" class="btn btn--primary btn--lg" id="submit-btn">
+                    Envoyer ma demande
+                </button>
             </div>
 
             {{ form_end(form) }}
-
-            <p style="margin-top: 30px;">
-                <a class="cta-btn" href="{{ path('app_profile_events') }}">← Retour à mes événements</a>
-            </p>
         </div>
     </div>
+{% endblock %}
 
+{% block javascripts %}
+    {{ parent() }}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const formulaCards = document.querySelectorAll('.formula-card');
@@ -104,42 +138,34 @@
             let selectedDays = 0;
             let selectedPrice = 0;
 
-            // Sélection de formule
-            formulaCards.forEach(function(card) {
-                card.addEventListener('click', function(e) {
-                    e.preventDefault();
+            // Initially hide date and summary
+            dateSection.style.display = 'none';
+            summary.style.display = 'none';
 
-                    formulaCards.forEach(function(c) {
-                        c.classList.remove('selected');
-                    });
-
-                    this.classList.add('selected');
+            formulaCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    formulaCards.forEach(c => c.classList.remove('formula-card--selected'));
+                    this.classList.add('formula-card--selected');
 
                     selectedFormula = this.dataset.formula;
                     selectedDays = parseInt(this.dataset.days);
                     selectedPrice = parseFloat(this.dataset.price);
 
-                    if (formulaInput) {
-                        formulaInput.value = selectedFormula;
-                    }
-
-                    dateSection.classList.add('visible');
+                    formulaInput.value = selectedFormula;
                     document.getElementById('selected-days').textContent = selectedDays;
 
+                    dateSection.style.display = 'block';
                     updateSummary();
                 });
             });
 
             if (dateInput) {
-                dateInput.addEventListener('change', function() {
-                    updateSummary();
-                });
+                dateInput.addEventListener('change', updateSummary);
             }
 
             function updateSummary() {
-                if (!selectedFormula || !dateInput || !dateInput.value) {
-                    summary.classList.remove('visible');
-                    submitBtn.classList.remove('visible');
+                if (!selectedFormula || !dateInput.value) {
+                    summary.style.display = 'none';
                     return;
                 }
 
@@ -147,17 +173,14 @@
                 const endDate = new Date(startDate);
                 endDate.setDate(endDate.getDate() + selectedDays - 1);
 
-                const formatDate = function(date) {
-                    return date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
-                };
+                const formatDate = (date) => date.toLocaleDateString('fr-FR');
 
                 document.getElementById('summary-formula').textContent = selectedDays + ' jours';
                 document.getElementById('summary-days').textContent = selectedDays;
                 document.getElementById('summary-period').textContent = formatDate(startDate) + ' → ' + formatDate(endDate);
                 document.getElementById('summary-price').textContent = selectedPrice.toFixed(2);
 
-                summary.classList.add('visible');
-                submitBtn.classList.add('visible');
+                summary.style.display = 'block';
             }
         });
     </script>

@@ -1,50 +1,136 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Modifier {{ event.title }}{% endblock %}
+{% block title %}Modifier {{ event.title }} | La Vie en Rose{% endblock %}
 
 {% block body %}
-    <h1>Modifier l'événement</h1>
+    <div class="page page--event-form">
+        <div class="page__container page__container--narrow">
+            <h1 class="page__title">Modifier l'événement</h1>
 
-    {% for message in app.flashes('success') %}
-        <p style="color: green;">{{ message }}</p>
-    {% endfor %}
+            {# ========== CURRENT IMAGES ========== #}
+            {% if event.images|length > 0 %}
+                <section class="form__section">
+                    <h2 class="form__section-title">Images actuelles</h2>
+                    <div class="image-gallery">
+                        {% for image in event.images %}
+                            <div class="image-gallery__item">
+                                <img src="{{ asset('uploads/events/' ~ image.url) }}" alt="Image {{ loop.index }}">
+                                <form action="{{ path('app_profile_event_image_delete', {id: image.id}) }}" method="POST" class="image-gallery__delete">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete_image' ~ image.id) }}">
+                                    <button type="submit" class="btn btn--danger btn--sm" onclick="return confirm('Supprimer cette image ?')">
+                                        🗑
+                                    </button>
+                                </form>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </section>
+            {% endif %}
 
-    {% for message in app.flashes('error') %}
-        <p style="color: red;">{{ message }}</p>
-    {% endfor %}
+            {{ form_start(form, {'attr': {'class': 'form', 'enctype': 'multipart/form-data'}}) }}
 
-    {% if event.images|length > 0 %}
-        <h2>Images actuelles</h2>
-        <div>
-            {% for image in event.images %}
-                <div style="display: inline-block; margin: 10px; text-align: center;">
-                    <img src="{{ asset('uploads/events/' ~ image.url) }}" width="150" alt="Image {{ loop.index }}">
-                    <br>
-                    <form action="{{ path('app_profile_event_image_delete', {id: image.id}) }}" method="POST" style="margin-top: 5px;">
-                        <input type="hidden" name="_token" value="{{ csrf_token('delete_image' ~ image.id) }}">
-                        <button type="submit" onclick="return confirm('Supprimer cette image ?')">Supprimer</button>
-                    </form>
+            {# ========== BASIC INFO ========== #}
+            <fieldset class="form__fieldset">
+                <legend class="form__legend">Informations générales</legend>
+
+                <div class="form__group">
+                    {{ form_label(form.title, 'Titre de l\'événement *', {'label_attr': {'class': 'form__label'}}) }}
+                    {{ form_widget(form.title, {'attr': {'class': 'form__input'}}) }}
+                    {{ form_errors(form.title) }}
                 </div>
-            {% endfor %}
+
+                <div class="form__group">
+                    {{ form_label(form.description, 'Description *', {'label_attr': {'class': 'form__label'}}) }}
+                    {{ form_widget(form.description, {'attr': {'class': 'form__textarea', 'rows': 5}}) }}
+                    {{ form_errors(form.description) }}
+                </div>
+
+                <div class="form__group">
+                    {{ form_label(form.categories, 'Catégories', {'label_attr': {'class': 'form__label'}}) }}
+                    <div class="form__checkboxes">
+                        {{ form_widget(form.categories) }}
+                    </div>
+                    {{ form_errors(form.categories) }}
+                </div>
+            </fieldset>
+
+            {# ========== DATE & TIME ========== #}
+            <fieldset class="form__fieldset">
+                <legend class="form__legend">Date et horaires</legend>
+
+                <div class="form__row">
+                    <div class="form__group form__group--half">
+                        {{ form_label(form.dateStart, 'Date et heure de début *', {'label_attr': {'class': 'form__label'}}) }}
+                        {{ form_widget(form.dateStart, {'attr': {'class': 'form__input'}}) }}
+                        {{ form_errors(form.dateStart) }}
+                    </div>
+
+                    <div class="form__group form__group--half">
+                        {{ form_label(form.dateEnd, 'Date et heure de fin', {'label_attr': {'class': 'form__label'}}) }}
+                        {{ form_widget(form.dateEnd, {'attr': {'class': 'form__input'}}) }}
+                        {{ form_errors(form.dateEnd) }}
+                    </div>
+                </div>
+
+                <div class="form__group">
+                    {{ form_label(form.schedule, 'Horaires (texte)', {'label_attr': {'class': 'form__label'}}) }}
+                    {{ form_widget(form.schedule, {'attr': {'class': 'form__input'}}) }}
+                    {{ form_errors(form.schedule) }}
+                </div>
+            </fieldset>
+
+            {# ========== LOCATION ========== #}
+            <fieldset class="form__fieldset">
+                <legend class="form__legend">Lieu</legend>
+
+                <div class="form__group">
+                    {{ form_label(form.address, 'Adresse *', {'label_attr': {'class': 'form__label'}}) }}
+                    {{ form_widget(form.address, {'attr': {'class': 'form__input'}}) }}
+                    {{ form_errors(form.address) }}
+                </div>
+
+                <div class="form__group">
+                    {{ form_label(form.city, 'Ville *', {'label_attr': {'class': 'form__label'}}) }}
+                    {{ form_widget(form.city, {'attr': {'class': 'form__select'}}) }}
+                    {{ form_errors(form.city) }}
+                </div>
+            </fieldset>
+
+            {# ========== PRICE ========== #}
+            <fieldset class="form__fieldset">
+                <legend class="form__legend">Tarification</legend>
+
+                <div class="form__group">
+                    {{ form_label(form.price, 'Prix (€)', {'label_attr': {'class': 'form__label'}}) }}
+                    {{ form_widget(form.price, {'attr': {'class': 'form__input'}}) }}
+                    {{ form_errors(form.price) }}
+                </div>
+            </fieldset>
+
+            {# ========== ADD IMAGES ========== #}
+            <fieldset class="form__fieldset">
+                <legend class="form__legend">Ajouter des images</legend>
+
+                <div class="form__group">
+                    <div class="form__upload">
+                        <div class="form__upload-icon">📤</div>
+                        <label for="{{ form.images.vars.id }}" class="form__upload-label">
+                            Ajouter de nouvelles images
+                        </label>
+                        <small class="form__upload-hint">JPG, PNG, WEBP - Max 5Mo par image</small>
+                        {{ form_widget(form.images, {'attr': {'class': 'form__upload-input', 'accept': 'image/*'}}) }}
+                    </div>
+                    {{ form_errors(form.images) }}
+                </div>
+            </fieldset>
+
+            {# ========== SUBMIT ========== #}
+            <div class="form__actions">
+                <a href="{{ path('app_profile_events') }}" class="btn btn--outline">Annuler</a>
+                <button type="submit" class="btn btn--primary">Enregistrer les modifications</button>
+            </div>
+
+            {{ form_end(form) }}
         </div>
-    {% endif %}
-
-    {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
-    {{ form_row(form.title) }}
-    {{ form_row(form.description) }}
-    {{ form_row(form.address) }}
-    {{ form_row(form.city) }}
-    {{ form_row(form.dateStart) }}
-    {{ form_row(form.dateEnd) }}
-    {{ form_row(form.schedule) }}
-    {{ form_row(form.price) }}
-    {{ form_row(form.categories) }}
-
-    <h2>Ajouter de nouvelles images</h2>
-    {{ form_row(form.images) }}
-
-    <button class="cta-btn" type="submit">Enregistrer les modifications</button>
-    {{ form_end(form) }}
-
-    <p><a class="cta-btn" href="{{ path('app_profile_events') }}">Retour à mes événements</a></p>
+    </div>
 {% endblock %}

@@ -1,95 +1,89 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}Événements Locaux!{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}La Vie en Rose{% endblock %}</title>
 
     {# Google Fonts #}
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Vast+Shadow&display=swap" rel="stylesheet">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
-    {% block stylesheets %}
-    {% endblock %}
-    <link rel="stylesheet" href="{{ asset('styles/main.css') }}">
-    {% block javascripts %}
-        {% block importmap %}{{ importmap('app') }}{% endblock %}
-    {% endblock %}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Vast+Shadow&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
+
 </head>
 <body>
-{# Header #}
-<header class="main-header">
-    <a href="{{ path('app_home') }}" class="logo-link">
-        <div class="logo">La Vie<br>en Rose</div>
-    </a>
-    <nav class="nav-menu">
-        <a href="{{ path('app_home') }}" class="nav-link">Accueil</a>
-        <a href="{{ path('app_event_index') }}" class="nav-link">Événements</a>
-        {% if app.user %}
-            <div class="user-menu">
-                <div class="user-avatar">
-                    {{ app.user.email|first|upper }}{{ app.user.email|slice(app.user.email|split('@')[0]|length - 1, 1)|upper }}
+{# ========== HEADER ========== #}
+<header class="header">
+    <div class="header__container">
+        <a href="{{ path('app_home') }}" class="header__logo logo">
+            <span class="logo__text">La Vie<br>en Rose</span>
+        </a>
+
+        <nav class="header__nav nav">
+            <a href="{{ path('app_home') }}" class="nav__link">Accueil</a>
+            <a href="{{ path('app_event_index') }}" class="nav__link">Événements</a>
+
+            {% if app.user %}
+                <div class="nav__user user-menu">
+                    <button class="user-menu__trigger" type="button" aria-expanded="false">
+                            <span class="user-menu__avatar avatar">
+                                {{ app.user.firstName|first|upper }}{{ app.user.lastName|first|upper }}
+                            </span>
+                    </button>
+
+                    <div class="user-menu__dropdown">
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <a href="{{ path('admin') }}" class="user-menu__item">Administration</a>
+                        {% endif %}
+                        <a href="{{ path('app_profile') }}" class="user-menu__item">Mon profil</a>
+                        <a href="{{ path('app_profile_events') }}" class="user-menu__item">Mes événements</a>
+                        <a href="{{ path('app_my_follows') }}" class="user-menu__item">Mes abonnements</a>
+                        <hr class="user-menu__divider">
+                        <a href="{{ path('app_logout') }}" class="user-menu__item user-menu__item--logout">Déconnexion</a>
+                    </div>
                 </div>
-                <div class="nav-menu-niv2">
-                    {% if is_granted('ROLE_ADMIN') %}
-                        <a href="{{ path('admin') }}" class="nav-link">Administration</a>
-                    {% endif %}
-                    <a href="{{ path('app_profile') }}" class="nav-link">Mon profil</a>
-                    <a href="{{ path('app_profile_events') }}" class="nav-link">Mes événements</a>
-                    <a href="{{ path('app_logout') }}" class="nav-link">Déconnexion</a>
-                </div>
-            </div>
-        {% else %}
-            <a href="{{ path('app_login') }}" class="nav-link">Connexion</a>
-        {% endif %}
-    </nav>
+            {% else %}
+                <a href="{{ path('app_login') }}" class="nav__link nav__link--cta btn btn--primary btn--sm">Connexion</a>
+            {% endif %}
+        </nav>
+
+        {# Mobile menu toggle #}
+        <button class="header__mobile-toggle" type="button" aria-label="Menu">
+            <span class="hamburger"></span>
+        </button>
+    </div>
 </header>
 
-{% block body %}{% endblock %}
+{# ========== MAIN CONTENT ========== #}
+<main class="main">
+    {# Flash messages #}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert--{{ label }}">
+                <span class="alert__message">{{ message }}</span>
+                <button class="alert__close" type="button" aria-label="Fermer">&times;</button>
+            </div>
+        {% endfor %}
+    {% endfor %}
 
-{# Footer #}
-<footer class="main-footer">
-    <p>Liens: <a href="#">A propos</a> / <a href="#">Contact</a> / <a href="#">CGU/Confidentialité</a></p>
-    <p>@2025 Réseau Social d'Événements</p>
+    {% block body %}{% endblock %}
+</main>
+
+{# ========== FOOTER ========== #}
+<footer class="footer">
+    <div class="footer__container">
+        <div class="footer__links">
+            <a href="#" class="footer__link">À propos</a>
+            <a href="#" class="footer__link">Contact</a>
+            <a href="#" class="footer__link">CGU / Confidentialité</a>
+        </div>
+        <p class="footer__copyright">&copy; {{ "now"|date("Y") }} La Vie en Rose - Réseau Social d'Événements</p>
+    </div>
 </footer>
+{% block javascripts %}{% endblock %}
 
-<script>
-    function initUserMenu() {
-        const userMenu = document.querySelector('.user-menu');
-        const dropdown = document.querySelector('.nav-menu-niv2');
-
-        if (userMenu && dropdown) {
-            let timeoutId;
-
-            // Supprime les anciens listeners pour éviter les doublons
-            userMenu.replaceWith(userMenu.cloneNode(true));
-            const newUserMenu = document.querySelector('.user-menu');
-            const newDropdown = document.querySelector('.nav-menu-niv2');
-
-            newUserMenu.addEventListener('mouseenter', function() {
-                clearTimeout(timeoutId);
-                newDropdown.classList.add('active');
-            });
-
-            newUserMenu.addEventListener('mouseleave', function() {
-                timeoutId = setTimeout(function() {
-                    newDropdown.classList.remove('active');
-                }, 200);
-            });
-
-            document.addEventListener('click', function(e) {
-                if (!newUserMenu.contains(e.target)) {
-                    newDropdown.classList.remove('active');
-                }
-            });
-        }
-    }
-
-    // Au premier chargement
-    document.addEventListener('DOMContentLoaded', initUserMenu);
-
-    // À chaque navigation Turbo
-    document.addEventListener('turbo:load', initUserMenu);
-    document.addEventListener('turbo:render', initUserMenu);
-</script>
 </body>
 </html>

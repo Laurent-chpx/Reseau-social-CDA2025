@@ -2,107 +2,117 @@
 
 {% block title %}Créer un événement | La Vie en Rose{% endblock %}
 
-{% block stylesheets %}
-    <link rel="stylesheet" href="{{ asset('styles/logo.css') }}">
-    <link rel="stylesheet" href="{{ asset('styles/event-form.css') }}">
-{% endblock %}
-
 {% block body %}
-    <div class="event-form-container">
+    <div class="page page--event-form">
+        <div class="page__container page__container--narrow">
+            <h1 class="page__title">Créer un événement</h1>
 
+            {{ form_start(form, {'attr': {'class': 'form', 'enctype': 'multipart/form-data'}}) }}
 
-        {# Main Form Section #}
-        <section class="form-section">
-            <div class="form-card">
-                <h1 class="form-title">Créer un nouvel événement</h1>
+            {# ========== BASIC INFO ========== #}
+            <fieldset class="form__fieldset">
+                <legend class="form__legend">Informations générales</legend>
 
-                {{ form_start(form, {'attr': {'class': 'event-form', 'enctype': 'multipart/form-data'}}) }}
+                <div class="form__group">
+                    {{ form_label(form.title, 'Titre de l\'événement *', {'label_attr': {'class': 'form__label'}}) }}
+                    {{ form_widget(form.title, {'attr': {'class': 'form__input', 'placeholder': 'Ex: Festival de jazz 2025'}}) }}
+                    {{ form_errors(form.title) }}
+                </div>
 
-                    {# Title Field #}
-                    <div class="form-group">
-                        {{ form_label(form.title, 'Titre de l\'événement', {'label_attr': {'class': 'form-label'}}) }}
-                        {{ form_widget(form.title, {'attr': {'class': 'form-input', 'placeholder': 'Ex: Festival de jazz 2025'}}) }}
-                        {{ form_errors(form.title) }}
+                <div class="form__group">
+                    {{ form_label(form.description, 'Description *', {'label_attr': {'class': 'form__label'}}) }}
+                    {{ form_widget(form.description, {'attr': {'class': 'form__textarea', 'rows': 5, 'placeholder': 'Décrivez votre événement en détail...'}}) }}
+                    {{ form_errors(form.description) }}
+                </div>
+
+                <div class="form__group">
+                    {{ form_label(form.categories, 'Catégories', {'label_attr': {'class': 'form__label'}}) }}
+                    <div class="form__checkboxes">
+                        {{ form_widget(form.categories) }}
+                    </div>
+                    {{ form_errors(form.categories) }}
+                </div>
+            </fieldset>
+
+            {# ========== DATE & TIME ========== #}
+            <fieldset class="form__fieldset">
+                <legend class="form__legend">Date et horaires</legend>
+
+                <div class="form__row">
+                    <div class="form__group form__group--half">
+                        {{ form_label(form.dateStart, 'Date et heure de début *', {'label_attr': {'class': 'form__label'}}) }}
+                        {{ form_widget(form.dateStart, {'attr': {'class': 'form__input'}}) }}
+                        {{ form_errors(form.dateStart) }}
                     </div>
 
-                    {# Description Field #}
-                    <div class="form-group">
-                        {{ form_label(form.description, 'Description*', {'label_attr': {'class': 'form-label'}}) }}
-                        {{ form_widget(form.description, {'attr': {'class': 'form-textarea', 'placeholder': 'Décrivez votre événement en détail...', 'rows': 5}}) }}
-                        {{ form_errors(form.description) }}
+                    <div class="form__group form__group--half">
+                        {{ form_label(form.dateEnd, 'Date et heure de fin', {'label_attr': {'class': 'form__label'}}) }}
+                        {{ form_widget(form.dateEnd, {'attr': {'class': 'form__input'}}) }}
+                        {{ form_errors(form.dateEnd) }}
                     </div>
+                </div>
 
-                    {# Date and Time Row #}
-                    <div class="form-row">
-                        <div class="form-group form-group-half">
-                            {{ form_label(form.dateStart, 'Date*', {'label_attr': {'class': 'form-label'}}) }}
-                            {{ form_widget(form.dateStart, {'attr': {'class': 'form-input'}}) }}
-                            {{ form_errors(form.dateStart) }}
-                        </div>
+                <div class="form__group">
+                    {{ form_label(form.schedule, 'Horaires (texte)', {'label_attr': {'class': 'form__label'}}) }}
+                    {{ form_widget(form.schedule, {'attr': {'class': 'form__input', 'placeholder': 'Ex: 14h-18h, entrée libre'}}) }}
+                    {{ form_errors(form.schedule) }}
+                    <small class="form__help">Informations complémentaires sur les horaires</small>
+                </div>
+            </fieldset>
 
-                        <div class="form-group form-group-half">
-                            {{ form_label(form.schedule, 'Heure*', {'label_attr': {'class': 'form-label'}}) }}
-                            {{ form_widget(form.schedule, {'attr': {'class': 'form-input', 'placeholder': 'H:m'}}) }}
-                            {{ form_errors(form.schedule) }}
-                        </div>
+            {# ========== LOCATION ========== #}
+            <fieldset class="form__fieldset">
+                <legend class="form__legend">Lieu</legend>
+
+                <div class="form__group">
+                    {{ form_label(form.address, 'Adresse *', {'label_attr': {'class': 'form__label'}}) }}
+                    {{ form_widget(form.address, {'attr': {'class': 'form__input', 'placeholder': 'Adresse complète'}}) }}
+                    {{ form_errors(form.address) }}
+                </div>
+
+                <div class="form__group">
+                    {{ form_label(form.city, 'Ville *', {'label_attr': {'class': 'form__label'}}) }}
+                    {{ form_widget(form.city, {'attr': {'class': 'form__select'}}) }}
+                    {{ form_errors(form.city) }}
+                </div>
+            </fieldset>
+
+            {# ========== PRICE ========== #}
+            <fieldset class="form__fieldset">
+                <legend class="form__legend">Tarification</legend>
+
+                <div class="form__group">
+                    {{ form_label(form.price, 'Prix (€)', {'label_attr': {'class': 'form__label'}}) }}
+                    {{ form_widget(form.price, {'attr': {'class': 'form__input', 'placeholder': 'Laisser vide si gratuit'}}) }}
+                    {{ form_errors(form.price) }}
+                    <small class="form__help">Laissez vide ou à 0 pour un événement gratuit</small>
+                </div>
+            </fieldset>
+
+            {# ========== IMAGES ========== #}
+            <fieldset class="form__fieldset">
+                <legend class="form__legend">Images</legend>
+
+                <div class="form__group">
+                    <div class="form__upload">
+                        <div class="form__upload-icon">📤</div>
+                        <label for="{{ form.images.vars.id }}" class="form__upload-label">
+                            Choisissez ou glissez des images ici
+                        </label>
+                        <small class="form__upload-hint">JPG, PNG, WEBP - Max 5Mo par image</small>
+                        {{ form_widget(form.images, {'attr': {'class': 'form__upload-input', 'accept': 'image/*'}}) }}
                     </div>
+                    {{ form_errors(form.images) }}
+                </div>
+            </fieldset>
 
-                    {# Address Field #}
-                    <div class="form-group">
-                        {{ form_label(form.address, 'Lieu', {'label_attr': {'class': 'form-label'}}) }}
-                        {{ form_widget(form.address, {'attr': {'class': 'form-input', 'placeholder': 'Adresse complete'}}) }}
-                        {{ form_errors(form.address) }}
-                    </div>
-
-                    {# City and Postal Code Row #}
-                    <div class="form-row">
-                        <div class="form-group form-group-half">
-                            {{ form_label(form.city, 'Ville', {'label_attr': {'class': 'form-label'}}) }}
-                            {{ form_widget(form.city, {'attr': {'class': 'form-select'}}) }}
-                            {{ form_errors(form.city) }}
-                        </div>
-
-                        <div class="form-group form-group-half">
-                            <label class="form-label">Code postal</label>
-                            <input type="text" class="form-input form-input-disabled" value="" placeholder="Auto-rempli" readonly>
-                        </div>
-                    </div>
-
-                    {# Categories Field #}
-                    <div class="form-group">
-                        {{ form_label(form.categories, 'Type d\'événements*', {'label_attr': {'class': 'form-label'}}) }}
-                        <div class="categories-container">
-                            {{ form_widget(form.categories) }}
-                        </div>
-                        {{ form_errors(form.categories) }}
-                    </div>
-
-                    {# Image Upload Field #}
-                    <div class="form-group">
-                        <div class="upload-area">
-                            <div class="upload-icon">📤</div>
-                            <label for="{{ form.images.vars.id }}" class="upload-label">
-                                Choisissez ou glissez une image ici
-                            </label>
-                            <p class="upload-subtitle">Partagez des visuels sur l'événement</p>
-                            {{ form_widget(form.images, {'attr': {'class': 'form-file-input'}}) }}
-                        </div>
-                        {{ form_errors(form.images) }}
-                    </div>
-
-                    {# Hidden Optional Fields #}
-                    <div style="display: none;">
-                        {{ form_widget(form.dateEnd) }}
-                        {{ form_widget(form.price) }}
-                    </div>
-
-                    {# Form Buttons #}
-                    <div class="form-actions">
-                        <button type="submit" class="btn-submit">Publier l'événement</button>
-                    </div>
-
-                {{ form_end(form) }}
+            {# ========== SUBMIT ========== #}
+            <div class="form__actions">
+                <a href="{{ path('app_profile_events') }}" class="btn btn--outline">Annuler</a>
+                <button type="submit" class="btn btn--primary">Publier l'événement</button>
             </div>
-        </section>
+
+            {{ form_end(form) }}
+        </div>
     </div>
 {% endblock %}

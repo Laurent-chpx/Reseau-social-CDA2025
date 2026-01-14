@@ -1,0 +1,217 @@
+
+// Hero Section
+.hero {
+    background: linear-gradient(135deg, $color-black 0%, lighten($color-black, 10%) 100%);
+    padding: 4rem 0;
+
+    @media (min-width: $breakpoint-md) {
+        padding: 6rem 0;
+    }
+
+    &__container {
+        max-width: $container-max-width;
+        margin: 0 auto;
+        padding: 0 $container-padding;
+        text-align: center;
+    }
+
+    &__title {
+        font-family: $font-primary;
+        font-size: 2rem;
+        font-weight: 800;
+        color: white;
+        margin: 0 0 1rem 0;
+        line-height: 1.2;
+
+        @media (min-width: $breakpoint-md) {
+            font-size: 2.75rem;
+        }
+
+        @media (min-width: $breakpoint-lg) {
+            font-size: 3.25rem;
+        }
+    }
+
+    &__subtitle {
+        font-size: 1rem;
+        color: rgba(white, 0.7);
+        margin: 0 0 2rem 0;
+
+        @media (min-width: $breakpoint-md) {
+            font-size: 1.125rem;
+        }
+    }
+
+    &__search {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+}
+
+// Search Form
+.search-form {
+    background: white;
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+
+    @media (min-width: $breakpoint-md) {
+        padding: 1.5rem;
+    }
+
+    &__row {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+
+        @media (min-width: $breakpoint-lg) {
+            flex-direction: row;
+        }
+    }
+
+    &__field {
+        flex: 1;
+    }
+
+    &__input,
+    &__select {
+        width: 100%;
+        padding: 0.875rem 1rem;
+        font-family: $font-primary;
+        font-size: 0.9375rem;
+        color: $color-black;
+        background-color: #F7F8FA;
+        border: 1px solid $color-gris-clair;
+        border-radius: 8px;
+        transition: border-color 0.2s ease;
+
+        &::placeholder {
+            color: lighten($color-gris, 25%);
+        }
+
+        &:focus {
+            outline: none;
+            border-color: $color-orange;
+        }
+    }
+
+    &__select {
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%232D3748' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        padding-right: 2.5rem;
+    }
+
+    &__submit {
+        width: 100%;
+
+        @media (min-width: $breakpoint-lg) {
+            width: auto;
+            white-space: nowrap;
+        }
+    }
+}
+
+// CTA Section
+.cta-section {
+    background: linear-gradient(135deg, $color-orange 0%, $color-orange-hover 100%);
+    padding: 3rem 0;
+
+    &__container {
+        max-width: $container-max-width;
+        margin: 0 auto;
+        padding: 0 $container-padding;
+        text-align: center;
+    }
+
+    &__title {
+        font-family: $font-primary;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: white;
+        margin: 0 0 0.5rem 0;
+
+        @media (min-width: $breakpoint-md) {
+            font-size: 1.75rem;
+        }
+    }
+
+    &__text {
+        font-size: 1rem;
+        color: rgba(white, 0.9);
+        margin: 0 0 1.5rem 0;
+    }
+
+    .btn--primary {
+        background-color: white;
+        color: $color-orange;
+        border-color: white;
+
+        &:hover {
+            background-color: rgba(white, 0.9);
+        }
+    }
+}
+
+// Section
+.section {
+    padding: 3rem 0;
+
+    &--events {
+        background-color: #F7F8FA;
+    }
+
+    &__container {
+        max-width: $container-max-width;
+        margin: 0 auto;
+        padding: 0 $container-padding;
+    }
+
+    &__header {
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+
+    &__title {
+        font-family: $font-primary;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: $color-black;
+        margin: 0;
+
+        @media (min-width: $breakpoint-md) {
+            font-size: 1.75rem;
+        }
+    }
+
+    &__location {
+        font-size: 0.9375rem;
+        color: $color-gris;
+        margin-top: 0.5rem;
+    }
+
+    &__link {
+        display: inline-block;
+        font-size: 0.875rem;
+        color: $color-orange;
+        text-decoration: none;
+        font-weight: 500;
+        margin-bottom: 1.5rem;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+
+    &__actions {
+        text-align: center;
+        margin-top: 2rem;
+    }
+
+    &__empty {
+        text-align: center;
+        color: $color-gris;
+    }
+}

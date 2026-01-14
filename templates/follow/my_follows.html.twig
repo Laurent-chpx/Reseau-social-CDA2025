@@ -1,65 +1,101 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Mes abonnements{% endblock %}
+{% block title %}Mes abonnements | La Vie en Rose{% endblock %}
 
 {% block body %}
-    <h1>Mes abonnements</h1>
+    <div class="page page--follows">
+        <div class="page__container">
+            <h1 class="page__title">Mes abonnements</h1>
 
-    {% for message in app.flashes('success') %}
-        <p style="color: green;">{{ message }}</p>
-    {% endfor %}
+            <div class="follows-grid">
+                {# ========== FOLLOWED USERS ========== #}
+                <section class="follows-section">
+                    <h2 class="follows-section__title">
+                        Utilisateurs suivis
+                        <span class="follows-section__count">({{ followedUsers|length }})</span>
+                    </h2>
 
-    {% for message in app.flashes('error') %}
-        <p style="color: red;">{{ message }}</p>
-    {% endfor %}
+                    {% if followedUsers is empty %}
+                        <div class="follows-section__empty">
+                            <p>Vous ne suivez aucun utilisateur.</p>
+                            <a href="{{ path('app_event_index') }}" class="btn btn--outline btn--sm">
+                                Découvrir des organisateurs
+                            </a>
+                        </div>
+                    {% else %}
+                        <div class="follows-list">
+                            {% for follow in followedUsers %}
+                                <div class="follow-card">
+                                    <div class="follow-card__avatar avatar">
+                                        {{ follow.followed.firstName|first|upper }}{{ follow.followed.lastName|first|upper }}
+                                    </div>
+                                    <div class="follow-card__info">
+                                        <h4 class="follow-card__name">
+                                            {{ follow.followed.firstName }} {{ follow.followed.lastName }}
+                                        </h4>
+                                        <p class="follow-card__meta">
+                                            📅 {{ follow.followed.events|length }} événement(s) •
+                                            Suivi depuis le {{ follow.createdAt|date('d/m/Y') }}
+                                        </p>
+                                    </div>
+                                    <form action="{{ path('app_unfollow_user', {id: follow.followed.id}) }}" method="POST">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('unfollow_user' ~ follow.followed.id) }}">
+                                        <button type="submit" class="btn btn--outline btn--sm">
+                                            Ne plus suivre
+                                        </button>
+                                    </form>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </section>
 
-    <section style="margin-bottom: 40px;">
-        <h2>Utilisateurs suivis ({{ followedUsers|length }})</h2>
+                {# ========== FOLLOWED CITIES ========== #}
+                <section class="follows-section">
+                    <h2 class="follows-section__title">
+                        Villes suivies
+                        <span class="follows-section__count">({{ followedCities|length }})</span>
+                    </h2>
 
-        {% if followedUsers is empty %}
-            <p>Vous ne suivez aucun utilisateur pour le moment.</p>
-        {% else %}
-            <ul>
-                {% for follow in followedUsers %}
-                    <li>
-                        {{ follow.followed.firstName }} {{ follow.followed.lastName }}
-                        <small>(suivi depuis le {{ follow.createdAt|date('d/m/Y') }})</small>
+                    {% if followedCities is empty %}
+                        <div class="follows-section__empty">
+                            <p>Vous ne suivez aucune ville.</p>
+                            <a href="{{ path('app_event_index') }}" class="btn btn--outline btn--sm">
+                                Découvrir des événements
+                            </a>
+                        </div>
+                    {% else %}
+                        <div class="follows-list">
+                            {% for follow in followedCities %}
+                                <div class="follow-card">
+                                    <div class="follow-card__icon">
+                                        📍
+                                    </div>
+                                    <div class="follow-card__info">
+                                        <h4 class="follow-card__name">
+                                            {{ follow.city.name }}
+                                        </h4>
+                                        <p class="follow-card__meta">
+                                            {{ follow.city.postalCode }} - {{ follow.city.department.name }} •
+                                            Suivi depuis le {{ follow.createdAt|date('d/m/Y') }}
+                                        </p>
+                                    </div>
+                                    <form action="{{ path('app_unfollow_city', {id: follow.city.id}) }}" method="POST">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('unfollow_city' ~ follow.city.id) }}">
+                                        <button type="submit" class="btn btn--outline btn--sm">
+                                            Ne plus suivre
+                                        </button>
+                                    </form>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </section>
+            </div>
 
-                        <form action="{{ path('app_unfollow_user', {id: follow.followed.id}) }}"
-                              method="POST"
-                              style="display: inline;">
-                            <input type="hidden" name="_token" value="{{ csrf_token('unfollow_user' ~ follow.followed.id) }}">
-                            <button type="submit">Ne plus suivre</button>
-                        </form>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-    </section>
-
-    <section>
-        <h2>Villes suivies ({{ followedCities|length }})</h2>
-
-        {% if followedCities is empty %}
-            <p>Vous ne suivez aucune ville pour le moment.</p>
-        {% else %}
-            <ul>
-                {% for follow in followedCities %}
-                    <li>
-                        {{ follow.city.name }} ({{ follow.city.postalCode }})
-                        <small>(suivi depuis le {{ follow.createdAt|date('d/m/Y') }})</small>
-
-                        <form action="{{ path('app_unfollow_city', {id: follow.city.id}) }}"
-                              method="POST"
-                              style="display: inline;">
-                            <input type="hidden" name="_token" value="{{ csrf_token('unfollow_city' ~ follow.city.id) }}">
-                            <button class="cta-btn" type="submit">Ne plus suivre</button>
-                        </form>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-    </section>
-
-    <p><a class="cta-btn" href="{{ path('app_profile') }}">Retour au dashboard</a></p>
+            <div class="page__back">
+                <a href="{{ path('app_profile') }}" class="btn btn--outline">← Retour au tableau de bord</a>
+            </div>
+        </div>
+    </div>
 {% endblock %}

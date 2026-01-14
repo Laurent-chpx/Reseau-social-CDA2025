@@ -2,87 +2,91 @@
 
 {% block title %}Inscription | La Vie en Rose{% endblock %}
 
-{% block stylesheets %}
-    <link rel="stylesheet" href="{{ asset('styles/connexion.css') }}">
-{% endblock %}
-
 {% block body %}
-    <div class="page-container">
-        {# Main Content - Registration Form #}
-        <main class="auth-container">
-            <div class="registration-form-container">
-                <section class="auth-card registration-full">
-                    <h2 class="auth-title">Créer un compte</h2>
-                    <p class="auth-subtitle">Rejoignez la communauté gratuitement !</p>
+    <div class="page page--auth">
+        <div class="auth">
+            <div class="auth__container auth__container--register">
 
-                    {% if app.session.flashBag.has('error') %}
-                        <div class="alert alert-error">
-                            {% for message in app.session.flashBag.get('error') %}
-                                {{ message }}
-                            {% endfor %}
-                        </div>
-                    {% endif %}
+                {# ========== REGISTER FORM ========== #}
+                <div class="auth__card auth__card--wide">
+                    <h1 class="auth__title">Créer un compte 🌹</h1>
+                    <p class="auth__subtitle">Rejoignez la communauté gratuitement !</p>
 
-                    {{ form_start(registrationForm, {'attr': {'class': 'auth-form registration-form'}}) }}
+                    {{ form_start(registrationForm, {'attr': {'class': 'form'}}) }}
 
-                        {# Email Field #}
-                        <div class="form-group">
-                            {{ form_label(registrationForm.email, 'Email', {'label_attr': {'class': 'form-label'}}) }}
-                            {{ form_widget(registrationForm.email, {'attr': {'class': 'form-input', 'placeholder': 'nom@domaine.com'}}) }}
-                            {{ form_errors(registrationForm.email) }}
+                    <div class="form__row">
+                        <div class="form__group form__group--half">
+                            {{ form_label(registrationForm.firstName, 'Prénom', {'label_attr': {'class': 'form__label'}}) }}
+                            {{ form_widget(registrationForm.firstName, {'attr': {'class': 'form__input', 'placeholder': 'Jean'}}) }}
+                            {{ form_errors(registrationForm.firstName) }}
                         </div>
 
-                        {# Password Field #}
-                        <div class="form-group">
-                            {{ form_label(registrationForm.plainPassword, 'Mot de passe', {'label_attr': {'class': 'form-label'}}) }}
-                            {{ form_widget(registrationForm.plainPassword, {'attr': {'class': 'form-input', 'placeholder': '••••••••'}}) }}
-                            {{ form_errors(registrationForm.plainPassword) }}
-                            <small class="form-help">Minimum 6 caractères</small>
+                        <div class="form__group form__group--half">
+                            {{ form_label(registrationForm.lastName, 'Nom', {'label_attr': {'class': 'form__label'}}) }}
+                            {{ form_widget(registrationForm.lastName, {'attr': {'class': 'form__input', 'placeholder': 'Dupont'}}) }}
+                            {{ form_errors(registrationForm.lastName) }}
                         </div>
+                    </div>
 
-                        {# Terms Checkbox #}
-                        <div class="form-group">
-                            <label class="checkbox-container">
-                                {{ form_widget(registrationForm.agreeTerms) }}
-                                <span class="checkbox-label">
-                                    J'accepte les conditions d'utilisation et la politique de confidentialité
+                    <div class="form__group">
+                        {{ form_label(registrationForm.email, 'Email', {'label_attr': {'class': 'form__label'}}) }}
+                        {{ form_widget(registrationForm.email, {'attr': {'class': 'form__input', 'placeholder': 'nom@exemple.com'}}) }}
+                        {{ form_errors(registrationForm.email) }}
+                    </div>
+
+                    <div class="form__group">
+                        {{ form_label(registrationForm.plainPassword, 'Mot de passe', {'label_attr': {'class': 'form__label'}}) }}
+                        {{ form_widget(registrationForm.plainPassword, {'attr': {'class': 'form__input', 'placeholder': '••••••••'}}) }}
+                        {{ form_errors(registrationForm.plainPassword) }}
+                        <small class="form__help">Minimum 6 caractères</small>
+                    </div>
+
+                    <div class="form__group">
+                        <label class="form__checkbox">
+                            {{ form_widget(registrationForm.agreeTerms) }}
+                            <span class="form__checkbox-label">
+                                    J'accepte les <a href="#" class="form__link">conditions d'utilisation</a>
+                                    et la <a href="#" class="form__link">politique de confidentialité</a>
                                 </span>
-                            </label>
-                            {{ form_errors(registrationForm.agreeTerms) }}
-                        </div>
+                        </label>
+                        {{ form_errors(registrationForm.agreeTerms) }}
+                    </div>
 
-                        <button type="submit" class="btn-primary">Créer mon compte</button>
+                    <button type="submit" class="btn btn--primary btn--block">
+                        Créer mon compte
+                    </button>
 
                     {{ form_end(registrationForm) }}
 
-                    <div class="auth-footer">
-                        <p>Vous avez déjà un compte ? <a href="{{ path('app_login') }}" class="link">Se connecter</a></p>
+                    <div class="auth__footer">
+                        <p>Déjà inscrit ? <a href="{{ path('app_login') }}" class="auth__link">Se connecter</a></p>
                     </div>
-                </section>
+                </div>
 
-                {# Info Section #}
-                <section class="registration-info">
-                    <h3 class="info-title">Pourquoi s'inscrire ?</h3>
-                    <div class="info-benefits">
-                        <div class="info-item">
-                            <div class="info-icon">⭐</div>
+                {# ========== BENEFITS SIDEBAR ========== #}
+                <div class="auth__sidebar">
+                    <h3 class="auth__sidebar-title">Pourquoi s'inscrire ?</h3>
+
+                    <div class="auth__benefits auth__benefits--vertical">
+                        <div class="auth__benefit">
+                            <span class="auth__benefit-icon">⭐</span>
                             <p>Suivez vos organisateurs favoris</p>
                         </div>
-                        <div class="info-item">
-                            <div class="info-icon">🔔</div>
-                            <p>Recevez des notifications personnalisées</p>
+                        <div class="auth__benefit">
+                            <span class="auth__benefit-icon">🔔</span>
+                            <p>Notifications personnalisées</p>
                         </div>
-                        <div class="info-item">
-                            <div class="info-icon">📅</div>
+                        <div class="auth__benefit">
+                            <span class="auth__benefit-icon">📅</span>
                             <p>Créez vos propres événements</p>
                         </div>
-                        <div class="info-item">
-                            <div class="info-icon">🌟</div>
+                        <div class="auth__benefit">
+                            <span class="auth__benefit-icon">🌟</span>
                             <p>Participez à la vie locale</p>
                         </div>
                     </div>
-                </section>
+                </div>
             </div>
-        </main>
+        </div>
     </div>
 {% endblock %}

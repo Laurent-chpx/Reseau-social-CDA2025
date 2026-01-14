@@ -3,151 +3,184 @@
 {% block title %}{{ event.title }} | La Vie en Rose{% endblock %}
 
 {% block stylesheets %}
-    <link rel="stylesheet" href="{{ asset('styles/logo.css') }}">
-    <link rel="stylesheet" href="{{ asset('styles/event-detail.css') }}">
+    {{ parent() }}
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 {% endblock %}
 
 {% block body %}
-    <div class="event-detail-container">
+    <div class="page page--event-detail">
+        <div class="page__container">
 
-        {# Main Event Card #}
-        <section class="event-main-card">
-            <div class="event-image-container">
-                {% if event.images|length > 0 %}
-                    <img src="{{ asset('uploads/events/' ~ event.images.first.url) }}" alt="{{ event.title }}">
-                {% else %}
-                    <div class="event-image-placeholder">[IMAGE PRINCIPALE]</div>
-                {% endif %}
-            </div>
-
-            <div class="event-main-info">
-                <h1 class="event-main-title">{{ event.title }}</h1>
-
-                <div class="event-meta">
-                    <span class="event-location">📍 {{ event.city.name }} ({{ event.city.postalCode }})</span>
-                    <span class="event-date">📅 {{ event.dateStart|date('d F Y à H\\hi') }}</span>
-
-                    <div class="event-tags">
-                        {% for category in event.categories %}
-                            <span class="event-tag">{{ category.name }}</span>
-                        {% endfor %}
-                    </div>
-
-                    <span class="event-views">👁 {{ event.views|default(0) }} vues</span>
-                </div>
-
-            </div>
-        </section>
-
-        {# Description Section #}
-        <section class="event-description-section">
-            <div class="description-card">
-                <h2 class="section-title">📄 Description</h2>
-                <div class="description-content">
-                    {{ event.description|nl2br }}
-                </div>
-
-                <div class="event-details-meta">
-                    {% if event.price %}
-                        <span>Tarifs | {{ event.price }}€</span>
+            {# ========== MAIN EVENT CARD ========== #}
+            <section class="event-detail">
+                {# Image Gallery #}
+                <div class="event-detail__gallery">
+                    {% if event.images|length > 0 %}
+                        <img
+                            src="{{ asset('uploads/events/' ~ event.images|first.url) }}"
+                            alt="{{ event.title }}"
+                            class="event-detail__main-image"
+                        >
                     {% else %}
-                        <span>Gratuit</span>
+                        <div class="event-detail__placeholder">
+                            <span class="event-detail__placeholder-icon"><i class="fa-regular fa-calendar-days"></i></span>
+                        </div>
                     {% endif %}
 
-                    {% if event.schedule %}
-                        <span>📅 {{ event.schedule }}</span>
-                    {% endif %}
-
-                    {% if event.dateEnd %}
-                        <span>{{ event.dateStart|date('d M') }} - {{ event.dateEnd|date('d M') }}</span>
+                    {# Promoted badge #}
+                    {% if event.promote and event.promote.dateStart <= date() and event.promote.dateEnd >= date() %}
+                        <span class="badge badge--promoted event-detail__badge"><i class="fa-solid fa-star"></i> Sponsorisé</span>
                     {% endif %}
                 </div>
-            </div>
-        </section>
 
-        {# Bottom Section: Location & Organizer #}
-        <section class="event-bottom-section">
-            <div class="bottom-grid">
-                {# Location #}
-                <div class="location-card">
-                    <h3 class="card-title">📍 Localisation</h3>
-                    <p class="location-address">
-                        Adresse | {{ event.address }}<br>
-                        {{ event.city.name }}, {{ event.city.department.name }}
-                    </p>
-                    {% if app.user %}
-                        {% if is_following_city(event.city) %}
-                            <form action="{{ path('app_unfollow_city', {id: event.city.id}) }}" method="POST" style="margin: 10px 0;">
-                                <input type="hidden" name="_token" value="{{ csrf_token('unfollow_city' ~ event.city.id) }}">
-                                <button type="submit" class="btn-follow">✓ Ville suivie - Ne plus suivre</button>
-                            </form>
-                        {% else %}
-                            <form action="{{ path('app_follow_city', {id: event.city.id}) }}" method="POST" style="margin: 10px 0;">
-                                <input type="hidden" name="_token" value="{{ csrf_token('follow_city' ~ event.city.id) }}">
-                                <button type="submit" class="btn-follow">+ Suivre {{ event.city.name }}</button>
-                            </form>
+                {# Event Info Header #}
+                <div class="event-detail__header">
+                    <h1 class="event-detail__title">{{ event.title }}</h1>
+
+                    <div class="event-detail__meta">
+                        <span class="event-detail__location">
+                            <i class="fa-solid fa-map-location-dot"></i> {{ event.city.name }} ({{ event.city.postalCode }})
+                        </span>
+                        <span class="event-detail__date">
+                            <i class="fa-regular fa-calendar-days"></i> {{ event.dateStart|date('d F Y à H\\hi') }}
+                        </span>
+                        {% if event.dateEnd %}
+                            <span class="event-detail__date-end">
+                                → {{ event.dateEnd|date('d F Y à H\\hi') }}
+                            </span>
                         {% endif %}
+                    </div>
+
+                    {# Tags #}
+                    {% if event.categories is not empty %}
+                        <div class="event-detail__tags">
+                            {% for category in event.categories %}
+                                <span class="tag">{{ category.name }}</span>
+                            {% endfor %}
+                        </div>
                     {% endif %}
-
-                    <div class="map-container">
-                        <div id="event-map" style="height: 300px; border-radius: 12px; overflow: hidden;"></div>
-                    </div>
-
-                    <p class="location-footer">
-                        🚗 Accès : Metro ligne A - Basso Cambo<br>
-                        Parking gratuit à proximité - Arrêt "Basso Cambo"
-                    </p>
                 </div>
+            </section>
 
-                {# Organizer #}
-                <div class="organizer-card">
-                    <h3 class="card-title">👤 Organisateur</h3>
-
-                    <div class="organizer-profile">
-                        <div class="organizer-avatar">
-                            {{ event.createdBy.email|first|upper }}
-                        </div>
-                        <div class="organizer-info">
-                            <h4 class="organizer-name">{{ event.createdBy.email|split('@')[0]|title }}</h4>
-                            <p class="organizer-role">Organisateur</p>
-                        </div>
+            {# ========== DESCRIPTION ========== #}
+            <section class="event-section">
+                <div class="event-section__card">
+                    <h2 class="event-section__title">Description</h2>
+                    <div class="event-section__content">
+                        {{ event.description|nl2br }}
                     </div>
 
-                    <div class="organizer-stats">
-                        <div class="stat-item">📍 {{ event.city.name }}, France</div>
-                        <div class="stat-item">📅 {{ event.createdBy.events|length }} Événements créés</div>
-                        <div class="stat-item">👥 {{ event.createdBy.subscribers|default(0) }} abonnés</div>
-                    </div>
-
-                    <div class="organizer-actions">
-                        {% if is_following_user(event.createdBy) %}
-                            <form action="{{ path('app_unfollow_user', {id: event.createdBy.id}) }}" method="POST" style="display: inline;">
-                                <input type="hidden" name="_token" value="{{ csrf_token('unfollow_user' ~ event.createdBy.id) }}">
-                                <button type="submit" class="btn-follow">✓ Suivi - Ne plus suivre</button>
-                            </form>
+                    <div class="event-section__details">
+                        {% if event.price %}
+                            <span class="event-section__detail"><i class="fa-solid fa-hand-holding-dollar"></i> {{ event.price|number_format(2, ',', ' ') }}€</span>
                         {% else %}
-                            <form action="{{ path('app_follow_user', {id: event.createdBy.id}) }}" method="POST" style="display: inline;">
-                                <input type="hidden" name="_token" value="{{ csrf_token('follow_user' ~ event.createdBy.id) }}">
-                                <button type="submit" class="btn-follow">+ Suivre</button>
-                            </form>
+                            <span class="event-section__detail event-section__detail--free"><i class="fa-solid fa-hand-holding-dollar"></i> Gratuit</span>
+                        {% endif %}
+
+                        {% if event.schedule %}
+                            <span class="event-section__detail"><i class="fa-solid fa-clock"></i> {{ event.schedule }}</span>
                         {% endif %}
                     </div>
                 </div>
+            </section>
+
+            {# ========== BOTTOM GRID: LOCATION + ORGANIZER ========== #}
+            <div class="event-grid">
+                {# Location Card #}
+                <section class="event-section">
+                    <div class="event-section__card">
+                        <h3 class="event-section__title"><i class="fa-solid fa-map-location-dot"></i> Localisation</h3>
+
+                        <p class="event-section__address">
+                            {{ event.address }}<br>
+                            {{ event.city.name }}, {{ event.city.department.name }}
+                        </p>
+
+                        {# Follow city #}
+                        {% if app.user %}
+                            {% if is_following_city(event.city) %}
+                                <form action="{{ path('app_unfollow_city', {id: event.city.id}) }}" method="POST" class="event-section__follow">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('unfollow_city' ~ event.city.id) }}">
+                                    <button type="submit" class="btn btn--outline btn--sm">
+                                        ✓ Ville suivie
+                                    </button>
+                                </form>
+                            {% else %}
+                                <form action="{{ path('app_follow_city', {id: event.city.id}) }}" method="POST" class="event-section__follow">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('follow_city' ~ event.city.id) }}">
+                                    <button type="submit" class="btn btn--primary btn--sm">
+                                        + Suivre {{ event.city.name }}
+                                    </button>
+                                </form>
+                            {% endif %}
+                        {% endif %}
+
+                        {# Map #}
+                        <div id="event-map" class="event-section__map"></div>
+                    </div>
+                </section>
+
+                {# Organizer Card #}
+                <section class="event-section">
+                    <div class="event-section__card">
+                        <h3 class="event-section__title"><i class="fa-solid fa-person"></i> Organisateur</h3>
+
+                        <div class="organizer">
+                            <div class="organizer__avatar avatar avatar--lg">
+                                {{ event.createdBy.firstName|first|upper }}{{ event.createdBy.lastName|first|upper }}
+                            </div>
+                            <div class="organizer__info">
+                                <h4 class="organizer__name">
+                                    {{ event.createdBy.firstName }} {{ event.createdBy.lastName }}
+                                </h4>
+                                <p class="organizer__role">Organisateur</p>
+                            </div>
+                        </div>
+
+                        <div class="organizer__stats">
+                            <span class="organizer__stat"><i class="fa-regular fa-calendar-days"></i> {{ event.createdBy.events|length }} événement(s)</span>
+                            <span class="organizer__stat"><i class="fa-solid fa-people-group"></i> {{ event.createdBy.followers|length }} abonné(s)</span>
+                        </div>
+
+                        {# Follow organizer #}
+                        {% if app.user and app.user != event.createdBy %}
+                            {% if is_following_user(event.createdBy) %}
+                                <form action="{{ path('app_unfollow_user', {id: event.createdBy.id}) }}" method="POST">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('unfollow_user' ~ event.createdBy.id) }}">
+                                    <button type="submit" class="btn btn--outline btn--block">
+                                        ✓ Suivi
+                                    </button>
+                                </form>
+                            {% else %}
+                                <form action="{{ path('app_follow_user', {id: event.createdBy.id}) }}" method="POST">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('follow_user' ~ event.createdBy.id) }}">
+                                    <button type="submit" class="btn btn--primary btn--block">
+                                        + Suivre
+                                    </button>
+                                </form>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </section>
             </div>
-        </section>
+
+            {# Back link #}
+            <div class="page__back">
+                <a href="{{ path('app_event_index') }}" class="btn btn--outline">← Retour aux événements</a>
+            </div>
+        </div>
     </div>
 {% endblock %}
 
 {% block javascripts %}
+    {{ parent() }}
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Configuration de la carte
             const cityName = "{{ event.city.name }}, {{ event.city.postalCode }}, France";
             const address = "{{ event.address }}";
+            const eventTitle = "{{ event.title|e('js') }}";
 
-            // Géocoder la ville avec Nominatim (OpenStreetMap)
             fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(cityName)}`)
                 .then(response => response.json())
                 .then(data => {
@@ -155,38 +188,23 @@
                         const lat = parseFloat(data[0].lat);
                         const lon = parseFloat(data[0].lon);
 
-                        // Initialiser la carte
                         const map = L.map('event-map').setView([lat, lon], 13);
-
-                        // Ajouter le layer OpenStreetMap
                         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                            attribution: '&copy; OpenStreetMap',
                             maxZoom: 19
                         }).addTo(map);
 
-                        // Ajouter un marqueur
-                        const marker = L.marker([lat, lon]).addTo(map);
-                        marker.bindPopup(`
-                            <div style="text-align: center;">
-                                <strong>{{ event.title }}</strong><br>
-                                <em>${address}</em><br>
-                                {{ event.city.name }}
-                            </div>
-                        `).openPopup();
+                        L.marker([lat, lon]).addTo(map)
+                            .bindPopup(`<strong>${eventTitle}</strong><br>${address}`)
+                            .openPopup();
                     } else {
-                        // En cas d'erreur de géocodage, afficher un message
                         document.getElementById('event-map').innerHTML =
-                            '<div style="display: flex; align-items: center; justify-content: center; height: 100%; background: #374b5f; color: #cbd5e0;">' +
-                            'Carte non disponible pour cette localisation' +
-                            '</div>';
+                            '<p class="event-section__map-error">Carte non disponible</p>';
                     }
                 })
-                .catch(error => {
-                    console.error('Erreur lors du chargement de la carte:', error);
+                .catch(() => {
                     document.getElementById('event-map').innerHTML =
-                        '<div style="display: flex; align-items: center; justify-content: center; height: 100%; background: #374b5f; color: #cbd5e0;">' +
-                        'Erreur de chargement de la carte' +
-                        '</div>';
+                        '<p class="event-section__map-error">Erreur de chargement</p>';
                 });
         });
     </script>
