@@ -40,7 +40,6 @@ Optional: show_actions (bool), compact (bool)
     {# Content #}
     <div class="event-card__content">
         <h3 class="event-card__title">{{ event.title }}</h3>
-
         <div class="event-card__meta">
             <span class="event-card__location">
                 <span class="event-card__icon"><i class="fa-solid fa-map-location-dot"></i></span>
@@ -58,7 +57,6 @@ Optional: show_actions (bool), compact (bool)
                 {% endif %}
             </span>
         </div>
-
         {# Categories #}
         {% if event.categories is not empty %}
             <div class="event-card__tags">
@@ -67,14 +65,12 @@ Optional: show_actions (bool), compact (bool)
                 {% endfor %}
             </div>
         {% endif %}
-
         {# Description (truncated) #}
         {% if event.description and not (compact|default(false)) %}
             <p class="event-card__description">
                 {{ event.description|length > 120 ? event.description|slice(0, 120) ~ '...' : event.description }}
             </p>
         {% endif %}
-
         {# Actions #}
         <div class="event-card__actions">
             <a href="{{ path('app_event_show', {id: event.id}) }}" class="btn btn--primary btn--sm">

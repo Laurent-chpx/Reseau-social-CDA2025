@@ -69,36 +69,29 @@ class EventRepository extends ServiceEntityRepository
             $qb->andWhere('c.id = :cityId')
                 ->setParameter('cityId', $cityId);
         }
-
         if ($departmentId) {
             $qb->andWhere('d.id = :departmentId')
                 ->setParameter('departmentId', $departmentId);
         }
-
         if ($categoryId) {
             $qb->andWhere('cat.id = :categoryId')
                 ->setParameter('categoryId', $categoryId);
         }
-
         if ($dateFrom) {
             $qb->andWhere('e.dateStart >= :dateFrom')
                 ->setParameter('dateFrom', new \DateTimeImmutable($dateFrom));
         }
-
         if ($dateTo) {
             $qb->andWhere('e.dateStart <= :dateTo')
                 ->setParameter('dateTo', new \DateTimeImmutable($dateTo . ' 23:59:59'));
         }
-
         if ($freeOnly) {
             $qb->andWhere('e.price IS NULL OR e.price = 0');
         }
-
         if ($search) {
             $qb->andWhere('e.title LIKE :search OR e.description LIKE :search')
                 ->setParameter('search', '%' . $search . '%');
         }
-
         return $qb->getQuery()->getResult();
     }
 
