@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\UserFollow;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -16,6 +17,35 @@ class UserFollowRepository extends ServiceEntityRepository
         parent::__construct($registry, UserFollow::class);
     }
 
+    public function findFollow(User $follower, User $followed): ?UserFollow
+    {
+        return $this->findOneBy([
+            'follower' => $follower,
+            'followed' => $followed,
+        ]);
+    }
+
+    public function findFollowedUsers(User $user): array
+    {
+        return $this->createQueryBuilder('uf')
+            ->innerJoin('uf.followed', 'u')
+            ->andWhere('uf.follower = :user')
+            ->setParameter('user', $user)
+            ->orderBy('uf.createdAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findFollowers(User $user): array
+    {
+        return $this->createQueryBuilder('uf')
+            ->innerJoin('uf.follower', 'u')
+            ->andWhere('uf.followed = :user')
+            ->setParameter('user', $user)
+            ->orderBy('uf.createdAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
     //    /**
     //     * @return UserFollow[] Returns an array of UserFollow objects
     //     */

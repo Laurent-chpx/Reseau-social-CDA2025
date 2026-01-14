@@ -1,0 +1,95 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil - Événements Occitanie{% endblock %}
+
+{% block body %}
+    <section class="hero">
+        <h1>Découvrez les événements en Occitanie</h1>
+        <p>Concerts, festivals, expositions, spectacles et bien plus encore...</p>
+
+        {# Barre de recherche #}
+        <form action="{{ path('app_event_index') }}" method="GET">
+            <div>
+
+                {# Champ de recherche texte #}
+                <input type="text" name="search" placeholder="Rechercher un événement...">
+
+                {# Filtre par catégorie #}
+                <select name="category" >
+                    <option value="">Toutes catégories</option>
+                    {% for category in categories %}
+                        <option value="{{ category.id }}">{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+
+                {# Filtre par département #}
+                <select name="department">
+                    <option value="">Tous départements</option>
+                    {% for department in departments %}
+                        <option value="{{ department.id }}">{{ department.code }} - {{ department.name }}</option>
+                    {% endfor %}
+                </select>
+
+                {# Bouton de recherche #}
+                <button type="submit">Rechercher</button>
+            </div>
+        </form>
+    </section>
+    <section>
+        <h2>Événements à la une</h2>
+        {% if promotedEvents is empty %}
+            <p>Aucun événement sponsorisé pour le moment.</p>
+        {% else %}
+            <div>
+                {% for event in promotedEvents %}
+                    <div>
+                        {% if event.images|length > 0 %}
+                            <img src="{{ asset('uploads/events/' ~ event.images[0].url) }}" alt="{{ event.title }}">
+                        {% else %}
+                            <div>
+                                Pas d'image
+                            </div>
+                        {% endif %}
+                        <h3>{{ event.title }}</h3>
+                        <p>{{ event.dateStart|date('d/m/Y H:i') }}</p>
+                        <p>{{ event.city }}</p>
+                        <p>{% if event.price %}{{ event.price }} €{% else %}Gratuit{% endif %}</p>
+                        <a href="{{ path('app_event_show', {id: event.id}) }}">Voir le détail</a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </section>
+
+    <section>
+        <h2>Derniers événements ajoutés</h2>
+        {% if latestEvents is empty %}
+            <p>Aucun événement pour le moment.</p>
+        {% else %}
+            <div>
+                {% for event in latestEvents %}
+                    <div>
+                        {% if event.images|length > 0 %}
+                            <img src="{{ asset('uploads/events/' ~ event.images[0].url) }}"
+                                 alt="{{ event.title }}"
+                                 style="width: 100%; height: 150px; object-fit: cover;">
+                        {% else %}
+                            <div>
+                                Pas d'image
+                            </div>
+                        {% endif %}
+                        <h3>{{ event.title }}</h3>
+                        <p>{{ event.dateStart|date('d/m/Y H:i') }}</p>
+                        <p>{{ event.city }}</p>
+                        <p>{% if event.price %}{{ event.price }} €{% else %}Gratuit{% endif %}</p>
+                        <a href="{{ path('app_event_show', {id: event.id}) }}">Voir le détail</a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </section>
+
+    <section style="margin-top: 40px;">
+        <a href="{{ path('app_event_index') }}">Voir tous les événements</a>
+    </section>
+{% endblock %}

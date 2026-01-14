@@ -16,6 +16,18 @@ class UserRepository extends ServiceEntityRepository
         parent::__construct($registry, User::class);
     }
 
+    public function isFollowing(User $follower, User $followed): bool
+    {
+        $conn = $this->getEntityManager()->getConnection();
+        $sql = 'SELECT id FROM user_follow WHERE follower_id = :follower AND followed_id = :followed';
+        $result = $conn->executeQuery($sql, [
+            'follower' => $follower->getId(),
+            'followed' => $followed->getId(),
+        ]);
+
+        return $result->fetchOne() !== false;
+    }
+
     //    /**
     //     * @return User[] Returns an array of User objects
     //     */

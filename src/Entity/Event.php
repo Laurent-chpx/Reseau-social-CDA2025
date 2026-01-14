@@ -41,7 +41,7 @@ class Event
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $updateAt = null;
+    private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'events')]
     #[ORM\JoinColumn(nullable: false)]
@@ -66,10 +66,17 @@ class Event
     #[ORM\OneToOne(mappedBy: 'event', cascade: ['persist', 'remove'])]
     private ?Promote $promote = null;
 
+    /**
+     * @var Collection<int, PromoteRequest>
+     */
+    #[ORM\OneToMany(targetEntity: PromoteRequest::class, mappedBy: 'event', orphanRemoval: true)]
+    private Collection $promoteRequests;
+
     public function __construct()
     {
         $this->categories = new ArrayCollection();
         $this->images = new ArrayCollection();
+        $this->promoteRequests = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -173,14 +180,14 @@ class Event
         return $this;
     }
 
-    public function getUpdateAt(): ?\DateTimeImmutable
+    public function getUpdatedAt(): ?\DateTimeImmutable
     {
-        return $this->updateAt;
+        return $this->updatedAt;
     }
 
-    public function setUpdateAt(\DateTimeImmutable $updateAt): static
+    public function setUpdatedAt(\DateTimeImmutable $updateAt): static
     {
-        $this->updateAt = $updateAt;
+        $this->updatedAt = $updateAt;
 
         return $this;
     }
@@ -276,6 +283,41 @@ class Event
         }
 
         $this->promote = $promote;
+
+        return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->title;
+    }
+
+    /**
+     * @return Collection<int, PromoteRequest>
+     */
+    public function getPromoteRequests(): Collection
+    {
+        return $this->promoteRequests;
+    }
+
+    public function addPromoteRequest(PromoteRequest $promoteRequest): static
+    {
+        if (!$this->promoteRequests->contains($promoteRequest)) {
+            $this->promoteRequests->add($promoteRequest);
+            $promoteRequest->setEvent($this);
+        }
+
+        return $this;
+    }
+
+    public function removePromoteRequest(PromoteRequest $promoteRequest): static
+    {
+        if ($this->promoteRequests->removeElement($promoteRequest)) {
+            // set the owning side to null (unless already changed)
+            if ($promoteRequest->getEvent() === $this) {
+                $promoteRequest->setEvent(null);
+            }
+        }
 
         return $this;
     }
