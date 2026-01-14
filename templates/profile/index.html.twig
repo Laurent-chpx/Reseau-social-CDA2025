@@ -1,282 +1,118 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Mon Profil{% endblock %}
+{% block title %}Tableau de bord | La Vie en Rose{% endblock %}
 
 {% block stylesheets %}
-    <style>
-        .carousel-container {
-            position: relative;
-            width: 100%;
-            overflow: hidden;
-            margin: 20px 0;
-        }
-
-        .carousel {
-            display: flex;
-            gap: 15px;
-            overflow-x: auto;
-            scroll-behavior: smooth;
-            padding: 10px 0;
-            scrollbar-width: thin;
-        }
-
-        .carousel::-webkit-scrollbar {
-            height: 8px;
-        }
-
-        .carousel::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 4px;
-        }
-
-        .carousel::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 4px;
-        }
-
-        .carousel-card {
-            flex: 0 0 280px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            overflow: hidden;
-            background: white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .carousel-card img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-        }
-
-        .carousel-card .no-image {
-            width: 100%;
-            height: 150px;
-            background: #eee;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #999;
-        }
-
-        .carousel-card .card-content {
-            padding: 15px;
-        }
-
-        .carousel-card h4 {
-            margin: 0 0 10px 0;
-            font-size: 16px;
-        }
-
-        .carousel-card p {
-            margin: 5px 0;
-            font-size: 14px;
-            color: #666;
-        }
-
-        .carousel-card a {
-            display: inline-block;
-            margin-top: 10px;
-            color: #007bff;
-            text-decoration: none;
-        }
-
-        .carousel-nav {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .carousel-nav button {
-            padding: 8px 15px;
-            border: 1px solid #ddd;
-            background: white;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-
-        .carousel-nav button:hover {
-            background: #f5f5f5;
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .empty-carousel {
-            padding: 30px;
-            background: #f9f9f9;
-            border-radius: 8px;
-            text-align: center;
-            color: #666;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('styles/logo.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/dashboard.css') }}">
 {% endblock %}
 
 {% block body %}
-    <h1>Mon Dashboard</h1>
+    <div class="dashboard-container">
+        {# Welcome Section #}
+        <section class="welcome-section">
+            <h1 class="welcome-title">
+                Bonjour {% if app.user %}{{ app.user.email|split('@')[0]|capitalize }}{% else %}Jean{% endif %} !
+            </h1>
+        </section>
 
-    {% for message in app.flashes('success') %}
-        <p style="color: green;">{{ message }}</p>
-    {% endfor %}
-
-    {% for message in app.flashes('error') %}
-        <p style="color: red;">{{ message }}</p>
-    {% endfor %}
-
-    {# Informations utilisateur #}
-    <section style="margin-bottom: 30px;">
-        <h2>Mes informations</h2>
-        <p><strong>Email :</strong> {{ user.email }}</p>
-        <p><strong>Prénom :</strong> {{ user.firstName }}</p>
-        <p><strong>Nom :</strong> {{ user.lastName }}</p>
-        <p><strong>Inscrit le :</strong> {{ user.createdAt|date('d/m/Y') }}</p>
-        <p><a href="{{ path('app_profile_edit') }}">Modifier mon profil</a></p>
-    </section>
-
-    {# Carrousel événements des villes suivies #}
-    <section style="margin-bottom: 30px;">
-        <div class="section-header">
-            <h2>Événements dans mes villes</h2>
-            <a href="{{ path('app_my_follows') }}">Gérer mes villes suivies</a>
-        </div>
-
-        {% if feedCities is empty %}
-            <div class="empty-carousel">
-                <p>Aucun événement dans les villes que vous suivez.</p>
-                <a href="{{ path('app_event_index') }}">Découvrir des événements</a>
+        {# Stats Cards #}
+        <section class="stats-section">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">{{ eventsCount|default(0) }}</div>
+                    <div class="stat-label">Événements créés</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">{{ followersCount|default(0) }}</div>
+                    <div class="stat-label">Abonnés</div>
+                </div>
             </div>
-        {% else %}
-            <div class="carousel-container">
-                <div class="carousel" id="carousel-cities">
-                    {% for event in feedCities %}
-                        <div class="carousel-card">
-                            {% if event.images|length > 0 %}
-                                <img src="{{ asset('uploads/events/' ~ event.images[0].url) }}" alt="{{ event.title }}">
-                            {% else %}
-                                <div class="no-image">Pas d'image</div>
-                            {% endif %}
-                            <div class="card-content">
-                                <h4>{{ event.title }}</h4>
-                                <p> {{ event.dateStart|date('d/m/Y H:i') }}</p>
-                                <p> {{ event.city.name }}</p>
-                                <p> {% if event.price %}{{ event.price }} €{% else %}Gratuit{% endif %}</p>
-                                <a href="{{ path('app_event_show', {id: event.id}) }}">Voir le détail →</a>
+        </section>
+
+        {# Main Content - Two Columns #}
+        <section class="content-section">
+            <div class="content-grid">
+                {# Left Column - New Events #}
+                <div class="content-column">
+                    <h2 class="column-title">Nouveaux événements dans vos villes</h2>
+
+                    <div class="events-list">
+                        {% if followedCitiesEvents is not empty %}
+                            {% for event in followedCitiesEvents %}
+                                <div class="event-card-dashboard">
+                                    <div class="event-image-placeholder">
+                                        {% if event.images|length > 0 %}
+                                            <img src="{{ asset('uploads/events/' ~ event.images.first.url) }}" alt="{{ event.title }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                        {% else %}
+                                            [IMAGE PRINCIPALE]
+                                        {% endif %}
+                                    </div>
+                                    <div class="event-info">
+                                        <h3 class="event-title-dashboard">{{ event.title }}</h3>
+                                        <p class="event-location-dashboard">📍 {{ event.city.name }}</p>
+                                        <p class="event-date-dashboard">📅 {{ event.dateStart|date('d F Y') }}</p>
+                                    </div>
+                                    <a href="{{ path('app_event_show', {id: event.id}) }}" class="event-btn-dashboard">Voir ></a>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="event-card-dashboard">
+                                <div class="event-image-placeholder">[IMAGE PRINCIPALE]</div>
+                                <div class="event-info">
+                                    <h3 class="event-title-dashboard">Aucun événement</h3>
+                                    <p class="event-location-dashboard">📍 Suivez des villes</p>
+                                    <p class="event-date-dashboard">📅 Pour voir les événements</p>
+                                </div>
                             </div>
-                        </div>
-                    {% endfor %}
+                        {% endif %}
+                    </div>
                 </div>
-                <div class="carousel-nav">
-                    <button onclick="scrollCarousel('carousel-cities', -300)">← Précédent</button>
-                    <button onclick="scrollCarousel('carousel-cities', 300)">Suivant →</button>
-                </div>
-            </div>
-        {% endif %}
-    </section>
 
-    {# Carrousel événements des utilisateurs suivis #}
-    <section style="margin-bottom: 30px;">
-        <div class="section-header">
-            <h2>Événements de mes abonnements</h2>
-            <a href="{{ path('app_my_follows') }}">Gérer mes abonnements</a>
-        </div>
+                {# Right Column - Activity Feed #}
+                <div class="content-column">
+                    <h2 class="column-title">Vos créateurs favoris ont publié</h2>
 
-        {% if feedUsers is empty %}
-            <div class="empty-carousel">
-                <p>Aucun événement des utilisateurs que vous suivez.</p>
-                <a href="{{ path('app_event_index') }}">Découvrir des organisateurs</a>
-            </div>
-        {% else %}
-            <div class="carousel-container">
-                <div class="carousel" id="carousel-users">
-                    {% for event in feedUsers %}
-                        <div class="carousel-card">
-                            {% if event.images|length > 0 %}
-                                <img src="{{ asset('uploads/events/' ~ event.images[0].url) }}" alt="{{ event.title }}">
-                            {% else %}
-                                <div class="no-image">Pas d'image</div>
-                            {% endif %}
-                            <div class="card-content">
-                                <h4>{{ event.title }}</h4>
-                                <p> {{ event.createdBy.firstName }} {{ event.createdBy.lastName }}</p>
-                                <p> {{ event.dateStart|date('d/m/Y H:i') }}</p>
-                                <p> {{ event.city.name }}</p>
-                                <p> {% if event.price %}{{ event.price }} €{% else %}Gratuit{% endif %}</p>
-                                <a href="{{ path('app_event_show', {id: event.id}) }}">Voir le détail →</a>
+                    <div class="activity-feed">
+                        {% if followedCreatorsEvents is not empty %}
+                            {% for event in followedCreatorsEvents %}
+                                <div class="activity-item">
+                                    <p class="activity-text">
+                                        <strong>{{ event.createdBy.firstName ?? 'Organisateur' }} {{ event.createdBy.lastName ?? '' }}</strong> a publié<br>
+                                        <span class="activity-detail">
+                                            {{ event.title }} •
+                                            {% set diff = date().diff(event.createdAt) %}
+                                            {% if diff.d > 1 %}
+                                                il y a {{ diff.d }} jours
+                                            {% elseif diff.d == 1 %}
+                                                Hier
+                                            {% elseif diff.h > 0 %}
+                                                il y a {{ diff.h }}h
+                                            {% else %}
+                                                il y a quelques minutes
+                                            {% endif %}
+                                        </span>
+                                    </p>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="activity-item">
+                                <p class="activity-text">
+                                    <strong>Aucune activité récente</strong><br>
+                                    <span class="activity-detail">Suivez des organisateurs pour voir leurs publications</span>
+                                </p>
                             </div>
-                        </div>
-                    {% endfor %}
-                </div>
-                <div class="carousel-nav">
-                    <button onclick="scrollCarousel('carousel-users', -300)">← Précédent</button>
-                    <button onclick="scrollCarousel('carousel-users', 300)">Suivant →</button>
+                        {% endif %}
+
+                        <a href="{{ path('app_event_index') }}" class="btn-view-all">Voir tous les événements</a>
+                    </div>
                 </div>
             </div>
-        {% endif %}
-    </section>
+        </section>
 
-    {# Mes événements #}
-    <section style="margin-bottom: 30px;">
-        <div class="section-header">
-            <h2> Mes événements ({{ events|length }})</h2>
-            <a href="{{ path('app_profile_event_new') }}">+ Créer un événement</a>
-        </div>
-
-        {% if events is empty %}
-            <div class="empty-carousel">
-                <p>Vous n'avez pas encore créé d'événement.</p>
-                <a href="{{ path('app_profile_event_new') }}">Créer mon premier événement</a>
-            </div>
-        {% else %}
-            <div class="carousel-container">
-                <div class="carousel" id="carousel-my-events">
-                    {% for event in events %}
-                        <div class="carousel-card">
-                            {% if event.images|length > 0 %}
-                                <img src="{{ asset('uploads/events/' ~ event.images[0].url) }}" alt="{{ event.title }}">
-                            {% else %}
-                                <div class="no-image">Pas d'image</div>
-                            {% endif %}
-                            <div class="card-content">
-                                <h4>{{ event.title }}</h4>
-                                <p> {{ event.dateStart|date('d/m/Y H:i') }}</p>
-                                <p>{{ event.city.name }}</p>
-                                <a href="{{ path('app_profile_event_edit', {id: event.id}) }}">Modifier</a>
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
-                <div class="carousel-nav">
-                    <button onclick="scrollCarousel('carousel-my-events', -300)">← Précédent</button>
-                    <button onclick="scrollCarousel('carousel-my-events', 300)">Suivant →</button>
-                </div>
-            </div>
-            <p><a href="{{ path('app_profile_events') }}">Voir tous mes événements en liste</a></p>
-        {% endif %}
-    </section>
-
-    {# Liens utiles #}
-    <section>
-        <h2>Liens rapides</h2>
-        <ul>
-            <li><a href="{{ path('app_my_follows') }}">Gérer mes abonnements</a></li>
-            <li><a href="{{ path('app_event_index') }}">Tous les événements</a></li>
-            <li><a href="{{ path('app_logout') }}">Déconnexion</a></li>
-        </ul>
-    </section>
-{% endblock %}
-
-{% block javascripts %}
-    <script>
-        function scrollCarousel(carouselId, scrollAmount) {
-            const carousel = document.getElementById(carouselId);
-            carousel.scrollBy({
-                left: scrollAmount,
-                behavior: 'smooth'
-            });
-        }
-    </script>
+        {# Create Event Button #}
+        <section class="create-event-section">
+            <a href="{{ path('app_profile_event_new') }}" class="btn-create-event">Créer un nouvel événement</a>
+        </section>
+    </div>
 {% endblock %}

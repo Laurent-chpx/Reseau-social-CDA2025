@@ -1,66 +1,141 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Mes événements{% endblock %}
+{% block title %}Mes événements | La Vie en Rose{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('styles/logo.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/my-events.css') }}">
+{% endblock %}
 
 {% block body %}
-    <h1>Mes événements</h1>
+    <div class="my-events-container">
+        {# Main Content #}
+        <main class="events-content">
+            <div class="events-wrapper">
+                <h1 class="page-title">Mes événements</h1>
 
-    {% for message in app.flashes('success') %}
-        <p style="color: green;">{{ message }}</p>
-    {% endfor %}
+                {# Flash Messages #}
+                {% for message in app.flashes('success') %}
+                    <div class="alert alert-success">{{ message }}</div>
+                {% endfor %}
 
-    {% for message in app.flashes('error') %}
-        <p style="color: red;">{{ message }}</p>
-    {% endfor %}
+                {% for message in app.flashes('error') %}
+                    <p style="color: red;">{{ message }}</p>
+                {% endfor %}
 
-    <p><a href="{{ path('app_profile_event_new') }}">+ Créer un événement</a></p>
+                {# Tabs Navigation #}
+                <div class="tabs-container">
+                    <button class="tab-btn active" data-tab="active">
+                        Actifs <span class="tab-count">({{ events|filter(e => e.dateStart >= date()) |length }})</span>
+                    </button>
+                    <button class="tab-btn" data-tab="past">
+                        Passés <span class="tab-count">({{ events|filter(e => e.dateStart < date()) |length }})</span>
+                    </button>
+                </div>
 
-    {% if events is empty %}
-        <p>Vous n'avez pas encore créé d'événement.</p>
-    {% else %}
-        <table border="1">
-            <thead>
-            <tr>
-                <th>Image</th>
-                <th>Titre</th>
-                <th>Date</th>
-                <th>Ville</th>
-                <th>Promotion</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for event in events %}
-                <tr>
-                    <td>
-                        {% if event.images|length > 0 %}
-                            <img src="{{ asset('uploads/events/' ~ event.images[0].url) }}" width="80" alt="{{ event.title }}">
-                        {% else %}
-                            Pas d'image
-                        {% endif %}
-                    </td>
-                    <td>{{ event.title }}</td>
-                    <td>{{ event.dateStart|date('d/m/Y H:i') }}</td>
-                    <td>{{ event.city }}</td>
-                    <td>
-                        {% if event.promote %}
-                            <span style="color: green;">En promotion</span>
-                        {% else %}
-                            <a href="{{ path('app_profile_event_promote', {id: event.id}) }}">Promouvoir</a>
-                        {% endif %}
-                    </td>
-                    <td>
-                        <a href="{{ path('app_profile_event_edit', {id: event.id}) }}">Modifier</a>
-                        <form action="{{ path('app_profile_event_delete', {id: event.id}) }}" method="POST" style="display:inline;">
-                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ event.id) }}">
-                            <button type="submit" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet événement ?')">Supprimer</button>
-                        </form>
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    {% endif %}
+                {# Events Grid #}
+                <div class="events-grid">
+                    {% if events is empty %}
+                        <div class="empty-state">
+                            <p class="empty-message">Vous n'avez pas encore créé d'événement.</p>
+                            <a href="{{ path('app_profile_event_new') }}" class="btn-create">Créer mon premier événement</a>
+                        </div>
+                    {% else %}
+                        {% for event in events %}
+                            <div class="event-card" data-status="{% if event.dateStart >= date() %}active{% else %}past{% endif %}">
+                                {# Event Badge #}
+                                {% if event.dateStart >= date() %}
+                                    <span class="event-badge badge-active">ACTIF</span>
+                                {% endif %}
 
-    <p><a href="{{ path('app_profile') }}">Retour au dashboard</a></p>
+                                {# Event Image #}
+                                <div class="event-image">
+                                    {% if event.images|length > 0 %}
+                                        <img src="{{ asset('uploads/events/' ~ event.images[0].url) }}" alt="{{ event.title }}">
+                                    {% else %}
+                                        <div class="image-placeholder">[img]</div>
+                                    {% endif %}
+                                </div>
+
+                                {# Event Info #}
+                                <div class="event-info">
+                                    <h3 class="event-title">{{ event.title }}</h3>
+
+                                    <div class="event-meta">
+                                        <span class="meta-item">
+                                            📍 {{ event.city.name }} ({{ event.city.postalCode }})
+                                        </span>
+                                        <span class="meta-item">
+                                            📅 {{ event.dateStart|date('d M Y') }}
+                                        </span>
+                                        <span class="meta-item">
+                                            👁 {{ event.views|default(0) }} vues
+                                        </span>
+                                    </div>
+
+                                    {# Event Tags #}
+                                    <div class="event-tags">
+                                        {% for category in event.categories|slice(0, 2) %}
+                                            <span class="event-tag">{{ category.name }}</span>
+                                        {% endfor %}
+                                    </div>
+
+                                    {# Event Actions #}
+                                    <div class="event-actions">
+                                        {% if event.promote %}
+                                            <span style="color: green;">En promotion</span>
+                                        {% else %}
+                                            <a href="{{ path('app_profile_event_promote', {id: event.id}) }}">Promouvoir</a>
+                                        {% endif %}
+                                        <a href="{{ path('app_profile_event_edit', {id: event.id}) }}" class="action-btn btn-edit" title="Modifier">
+                                            ✏️
+                                        </a>
+                                        <a href="{{ path('app_event_show', {id: event.id}) }}" class="action-btn btn-view" title="Voir les détails">
+                                            📋
+                                        </a>
+                                        <form action="{{ path('app_profile_event_delete', {id: event.id}) }}" method="POST" style="display:inline;">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ event.id) }}">
+                                            <button type="submit" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet événement ?')">Supprimer</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+        </main>
+    </div>
+
+    {# JavaScript for Tabs #}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('.tab-btn');
+            const cards = document.querySelectorAll('.event-card');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Remove active class from all tabs
+                    tabs.forEach(t => t.classList.remove('active'));
+                    // Add active class to clicked tab
+                    this.classList.add('active');
+
+                    const filter = this.dataset.tab;
+
+                    // Filter cards
+                    cards.forEach(card => {
+                        if (filter === 'drafts') {
+                            card.style.display = 'none'; // Hide all for now (no drafts implemented)
+                        } else if (filter === 'active' || filter === 'past') {
+                            if (card.dataset.status === filter) {
+                                card.style.display = 'block';
+                            } else {
+                                card.style.display = 'none';
+                            }
+                        }
+                    });
+                });
+            });
+        });
+    </script>
 {% endblock %}

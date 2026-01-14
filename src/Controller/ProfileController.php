@@ -33,8 +33,10 @@ final class ProfileController extends AbstractController
         return $this->render('profile/index.html.twig', [
             'user' => $user,
             'events' => $events,
-            'feedCities' => $eventRepository->findByFollowedCities($user, 10),
-            'feedUsers' => $eventRepository->findByFollowedUsers($user, 10),
+            'eventsCount' => count($events),
+            'followersCount' => $user->getFollowers()->count(),
+            'followedCitiesEvents' => $eventRepository->findByFollowedCities($user, 10),
+            'followedCreatorsEvents' => $eventRepository->findByFollowedUsers($user, 10),
         ]);
     }
 

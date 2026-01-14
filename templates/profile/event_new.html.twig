@@ -1,24 +1,108 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Créer un événement{% endblock %}
+{% block title %}Créer un événement | La Vie en Rose{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('styles/logo.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/event-form.css') }}">
+{% endblock %}
 
 {% block body %}
-    <h1>Créer un événement</h1>
+    <div class="event-form-container">
 
-    {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
-    {{ form_row(form.title) }}
-    {{ form_row(form.description) }}
-    {{ form_row(form.address) }}
-    {{ form_row(form.city) }}
-    {{ form_row(form.dateStart) }}
-    {{ form_row(form.dateEnd) }}
-    {{ form_row(form.schedule) }}
-    {{ form_row(form.price) }}
-    {{ form_row(form.categories) }}
-    {{ form_row(form.images) }}
 
-    <button type="submit">Créer l'événement</button>
-    {{ form_end(form) }}
+        {# Main Form Section #}
+        <section class="form-section">
+            <div class="form-card">
+                <h1 class="form-title">Créer un nouvel événement</h1>
 
-    <p><a href="{{ path('app_profile_events') }}">Retour à mes événements</a></p>
+                {{ form_start(form, {'attr': {'class': 'event-form', 'enctype': 'multipart/form-data'}}) }}
+
+                    {# Title Field #}
+                    <div class="form-group">
+                        {{ form_label(form.title, 'Titre de l\'événement', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.title, {'attr': {'class': 'form-input', 'placeholder': 'Ex: Festival de jazz 2025'}}) }}
+                        {{ form_errors(form.title) }}
+                    </div>
+
+                    {# Description Field #}
+                    <div class="form-group">
+                        {{ form_label(form.description, 'Description*', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.description, {'attr': {'class': 'form-textarea', 'placeholder': 'Décrivez votre événement en détail...', 'rows': 5}}) }}
+                        {{ form_errors(form.description) }}
+                    </div>
+
+                    {# Date and Time Row #}
+                    <div class="form-row">
+                        <div class="form-group form-group-half">
+                            {{ form_label(form.dateStart, 'Date*', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.dateStart, {'attr': {'class': 'form-input'}}) }}
+                            {{ form_errors(form.dateStart) }}
+                        </div>
+
+                        <div class="form-group form-group-half">
+                            {{ form_label(form.schedule, 'Heure*', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.schedule, {'attr': {'class': 'form-input', 'placeholder': 'H:m'}}) }}
+                            {{ form_errors(form.schedule) }}
+                        </div>
+                    </div>
+
+                    {# Address Field #}
+                    <div class="form-group">
+                        {{ form_label(form.address, 'Lieu', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.address, {'attr': {'class': 'form-input', 'placeholder': 'Adresse complete'}}) }}
+                        {{ form_errors(form.address) }}
+                    </div>
+
+                    {# City and Postal Code Row #}
+                    <div class="form-row">
+                        <div class="form-group form-group-half">
+                            {{ form_label(form.city, 'Ville', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.city, {'attr': {'class': 'form-select'}}) }}
+                            {{ form_errors(form.city) }}
+                        </div>
+
+                        <div class="form-group form-group-half">
+                            <label class="form-label">Code postal</label>
+                            <input type="text" class="form-input form-input-disabled" value="" placeholder="Auto-rempli" readonly>
+                        </div>
+                    </div>
+
+                    {# Categories Field #}
+                    <div class="form-group">
+                        {{ form_label(form.categories, 'Type d\'événements*', {'label_attr': {'class': 'form-label'}}) }}
+                        <div class="categories-container">
+                            {{ form_widget(form.categories) }}
+                        </div>
+                        {{ form_errors(form.categories) }}
+                    </div>
+
+                    {# Image Upload Field #}
+                    <div class="form-group">
+                        <div class="upload-area">
+                            <div class="upload-icon">📤</div>
+                            <label for="{{ form.images.vars.id }}" class="upload-label">
+                                Choisissez ou glissez une image ici
+                            </label>
+                            <p class="upload-subtitle">Partagez des visuels sur l'événement</p>
+                            {{ form_widget(form.images, {'attr': {'class': 'form-file-input'}}) }}
+                        </div>
+                        {{ form_errors(form.images) }}
+                    </div>
+
+                    {# Hidden Optional Fields #}
+                    <div style="display: none;">
+                        {{ form_widget(form.dateEnd) }}
+                        {{ form_widget(form.price) }}
+                    </div>
+
+                    {# Form Buttons #}
+                    <div class="form-actions">
+                        <button type="submit" class="btn-submit">Publier l'événement</button>
+                    </div>
+
+                {{ form_end(form) }}
+            </div>
+        </section>
+    </div>
 {% endblock %}

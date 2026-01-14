@@ -53,7 +53,7 @@
                               method="POST"
                               style="display: inline;">
                             <input type="hidden" name="_token" value="{{ csrf_token('unfollow_city' ~ follow.city.id) }}">
-                            <button type="submit">Ne plus suivre</button>
+                            <button class="cta-btn" type="submit">Ne plus suivre</button>
                         </form>
                     </li>
                 {% endfor %}
@@ -61,5 +61,5 @@
         {% endif %}
     </section>
 
-    <p><a href="{{ path('app_profile') }}">Retour au dashboard</a></p>
+    <p><a class="cta-btn" href="{{ path('app_profile') }}">Retour au dashboard</a></p>
 {% endblock %}

@@ -43,8 +43,8 @@
     <h2>Ajouter de nouvelles images</h2>
     {{ form_row(form.images) }}
 
-    <button type="submit">Enregistrer les modifications</button>
+    <button class="cta-btn" type="submit">Enregistrer les modifications</button>
     {{ form_end(form) }}
 
-    <p><a href="{{ path('app_profile_events') }}">Retour à mes événements</a></p>
+    <p><a class="cta-btn" href="{{ path('app_profile_events') }}">Retour à mes événements</a></p>
 {% endblock %}

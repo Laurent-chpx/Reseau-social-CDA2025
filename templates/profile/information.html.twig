@@ -1,0 +1,139 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Profil - Informations | La Vie en Rose{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('styles/logo.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/profile-information.css') }}">
+{% endblock %}
+
+{% block body %}
+    <div class="page-container">
+        {# Header Navigation #}
+        <header class="main-header">
+            {% include '_components/_logo.html.twig' %}
+            <nav class="nav-menu">
+                <a href="{{ path('app_event_index') }}" class="nav-link">Événements</a>
+                <a href="{{ path('app_profile_events') }}" class="nav-link">Mes événements</a>
+            </nav>
+            <div class="user-avatar">
+                {% if app.user %}
+                    {{ app.user.email|first|upper }}{{ app.user.email|slice(app.user.email|split('@')[0]|length - 1, 1)|upper }}
+                {% else %}
+                    JD
+                {% endif %}
+            </div>
+        </header>
+
+        {# Main Content #}
+        <div class="profile-content">
+            {# Sidebar #}
+            <aside class="profile-sidebar">
+                <div class="sidebar-user">
+                    <div class="sidebar-avatar">
+                        {{ app.user.email|first|upper }}{{ app.user.email|slice(app.user.email|split('@')[0]|length - 1, 1)|upper }}
+                    </div>
+                    <div class="sidebar-user-info">
+                        <div class="sidebar-user-name">{{ app.user.firstName }} {{ app.user.lastName }}</div>
+                    </div>
+                </div>
+
+                <nav class="sidebar-nav">
+                    <a href="{{ path('app_profile_information') }}" class="sidebar-link active">
+                        <span class="sidebar-link-text">information</span>
+                    </a>
+                    <a href="#" class="sidebar-link">
+                        <span class="sidebar-link-text">paramètre</span>
+                    </a>
+                    <a href="#" class="sidebar-link">
+                        <span class="sidebar-link-text">Facturation</span>
+                    </a>
+                    <a href="{{ path('app_logout') }}" class="sidebar-link logout">
+                        <span class="sidebar-link-text">Déconnexion</span>
+                    </a>
+                </nav>
+            </aside>
+
+            {# Main Content Area #}
+            <main class="profile-main">
+                {# Flash Messages #}
+                {% for message in app.flashes('success') %}
+                    <div class="alert alert-success">{{ message }}</div>
+                {% endfor %}
+
+                {% for message in app.flashes('error') %}
+                    <div class="alert alert-error">{{ message }}</div>
+                {% endfor %}
+
+                <h1 class="page-title">Mon profil</h1>
+
+                {{ form_start(form, {'attr': {'class': 'profile-form'}}) }}
+
+                <section class="form-section">
+                    <h2 class="section-title">Informations personnelles</h2>
+
+                    <div class="form-group">
+                        <label class="form-label">Nom complet</label>
+                        <div class="name-fields">
+                            {{ form_widget(form.firstName, {'attr': {'class': 'form-input', 'placeholder': 'Prénom'}}) }}
+                            {{ form_widget(form.lastName, {'attr': {'class': 'form-input', 'placeholder': 'Nom'}}) }}
+                        </div>
+                        {{ form_errors(form.firstName) }}
+                        {{ form_errors(form.lastName) }}
+                    </div>
+
+                    <div class="form-group">
+                        {{ form_label(form.email, null, {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.email, {'attr': {'class': 'form-input'}}) }}
+                        {{ form_errors(form.email) }}
+                    </div>
+
+                    <div class="form-group">
+                        {{ form_label(form.phone, null, {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.phone, {'attr': {'class': 'form-input', 'placeholder': '+33 6 12 34 56 78'}}) }}
+                        {{ form_errors(form.phone) }}
+                    </div>
+
+                    <div class="form-group">
+                        {{ form_label(form.accountType, null, {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.accountType, {'attr': {'class': 'form-select'}}) }}
+                        {{ form_errors(form.accountType) }}
+                    </div>
+
+                    <div class="form-group">
+                        {{ form_label(form.biography, null, {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.biography, {'attr': {'class': 'form-textarea'}}) }}
+                        {{ form_errors(form.biography) }}
+                    </div>
+                </section>
+
+                {# Cities Section #}
+                <section class="form-section cities-section">
+                    <h2 class="section-title">Villes de rattachement</h2>
+                    <p class="section-subtitle">Villes recommandées en fonction des villes suivies pour les événements</p>
+
+                    <div class="cities-tags">
+                        {% if followedCities is not empty %}
+                            {% for cityData in followedCities %}
+                                <span class="city-tag">
+                                    {{ cityData.city.name }} ({{ cityData.eventsCount }})
+                                </span>
+                            {% endfor %}
+                        {% else %}
+                            <p class="empty-state-text">Aucune ville suivie</p>
+                        {% endif %}
+                    </div>
+                </section>
+
+                {# Form Actions #}
+                <div class="form-actions">
+                    <a href="{{ path('app_profile') }}" class="btn btn-cancel">Annuler</a>
+                    <button type="submit" class="btn btn-save">Sauvegarder les modifications</button>
+                </div>
+
+                {{ form_rest(form) }}
+                {{ form_end(form) }}
+            </main>
+        </div>
+    </div>
+{% endblock %}
